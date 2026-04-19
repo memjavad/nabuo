@@ -3,7 +3,7 @@ Contributors: ArabPsychology
 Tags: database, scales, psychology, research, directory
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.55.4
+Stable tag: 1.55.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+= 1.55.5 =
+* Added unauthorized error path check for save_report in Admin Reports Generator
+
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
 * Config: Added .gitignore for clean project tracking.

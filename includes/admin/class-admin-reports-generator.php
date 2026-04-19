@@ -401,6 +401,10 @@ class Admin_Reports_Generator {
 	 * @return \WP_REST_Response
 	 */
 	public function save_report( $request ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return new \WP_Error( 'unauthorized', 'Not authorized', array( 'status' => 403 ) );
+		}
+
 		$report_name = sanitize_text_field( $request->get_param( 'report_name' ) );
 		$report_type = sanitize_text_field( $request->get_param( 'report_type' ) );
 		$start_date = sanitize_text_field( $request->get_param( 'start_date' ) );
