@@ -310,7 +310,7 @@ class Submission_Management_Queue {
 		$post_ids = $request->get_param( 'post_ids' ) ?? array();
 		$action   = $request->get_param( 'action' ) ?? '';
 
-		if ( empty( $post_ids ) || ! in_array( $action, array( 'approve', 'reject' ), true ) ) {
+		if ( empty( $post_ids ) || ! is_array( $post_ids ) || ! in_array( $action, array( 'approve', 'reject' ), true ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'Invalid action or empty post IDs' ),
 				400

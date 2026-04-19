@@ -100,7 +100,7 @@ class Bulk_Operations {
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
 		$status    = $request->get_param( 'status' ) ?? 'draft';
 
-		if ( empty( $scale_ids ) || ! in_array( $status, array( 'publish', 'draft', 'pending', 'trash' ), true ) ) {
+		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) || ! in_array( $status, array( 'publish', 'draft', 'pending', 'trash' ), true ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'Invalid parameters' ),
 				400
@@ -139,7 +139,7 @@ class Bulk_Operations {
 		$taxonomy  = $request->get_param( 'taxonomy' ) ?? 'scale_category';
 		$term_ids  = $request->get_param( 'term_ids' ) ?? array();
 
-		if ( empty( $scale_ids ) || empty( $term_ids ) ) {
+		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) || empty( $term_ids ) || ! is_array( $term_ids ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'Missing parameters' ),
 				400
@@ -172,7 +172,7 @@ class Bulk_Operations {
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
 		$permanent = $request->get_param( 'permanent' ) ?? false;
 
-		if ( empty( $scale_ids ) ) {
+		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'No scales provided' ),
 				400
@@ -205,7 +205,7 @@ class Bulk_Operations {
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
 		$format    = $request->get_param( 'format' ) ?? 'json';
 
-		if ( empty( $scale_ids ) ) {
+		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'No scales provided' ),
 				400
