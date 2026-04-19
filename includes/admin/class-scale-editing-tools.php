@@ -262,11 +262,13 @@ class Scale_Editing_Tools {
 			'_naboo_scale_language',
 			'_naboo_scale_population',
 		);
-
+		$all_meta = get_post_meta( $scale_id );
 		foreach ( $metadata_fields as $meta_key ) {
-			$meta_value = get_post_meta( $scale_id, $meta_key, true );
-			if ( $meta_value ) {
-				update_post_meta( $new_post_id, $meta_key, $meta_value );
+			if ( isset( $all_meta[ $meta_key ] ) && isset( $all_meta[ $meta_key ][0] ) ) {
+				$meta_value = maybe_unserialize( $all_meta[ $meta_key ][0] );
+				if ( $meta_value ) {
+					update_post_meta( $new_post_id, $meta_key, $meta_value );
+				}
 			}
 		}
 
