@@ -147,11 +147,13 @@ class Comments_Moderation {
 		$offset     = ( $paged - 1 ) * $per_page;
 
 		// Count per status
-		$counts = array();
-		foreach ( array( 'pending', 'approved', 'rejected', 'spam' ) as $s ) {
-			$counts[ $s ] = (int) $wpdb->get_var(
-				$wpdb->prepare( "SELECT COUNT(*) FROM `{$table}` WHERE status = %s", $s )
-			);
+		$counts = array( 'pending' => 0, 'approved' => 0, 'rejected' => 0, 'spam' => 0 );
+		$results = $wpdb->get_results( "SELECT status, COUNT(*) as count FROM `{$table}` GROUP BY status" );
+
+		foreach ( $results as $row ) {
+			if ( isset( $counts[ $row->status ] ) ) {
+				$counts[ $row->status ] = (int) $row->count;
+			}
 		}
 		$counts['all'] = array_sum( $counts );
 
