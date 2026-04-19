@@ -58,14 +58,22 @@ async function fillGrokipediaForm(title, link) {
             // 6. Wait for success (modal closing or success message)
             // For now, assume success if clicked. A more robust implementation would check for a success message.
             await sleep(2000);
-            chrome.runtime.sendMessage({ action: 'submissionComplete', success: true });
+            try {
+                chrome.runtime.sendMessage({ action: 'submissionComplete', success: true });
+            } catch (err) {
+                console.error('Naboo Ext: Error sending success message to background', err);
+            }
         } else {
             throw new Error('Submit button not found or disabled');
         }
 
     } catch (error) {
         console.error('Naboo Sync Error:', error);
-        chrome.runtime.sendMessage({ action: 'submissionComplete', success: false, error: error.message });
+        try {
+            chrome.runtime.sendMessage({ action: 'submissionComplete', success: false, error: error.message });
+        } catch (err) {
+            console.error('Naboo Ext: Error sending failure message to background', err);
+        }
     }
 }
 
