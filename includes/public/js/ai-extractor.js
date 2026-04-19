@@ -140,25 +140,32 @@
             formData.append('scale_pdf', file);
             formData.append('extracted_text', extractedText);
 
-            $.ajax({
-                url: nabooAIExtractor.ajax_url,
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: (response) => {
-                    this.$loading.hide();
+            fetch(nabooAIExtractor.ajax_url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.$loading.hide();
 
-                    if (response.success) {
-                        this.populateForm(response.data);
-                    } else {
-                        this.$inner.show();
-                        alert(response.data.message || 'An error occurred during extraction.');
-                    }
-                },
-                error: () => {
-                    this.$loading.hide();
+                if (data.success) {
+                    this.populateForm(data.data);
+                } else {
                     this.$inner.show();
+                    alert(data.data.message || 'An error occurred during extraction.');
+                }
+            })
+            .catch((err) => {
+                this.$loading.hide();
+                this.$inner.show();
+                if (err instanceof SyntaxError) {
+                    alert('Failed to parse AI response');
+                } else {
                     alert('An error occurred. Please try again.');
                 }
             });
