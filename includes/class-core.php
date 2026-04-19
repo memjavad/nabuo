@@ -359,200 +359,208 @@ class Core {
 	}
 
 	private function define_public_hooks() {
+		$ajax = new Ajax();
 		$plugin_public = new Frontend( $this->get_plugin_name(), $this->get_version() );
-        $ajax = new Ajax();
-        $user_dashboard = new User_Dashboard();
-        $api = new API();
-        $favorites = new Favorites( $this->get_plugin_name(), $this->get_version() );
-        $ratings = new Ratings( $this->get_plugin_name(), $this->get_version() );
-        $related_scales = new Related_Scales( $this->get_plugin_name(), $this->get_version() );
-        $comments = new Comments( $this->get_plugin_name(), $this->get_version() );
-        $advanced_search = new Advanced_Search( $this->get_plugin_name(), $this->get_version() );
-        $smart_search_suggestions = new Smart_Search_Suggestions( $this->get_plugin_name(), $this->get_version() );
-        $search_result_improvements = new Search_Result_Improvements( $this->get_plugin_name(), $this->get_version() );
-        $pdf_export = new PDF_Export( $this->get_plugin_name(), $this->get_version() );
-        $file_download_features = new File_Download_Features( $this->get_plugin_name(), $this->get_version() );
-        $data_export_features = new Data_Export_Features( $this->get_plugin_name(), $this->get_version() );
-        $scale_collections = new Scale_Collections( $this->get_plugin_name(), $this->get_version() );
-        $scale_comparison = new Scale_Comparison( $this->get_plugin_name(), $this->get_version() );
-        $scale_popularity_analytics = new Scale_Popularity_Analytics( $this->get_plugin_name(), $this->get_version() );
-        $user_analytics_dashboard = new User_Analytics_Dashboard( $this->get_plugin_name(), $this->get_version() );
-        $search_analytics_trends = new Search_Analytics_Trends( $this->get_plugin_name(), $this->get_version() );
-        $scale_recommendation_engine = new Scale_Recommendation_Engine( $this->get_plugin_name(), $this->get_version() );
-        $ai_frontend = new AI_Frontend( $this->get_plugin_name(), $this->get_version() );
-        $glossary_public = new Glossary_Public( $this->get_plugin_name(), $this->get_version() );
+		$admin_bar = new Admin_Bar();
+		$glossary_public = new Glossary_Public( $this->get_plugin_name(), $this->get_version() );
 
-        // New Modular Frontend Managers
-        $seo_manager     = new SEO_Manager();
-        $search_guard    = new Search_Guard();
-        $admin_bar       = new Admin_Bar();
-        $content_manager = new Content_Manager();
-        
-        // Favorites System
-        $this->loader->add_action( 'init', $favorites, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $favorites, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $favorites, 'enqueue_scripts' );
-        $this->loader->add_action( 'naboo_after_user_dashboard', $favorites, 'add_favorites_dashboard_section' );
-        
-        // Ratings System
-        $this->loader->add_action( 'init', $ratings, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $ratings, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $ratings, 'enqueue_scripts' );
-        $this->loader->add_filter( 'the_content', $ratings, 'inject_rating_section', 20 );
-        $this->loader->add_action( 'save_post_psych_scale', $ratings, 'add_default_rating_on_publish', 10, 3 );
-        
-        // Related Scales System
-        $this->loader->add_action( 'wp_enqueue_scripts', $related_scales, 'enqueue_scripts' );
-        $this->loader->add_filter( 'the_content', $related_scales, 'inject_related_scales', 15 );
-        $this->loader->add_action( 'wp_ajax_naboo_get_related_scales', $related_scales, 'ajax_get_related_scales' );
-        $this->loader->add_action( 'wp_ajax_nopriv_naboo_get_related_scales', $related_scales, 'ajax_get_related_scales' );
-        
-        // Comments System
-        $this->loader->add_action( 'init', $comments, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $comments, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $comments, 'enqueue_scripts' );
-        $this->loader->add_filter( 'the_content', $comments, 'inject_comments_section', 25 );
-        
-        // Advanced Search System
-        $this->loader->add_action( 'rest_api_init', $advanced_search, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $advanced_search, 'enqueue_scripts' );
-        
-        // Smart Search Suggestions System
-        $this->loader->add_action( 'init', $smart_search_suggestions, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $smart_search_suggestions, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $smart_search_suggestions, 'enqueue_scripts' );
-        
-        // Search Result Improvements System
-        $this->loader->add_action( 'init', $search_result_improvements, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $search_result_improvements, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $search_result_improvements, 'enqueue_scripts' );
-        
-        // PDF Export System
-        $this->loader->add_action( 'rest_api_init', $pdf_export, 'register_endpoints' );
-        // $this->loader->add_action( 'wp_enqueue_scripts', $pdf_export, 'enqueue_scripts' );
-        // $this->loader->add_filter( 'the_content', $pdf_export, 'inject_export_button', 18 );
-        
-        // File Download Features System
-        $this->loader->add_action( 'init', $file_download_features, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $file_download_features, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $file_download_features, 'enqueue_scripts' );
-        
-        // Data Export Features System
-        $this->loader->add_action( 'rest_api_init', $data_export_features, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $data_export_features, 'enqueue_scripts' );
-        
-        // Scale Collections System
-        $this->loader->add_action( 'init', $scale_collections, 'create_table' );
-        $this->loader->add_action( 'rest_api_init', $scale_collections, 'register_endpoints' );
-        // $this->loader->add_action( 'wp_enqueue_scripts', $scale_collections, 'enqueue_scripts' );
-        // $this->loader->add_filter( 'the_content', $scale_collections, 'inject_add_to_collection_button', 18 );
-        
-        // Scale Comparison System
-        $this->loader->add_action( 'rest_api_init', $scale_comparison, 'register_endpoints' );
-        // $this->loader->add_action( 'wp_enqueue_scripts', $scale_comparison, 'enqueue_scripts' );
-        // $this->loader->add_filter( 'the_content', $scale_comparison, 'inject_add_to_compare_button', 19 );
-        // $this->loader->add_action( 'wp_footer', $scale_comparison, 'render_comparison_bar' );
-        
-        // Scale Popularity Analytics System
-        $this->loader->add_action( 'rest_api_init', $scale_popularity_analytics, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $scale_popularity_analytics, 'enqueue_scripts' );
-        
-        // User Analytics Dashboard System
-        $this->loader->add_action( 'rest_api_init', $user_analytics_dashboard, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $user_analytics_dashboard, 'enqueue_scripts' );
-        $this->loader->add_filter( 'naboo_after_dashboard_content', $user_analytics_dashboard, 'inject_dashboard_tab' );
-        
-        // Search Analytics & Trends System
-        $this->loader->add_action( 'rest_api_init', $search_analytics_trends, 'register_endpoints' );
-        
-        // Scale Recommendation Engine System
-        $this->loader->add_action( 'rest_api_init', $scale_recommendation_engine, 'register_endpoints' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $scale_recommendation_engine, 'enqueue_scripts' );
-        $this->loader->add_filter( 'the_content', $scale_recommendation_engine, 'inject_recommendations_section', 30 );
-        
-        // Register API Routes
-        $this->loader->add_action( 'rest_api_init', $api, 'register_routes' );
-        
-        // Theme Builder
-        $theme_builder = new Theme_Builder();
-        $theme_builder->init();
+		$this->define_public_system_hooks();
+		$this->define_public_content_hooks( $plugin_public, $admin_bar, $glossary_public );
+		$this->define_public_ajax_shortcode_hooks( $plugin_public, $admin_bar, $glossary_public );
+	}
 
-        // Register CPT
-        $cpt = new CPT();
-        $this->loader->add_action( 'init', $cpt, 'register' );
-        
-        // Register Widget
-        $this->loader->add_action( 'widgets_init', $this, 'register_widgets' );
+	private function define_public_system_hooks() {
+		$favorites = new Favorites( $this->get_plugin_name(), $this->get_version() );
+		$ratings = new Ratings( $this->get_plugin_name(), $this->get_version() );
+		$related_scales = new Related_Scales( $this->get_plugin_name(), $this->get_version() );
+		$comments = new Comments( $this->get_plugin_name(), $this->get_version() );
+		$advanced_search = new Advanced_Search( $this->get_plugin_name(), $this->get_version() );
+		$smart_search_suggestions = new Smart_Search_Suggestions( $this->get_plugin_name(), $this->get_version() );
+		$search_result_improvements = new Search_Result_Improvements( $this->get_plugin_name(), $this->get_version() );
+		$pdf_export = new PDF_Export( $this->get_plugin_name(), $this->get_version() );
+		$file_download_features = new File_Download_Features( $this->get_plugin_name(), $this->get_version() );
+		$data_export_features = new Data_Export_Features( $this->get_plugin_name(), $this->get_version() );
+		$scale_collections = new Scale_Collections( $this->get_plugin_name(), $this->get_version() );
+		$scale_comparison = new Scale_Comparison( $this->get_plugin_name(), $this->get_version() );
+		$scale_popularity_analytics = new Scale_Popularity_Analytics( $this->get_plugin_name(), $this->get_version() );
+		$user_analytics_dashboard = new User_Analytics_Dashboard( $this->get_plugin_name(), $this->get_version() );
+		$search_analytics_trends = new Search_Analytics_Trends( $this->get_plugin_name(), $this->get_version() );
+		$scale_recommendation_engine = new Scale_Recommendation_Engine( $this->get_plugin_name(), $this->get_version() );
 
-        // Enqueue styles and scripts
+		// Favorites System
+		$this->loader->add_action( 'init', $favorites, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $favorites, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $favorites, 'enqueue_scripts' );
+		$this->loader->add_action( 'naboo_after_user_dashboard', $favorites, 'add_favorites_dashboard_section' );
+
+		// Ratings System
+		$this->loader->add_action( 'init', $ratings, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $ratings, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $ratings, 'enqueue_scripts' );
+		$this->loader->add_filter( 'the_content', $ratings, 'inject_rating_section', 20 );
+		$this->loader->add_action( 'save_post_psych_scale', $ratings, 'add_default_rating_on_publish', 10, 3 );
+
+		// Related Scales System
+		$this->loader->add_action( 'wp_enqueue_scripts', $related_scales, 'enqueue_scripts' );
+		$this->loader->add_filter( 'the_content', $related_scales, 'inject_related_scales', 15 );
+		$this->loader->add_action( 'wp_ajax_naboo_get_related_scales', $related_scales, 'ajax_get_related_scales' );
+		$this->loader->add_action( 'wp_ajax_nopriv_naboo_get_related_scales', $related_scales, 'ajax_get_related_scales' );
+
+		// Comments System
+		$this->loader->add_action( 'init', $comments, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $comments, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $comments, 'enqueue_scripts' );
+		$this->loader->add_filter( 'the_content', $comments, 'inject_comments_section', 25 );
+
+		// Advanced Search System
+		$this->loader->add_action( 'rest_api_init', $advanced_search, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $advanced_search, 'enqueue_scripts' );
+
+		// Smart Search Suggestions System
+		$this->loader->add_action( 'init', $smart_search_suggestions, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $smart_search_suggestions, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $smart_search_suggestions, 'enqueue_scripts' );
+
+		// Search Result Improvements System
+		$this->loader->add_action( 'init', $search_result_improvements, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $search_result_improvements, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $search_result_improvements, 'enqueue_scripts' );
+
+		// PDF Export System
+		$this->loader->add_action( 'rest_api_init', $pdf_export, 'register_endpoints' );
+		// $this->loader->add_action( 'wp_enqueue_scripts', $pdf_export, 'enqueue_scripts' );
+		// $this->loader->add_filter( 'the_content', $pdf_export, 'inject_export_button', 18 );
+
+		// File Download Features System
+		$this->loader->add_action( 'init', $file_download_features, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $file_download_features, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $file_download_features, 'enqueue_scripts' );
+
+		// Data Export Features System
+		$this->loader->add_action( 'rest_api_init', $data_export_features, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $data_export_features, 'enqueue_scripts' );
+
+		// Scale Collections System
+		$this->loader->add_action( 'init', $scale_collections, 'create_table' );
+		$this->loader->add_action( 'rest_api_init', $scale_collections, 'register_endpoints' );
+		// $this->loader->add_action( 'wp_enqueue_scripts', $scale_collections, 'enqueue_scripts' );
+		// $this->loader->add_filter( 'the_content', $scale_collections, 'inject_add_to_collection_button', 18 );
+
+		// Scale Comparison System
+		$this->loader->add_action( 'rest_api_init', $scale_comparison, 'register_endpoints' );
+		// $this->loader->add_action( 'wp_enqueue_scripts', $scale_comparison, 'enqueue_scripts' );
+		// $this->loader->add_filter( 'the_content', $scale_comparison, 'inject_add_to_compare_button', 19 );
+		// $this->loader->add_action( 'wp_footer', $scale_comparison, 'render_comparison_bar' );
+
+		// Scale Popularity Analytics System
+		$this->loader->add_action( 'rest_api_init', $scale_popularity_analytics, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $scale_popularity_analytics, 'enqueue_scripts' );
+
+		// User Analytics Dashboard System
+		$this->loader->add_action( 'rest_api_init', $user_analytics_dashboard, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $user_analytics_dashboard, 'enqueue_scripts' );
+		$this->loader->add_filter( 'naboo_after_dashboard_content', $user_analytics_dashboard, 'inject_dashboard_tab' );
+
+		// Search Analytics & Trends System
+		$this->loader->add_action( 'rest_api_init', $search_analytics_trends, 'register_endpoints' );
+
+		// Scale Recommendation Engine System
+		$this->loader->add_action( 'rest_api_init', $scale_recommendation_engine, 'register_endpoints' );
+		$this->loader->add_action( 'wp_enqueue_scripts', $scale_recommendation_engine, 'enqueue_scripts' );
+		$this->loader->add_filter( 'the_content', $scale_recommendation_engine, 'inject_recommendations_section', 30 );
+	}
+
+	private function define_public_content_hooks( $plugin_public, $admin_bar, $glossary_public ) {
+		$seo_manager = new SEO_Manager();
+		$content_manager = new Content_Manager();
+
+		// Theme Builder
+		$theme_builder = new Theme_Builder();
+		$theme_builder->init();
+
+		// Register CPT
+		$cpt = new CPT();
+		$this->loader->add_action( 'init', $cpt, 'register' );
+
+		// Register Widget
+		$this->loader->add_action( 'widgets_init', $this, 'register_widgets' );
+
+		// Enqueue styles and scripts
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-        // SEO & Site Icon Hooks
-        $this->loader->add_action( 'wp_head', $seo_manager, 'add_schema_markup' );
-        $this->loader->add_action( 'wp_head', $seo_manager, 'add_meta_description', 1 );
-        $this->loader->add_action( 'wp_head', $seo_manager, 'add_opengraph_tags' );
-        $this->loader->add_action( 'wp_head', $seo_manager, 'add_academic_meta_tags' );
-        $this->loader->add_action( 'wp_head', $seo_manager, 'add_site_icons' );
-        
-        // Single Scale Features
-        $this->loader->add_action( 'wp_head', $content_manager, 'track_views' );
-        $this->loader->add_filter( 'the_content', $content_manager, 'inject_scale_content' );
-        $this->loader->add_action( 'wp_footer', $admin_bar, 'render_admin_review_bar' );
+		// SEO & Site Icon Hooks
+		$this->loader->add_action( 'wp_head', $seo_manager, 'add_schema_markup' );
+		$this->loader->add_action( 'wp_head', $seo_manager, 'add_meta_description', 1 );
+		$this->loader->add_action( 'wp_head', $seo_manager, 'add_opengraph_tags' );
+		$this->loader->add_action( 'wp_head', $seo_manager, 'add_academic_meta_tags' );
+		$this->loader->add_action( 'wp_head', $seo_manager, 'add_site_icons' );
 
-        // Shortcodes
-        $this->loader->add_shortcode( 'naboo_search', $plugin_public, 'render_search_shortcode' );
-        $this->loader->add_shortcode( 'naboo_submit', $plugin_public, 'render_submission_shortcode' );
-        $this->loader->add_shortcode( 'naboo_dashboard', $user_dashboard, 'render_dashboard_shortcode' );
-        $this->loader->add_shortcode( 'naboo_ai_submit', $ai_frontend, 'render_ai_submit_shortcode' );
+		// Single Scale Features
+		$this->loader->add_action( 'wp_head', $content_manager, 'track_views' );
+		$this->loader->add_filter( 'the_content', $content_manager, 'inject_scale_content' );
+		$this->loader->add_action( 'wp_footer', $admin_bar, 'render_admin_review_bar' );
 
-        // AJAX for AI Extraction
-        $this->loader->add_action( 'wp_ajax_naboo_process_pdf_extraction', $ai_frontend, 'ajax_process_pdf_extraction' );
-        $this->loader->add_action( 'wp_ajax_nopriv_naboo_process_pdf_extraction', $ai_frontend, 'ajax_process_pdf_extraction' );
+		// Hide page title on pages that contain any NABOO shortcode.
+		$this->loader->add_filter( 'the_title', $content_manager, 'hide_title_on_shortcode_pages', 10, 2 );
 
-        // AJAX for AI Final Submission
-        $this->loader->add_action( 'wp_ajax_naboo_submit_ai_scale', $ai_frontend, 'ajax_submit_ai_scale' );
-        $this->loader->add_action( 'wp_ajax_nopriv_naboo_submit_ai_scale', $ai_frontend, 'ajax_submit_ai_scale' );
-
-
-        // AJAX for AI Single Field Refinement
-        $this->loader->add_action( 'wp_ajax_naboo_refine_single_field', $ai_frontend, 'ajax_refine_single_field' );
-        $this->loader->add_action( 'wp_ajax_nopriv_naboo_refine_single_field', $ai_frontend, 'ajax_refine_single_field' );
-
-        // AJAX for Pending Scale Processor
-        // Since $pending_processor is not globally available in this method block (it's in define_admin_hooks), 
-        // we map it properly inside define_admin_hooks where it's instantiated.
-
-        // AJAX for Inline AI Refinement (Admin Only)
-        $this->loader->add_action( 'wp_ajax_naboo_inline_ai_refine', $ai_frontend, 'ajax_inline_ai_refine' );
-
-        // AJAX for Inline Manual Edit (Admin Only)
-        $this->loader->add_action( 'wp_ajax_naboo_get_raw_field_value', $admin_bar, 'ajax_get_raw_field_value' );
-        $this->loader->add_action( 'wp_ajax_naboo_inline_manual_edit', $admin_bar, 'ajax_inline_manual_edit' );
-
-        // Hide page title on pages that contain any NABOO shortcode.
-        // Priority 10, 2 args — ID is passed since WP 4.4 so we can check the correct post.
-        $this->loader->add_filter( 'the_title', $content_manager, 'hide_title_on_shortcode_pages', 10, 2 );
-
-        // Disable WordPress default search.
-        $this->loader->add_filter( 'get_search_form',   $search_guard, 'disable_search_form'    );
-        $this->loader->add_action( 'template_redirect', $search_guard, 'redirect_search_to_apa' );
-        $this->loader->add_action( 'pre_get_posts',     $search_guard, 'disable_search_query'   );
-
-        // Glossary Shortcode, Assets & REST API
-        $this->loader->add_shortcode( 'naboo_glossary', $glossary_public, 'render_shortcode' );
-        $this->loader->add_action( 'wp_enqueue_scripts', $glossary_public, 'enqueue_assets' );
-        $this->loader->add_action( 'rest_api_init', $glossary_public, 'register_rest_routes' );
-
-        // Scale Index — virtual full-page browser
-        $scale_index = new Scale_Index( $this->plugin_name, $this->version );
-        $this->loader->add_action( 'init',              $scale_index, 'register_rewrite_rule' );
-        $this->loader->add_action( 'rest_api_init',     $glossary_public, 'register_rest_routes' );
-        $this->loader->add_filter( 'query_vars',        $scale_index, 'register_query_var' );
-        $this->loader->add_action( 'template_redirect', $scale_index, 'maybe_render_index' );
+		// Glossary Assets & REST API
+		$this->loader->add_action( 'wp_enqueue_scripts', $glossary_public, 'enqueue_assets' );
+		$this->loader->add_action( 'rest_api_init', $glossary_public, 'register_rest_routes' );
 	}
 
-    public function register_widgets() {
+	private function define_public_ajax_shortcode_hooks( $plugin_public, $admin_bar, $glossary_public ) {
+		$api = new API();
+		$user_dashboard = new User_Dashboard();
+		$ai_frontend = new AI_Frontend( $this->get_plugin_name(), $this->get_version() );
+		$search_guard = new Search_Guard();
+		$scale_index = new Scale_Index( $this->plugin_name, $this->version );
+
+		// Register API Routes
+		$this->loader->add_action( 'rest_api_init', $api, 'register_routes' );
+
+		// Shortcodes
+		$this->loader->add_shortcode( 'naboo_search', $plugin_public, 'render_search_shortcode' );
+		$this->loader->add_shortcode( 'naboo_submit', $plugin_public, 'render_submission_shortcode' );
+		$this->loader->add_shortcode( 'naboo_dashboard', $user_dashboard, 'render_dashboard_shortcode' );
+		$this->loader->add_shortcode( 'naboo_ai_submit', $ai_frontend, 'render_ai_submit_shortcode' );
+		$this->loader->add_shortcode( 'naboo_glossary', $glossary_public, 'render_shortcode' );
+
+		// AJAX for AI Extraction
+		$this->loader->add_action( 'wp_ajax_naboo_process_pdf_extraction', $ai_frontend, 'ajax_process_pdf_extraction' );
+		$this->loader->add_action( 'wp_ajax_nopriv_naboo_process_pdf_extraction', $ai_frontend, 'ajax_process_pdf_extraction' );
+
+		// AJAX for AI Final Submission
+		$this->loader->add_action( 'wp_ajax_naboo_submit_ai_scale', $ai_frontend, 'ajax_submit_ai_scale' );
+		$this->loader->add_action( 'wp_ajax_nopriv_naboo_submit_ai_scale', $ai_frontend, 'ajax_submit_ai_scale' );
+
+		// AJAX for AI Single Field Refinement
+		$this->loader->add_action( 'wp_ajax_naboo_refine_single_field', $ai_frontend, 'ajax_refine_single_field' );
+		$this->loader->add_action( 'wp_ajax_nopriv_naboo_refine_single_field', $ai_frontend, 'ajax_refine_single_field' );
+
+		// AJAX for Pending Scale Processor
+		// Since $pending_processor is not globally available in this method block (it's in define_admin_hooks),
+		// we map it properly inside define_admin_hooks where it's instantiated.
+
+		// AJAX for Inline AI Refinement (Admin Only)
+		$this->loader->add_action( 'wp_ajax_naboo_inline_ai_refine', $ai_frontend, 'ajax_inline_ai_refine' );
+
+		// AJAX for Inline Manual Edit (Admin Only)
+		$this->loader->add_action( 'wp_ajax_naboo_get_raw_field_value', $admin_bar, 'ajax_get_raw_field_value' );
+		$this->loader->add_action( 'wp_ajax_naboo_inline_manual_edit', $admin_bar, 'ajax_inline_manual_edit' );
+
+		// Disable WordPress default search.
+		$this->loader->add_filter( 'get_search_form',   $search_guard, 'disable_search_form'    );
+		$this->loader->add_action( 'template_redirect', $search_guard, 'redirect_search_to_apa' );
+		$this->loader->add_action( 'pre_get_posts',     $search_guard, 'disable_search_query'   );
+
+		// Scale Index — virtual full-page browser
+		$this->loader->add_action( 'init',              $scale_index, 'register_rewrite_rule' );
+		$this->loader->add_filter( 'query_vars',        $scale_index, 'register_query_var' );
+		$this->loader->add_action( 'template_redirect', $scale_index, 'maybe_render_index' );
+	}
+
+	public function register_widgets() {
         register_widget( 'ArabPsychology\NabooDatabase\Core\Widget' );
     }
 
