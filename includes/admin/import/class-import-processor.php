@@ -55,6 +55,12 @@ class Import_Processor {
 	 */
 	public function import_scale( $row ) {
 		try {
+			if ( empty( $_FILES['import_file'] ) ) {
+				throw new \Exception( 'No file uploaded.' );
+			}
+
+			$file = $_FILES['import_file'];
+
 			// Validate required fields
 			if ( empty( $row['title'] ) ) {
 				return array(
