@@ -13,6 +13,21 @@ namespace ArabPsychology\NabooDatabase\Admin\Import;
 class Import_Processor {
 
 	/**
+	 * Validate file upload
+	 *
+	 * @throws \Exception If no file is uploaded.
+	 * @return array The uploaded file data.
+	 */
+	public function validate_file_upload() {
+		if ( empty( $_FILES['import_file'] ) ) {
+			throw new \Exception( 'No file uploaded.' );
+		}
+
+		$file = $_FILES['import_file'];
+		return $file;
+	}
+
+	/**
 	 * Parse import file
 	 *
 	 * @param string $content   The file content.
