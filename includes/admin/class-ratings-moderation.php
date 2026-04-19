@@ -146,31 +146,45 @@ class Ratings_Moderation {
 		}
 		$counts['all'] = array_sum( $counts );
 
-		// Build WHERE
-		$where = $active_tab !== 'all'
-			? $wpdb->prepare( 'WHERE r.status = %s', $active_tab )
-			: 'WHERE 1=1';
+		// Build WHERE safely
+		$where_clauses = array();
+		$where_args    = array();
 
-		if ( $search ) {
-			$like   = '%' . $wpdb->esc_like( $search ) . '%';
-			$where .= $wpdb->prepare( ' AND (r.review LIKE %s OR u.display_name LIKE %s)', $like, $like );
+		if ( $active_tab !== 'all' ) {
+			$where_clauses[] = 'r.status = %s';
+$where_args[]    = $active_tab;
 		}
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` r LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id {$where}" );
+		if ( $search ) {
+			$like            = '%' . $wpdb->esc_like( $search ) . '%';
+			$where_clauses[] = '(r.review LIKE %s OR u.display_name LIKE %s)';
+$where_args[]    = $like;
+$where_args[]    = $like;
+		}
 
-		$ratings = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT r.*, p.post_title AS scale_title, u.display_name, u.user_email
+		$where_sql = '';
+		if ( ! empty( $where_clauses ) ) {
+			$where_sql = 'WHERE ' . implode( ' AND ', $where_clauses );
+		} else {
+			$where_sql = 'WHERE 1=1';
+		}
+
+		if ( ! empty( $where_args ) ) {
+			$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$table}` r LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id {$where_sql}", $where_args ) );
+		} else {
+			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` r LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id {$where_sql}" );
+		}
+
+		$query_string = "SELECT r.*, p.post_title AS scale_title, u.display_name, u.user_email
 				 FROM `{$table}` r
 				 LEFT JOIN {$wpdb->posts} p ON p.ID = r.scale_id
 				 LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id
-				 {$where}
+				 {$where_sql}
 				 ORDER BY r.created_at DESC
-				 LIMIT %d OFFSET %d",
-				$per_page,
-				$offset
-			)
-		);
+				 LIMIT %d OFFSET %d";
+
+		$merged_args = array_merge( $where_args, array( $per_page, $offset ) );
+		$ratings     = $wpdb->get_results( $wpdb->prepare( $query_string, $merged_args ) );
 
 		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( $_GET['notice'] ) : '';
 
