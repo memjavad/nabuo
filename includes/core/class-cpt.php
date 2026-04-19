@@ -170,8 +170,19 @@ class CPT {
 
     }
 
+
     private function register_taxonomies() {
-        // Scale Category
+        $this->register_scale_category_taxonomy();
+        $this->register_scale_author_taxonomy();
+        $this->register_scale_year_taxonomy();
+        $this->register_scale_language_taxonomy();
+        $this->register_scale_test_type_taxonomy();
+        $this->register_scale_format_taxonomy();
+        $this->register_scale_age_group_taxonomy();
+        $this->register_glossary_category_taxonomy();
+    }
+
+    private function register_scale_category_taxonomy() {
         register_taxonomy( 'scale_category', array( 'psych_scale' ), array(
             'hierarchical'      => true,
             'labels'            => array(
@@ -193,8 +204,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-category' ),
         ));
+    }
 
-        // Scale Author (Taxonomy since a scale can have multiple authors and we want to filter by them)
+    private function register_scale_author_taxonomy() {
         register_taxonomy( 'scale_author', array( 'psych_scale' ), array(
             'hierarchical'      => false,
             'labels'            => array(
@@ -214,8 +226,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-author' ),
         ));
+    }
 
-        // Scale Year
+    private function register_scale_year_taxonomy() {
         register_taxonomy( 'scale_year', array( 'psych_scale' ), array(
             'hierarchical'      => false,
             'labels'            => array(
@@ -234,8 +247,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-year' ),
         ));
+    }
 
-        // Scale Language
+    private function register_scale_language_taxonomy() {
         register_taxonomy( 'scale_language', array( 'psych_scale' ), array(
             'hierarchical'      => false,
             'labels'            => array(
@@ -254,8 +268,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-language' ),
         ));
+    }
 
-        // Scale Test Type
+    private function register_scale_test_type_taxonomy() {
         register_taxonomy( 'scale_test_type', array( 'psych_scale' ), array(
             'hierarchical'      => false,
             'labels'            => array(
@@ -274,8 +289,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-test-type' ),
         ));
+    }
 
-        // Scale Format
+    private function register_scale_format_taxonomy() {
         register_taxonomy( 'scale_format', array( 'psych_scale' ), array(
             'hierarchical'      => false,
             'labels'            => array(
@@ -294,8 +310,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-format' ),
         ));
+    }
 
-        // Scale Age Group
+    private function register_scale_age_group_taxonomy() {
         register_taxonomy( 'scale_age_group', array( 'psych_scale' ), array(
             'hierarchical'      => false,
             'labels'            => array(
@@ -315,8 +332,9 @@ class CPT {
             'query_var'         => true,
             'rewrite'           => array( 'slug' => 'scale-age-group' ),
         ));
+    }
 
-        // Glossary Category
+    private function register_glossary_category_taxonomy() {
         register_taxonomy( 'glossary_category', array( 'naboo_glossary' ), array(
             'hierarchical'      => true,
             'labels'            => array(
@@ -339,7 +357,6 @@ class CPT {
             'rewrite'           => array( 'slug' => 'glossary-category' ),
         ));
     }
-
     private function register_glossary_cpt() {
         $labels = array(
             'name'                  => _x( 'Glossary Terms', 'Post Type General Name', 'naboodatabase' ),
