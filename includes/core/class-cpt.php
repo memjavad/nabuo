@@ -171,173 +171,171 @@ class CPT {
     }
 
     private function register_taxonomies() {
-        // Scale Category
-        register_taxonomy( 'scale_category', array( 'psych_scale' ), array(
-            'hierarchical'      => true,
-            'labels'            => array(
-                'name'              => _x( 'Scale Categories', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Scale Category', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Categories', 'naboodatabase' ),
-                'all_items'         => __( 'All Categories', 'naboodatabase' ),
-                'parent_item'       => __( 'Parent Category', 'naboodatabase' ),
-                'parent_item_colon' => __( 'Parent Category:', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Category', 'naboodatabase' ),
-                'update_item'       => __( 'Update Category', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Category', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Category Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Categories', 'naboodatabase' ),
+        $taxonomies = array(
+            'scale_category' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => true,
+                    'labels'            => array(
+                        'name'              => _x( 'Scale Categories', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Scale Category', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Categories', 'naboodatabase' ),
+                        'all_items'         => __( 'All Categories', 'naboodatabase' ),
+                        'parent_item'       => __( 'Parent Category', 'naboodatabase' ),
+                        'parent_item_colon' => __( 'Parent Category:', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Category', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Category', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Category', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Category Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Categories', 'naboodatabase' ),
+                    ),
+                    'show_in_rest'      => true,
+                    'rewrite'           => array( 'slug' => 'scale-category' ),
+                )
             ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'show_in_rest'      => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-category' ),
-        ));
+            'scale_author' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => false,
+                    'labels'            => array(
+                        'name'              => _x( 'Scale Authors', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Scale Author', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Authors', 'naboodatabase' ),
+                        'all_items'         => __( 'All Authors', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Author', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Author', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Author', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Author Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Authors', 'naboodatabase' ),
+                    ),
+                    'show_in_rest'      => true,
+                    'rewrite'           => array( 'slug' => 'scale-author' ),
+                )
+            ),
+            'scale_year' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => false,
+                    'labels'            => array(
+                        'name'              => _x( 'Years', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Year', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Years', 'naboodatabase' ),
+                        'all_items'         => __( 'All Years', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Year', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Year', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Year', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Year Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Years', 'naboodatabase' ),
+                    ),
+                    'rewrite'           => array( 'slug' => 'scale-year' ),
+                )
+            ),
+            'scale_language' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => false,
+                    'labels'            => array(
+                        'name'              => _x( 'Languages', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Language', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Languages', 'naboodatabase' ),
+                        'all_items'         => __( 'All Languages', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Language', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Language', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Language', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Language Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Languages', 'naboodatabase' ),
+                    ),
+                    'rewrite'           => array( 'slug' => 'scale-language' ),
+                )
+            ),
+            'scale_test_type' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => false,
+                    'labels'            => array(
+                        'name'              => _x( 'Test Types', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Test Type', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Test Types', 'naboodatabase' ),
+                        'all_items'         => __( 'All Test Types', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Test Type', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Test Type', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Test Type', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Test Type Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Test Types', 'naboodatabase' ),
+                    ),
+                    'rewrite'           => array( 'slug' => 'scale-test-type' ),
+                )
+            ),
+            'scale_format' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => false,
+                    'labels'            => array(
+                        'name'              => _x( 'Formats', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Format', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Formats', 'naboodatabase' ),
+                        'all_items'         => __( 'All Formats', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Format', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Format', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Format', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Format Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Formats', 'naboodatabase' ),
+                    ),
+                    'rewrite'           => array( 'slug' => 'scale-format' ),
+                )
+            ),
+            'scale_age_group' => array(
+                'object_type' => array( 'psych_scale' ),
+                'args'        => array(
+                    'hierarchical'      => false,
+                    'labels'            => array(
+                        'name'              => _x( 'Age Groups', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Age Group', 'taxonomy singular name', 'naboo' ),
+                        'search_items'      => __( 'Search Age Groups', 'naboodatabase' ),
+                        'all_items'         => __( 'All Age Groups', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Age Group', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Age Group', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Age Group', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Age Group Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Age Groups', 'naboodatabase' ),
+                    ),
+                    'show_in_rest'      => true,
+                    'rewrite'           => array( 'slug' => 'scale-age-group' ),
+                )
+            ),
+            'glossary_category' => array(
+                'object_type' => array( 'naboo_glossary' ),
+                'args'        => array(
+                    'hierarchical'      => true,
+                    'labels'            => array(
+                        'name'              => _x( 'Glossary Categories', 'taxonomy general name', 'naboodatabase' ),
+                        'singular_name'     => _x( 'Glossary Category', 'taxonomy singular name', 'naboodatabase' ),
+                        'search_items'      => __( 'Search Categories', 'naboodatabase' ),
+                        'all_items'         => __( 'All Categories', 'naboodatabase' ),
+                        'parent_item'       => __( 'Parent Category', 'naboodatabase' ),
+                        'parent_item_colon' => __( 'Parent Category:', 'naboodatabase' ),
+                        'edit_item'         => __( 'Edit Category', 'naboodatabase' ),
+                        'update_item'       => __( 'Update Category', 'naboodatabase' ),
+                        'add_new_item'      => __( 'Add New Category', 'naboodatabase' ),
+                        'new_item_name'     => __( 'New Category Name', 'naboodatabase' ),
+                        'menu_name'         => __( 'Categories', 'naboodatabase' ),
+                    ),
+                    'show_in_rest'      => true,
+                    'rewrite'           => array( 'slug' => 'glossary-category' ),
+                )
+            ),
+        );
 
-        // Scale Author (Taxonomy since a scale can have multiple authors and we want to filter by them)
-        register_taxonomy( 'scale_author', array( 'psych_scale' ), array(
-            'hierarchical'      => false,
-            'labels'            => array(
-                'name'              => _x( 'Scale Authors', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Scale Author', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Authors', 'naboodatabase' ),
-                'all_items'         => __( 'All Authors', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Author', 'naboodatabase' ),
-                'update_item'       => __( 'Update Author', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Author', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Author Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Authors', 'naboodatabase' ),
-            ),
+        $default_args = array(
             'show_ui'           => true,
             'show_admin_column' => true,
-            'show_in_rest'      => true,
             'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-author' ),
-        ));
+        );
 
-        // Scale Year
-        register_taxonomy( 'scale_year', array( 'psych_scale' ), array(
-            'hierarchical'      => false,
-            'labels'            => array(
-                'name'              => _x( 'Years', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Year', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Years', 'naboodatabase' ),
-                'all_items'         => __( 'All Years', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Year', 'naboodatabase' ),
-                'update_item'       => __( 'Update Year', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Year', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Year Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Years', 'naboodatabase' ),
-            ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-year' ),
-        ));
-
-        // Scale Language
-        register_taxonomy( 'scale_language', array( 'psych_scale' ), array(
-            'hierarchical'      => false,
-            'labels'            => array(
-                'name'              => _x( 'Languages', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Language', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Languages', 'naboodatabase' ),
-                'all_items'         => __( 'All Languages', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Language', 'naboodatabase' ),
-                'update_item'       => __( 'Update Language', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Language', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Language Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Languages', 'naboodatabase' ),
-            ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-language' ),
-        ));
-
-        // Scale Test Type
-        register_taxonomy( 'scale_test_type', array( 'psych_scale' ), array(
-            'hierarchical'      => false,
-            'labels'            => array(
-                'name'              => _x( 'Test Types', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Test Type', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Test Types', 'naboodatabase' ),
-                'all_items'         => __( 'All Test Types', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Test Type', 'naboodatabase' ),
-                'update_item'       => __( 'Update Test Type', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Test Type', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Test Type Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Test Types', 'naboodatabase' ),
-            ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-test-type' ),
-        ));
-
-        // Scale Format
-        register_taxonomy( 'scale_format', array( 'psych_scale' ), array(
-            'hierarchical'      => false,
-            'labels'            => array(
-                'name'              => _x( 'Formats', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Format', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Formats', 'naboodatabase' ),
-                'all_items'         => __( 'All Formats', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Format', 'naboodatabase' ),
-                'update_item'       => __( 'Update Format', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Format', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Format Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Formats', 'naboodatabase' ),
-            ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-format' ),
-        ));
-
-        // Scale Age Group
-        register_taxonomy( 'scale_age_group', array( 'psych_scale' ), array(
-            'hierarchical'      => false,
-            'labels'            => array(
-                'name'              => _x( 'Age Groups', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Age Group', 'taxonomy singular name', 'naboo' ),
-                'search_items'      => __( 'Search Age Groups', 'naboodatabase' ),
-                'all_items'         => __( 'All Age Groups', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Age Group', 'naboodatabase' ),
-                'update_item'       => __( 'Update Age Group', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Age Group', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Age Group Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Age Groups', 'naboodatabase' ),
-            ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'show_in_rest'      => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'scale-age-group' ),
-        ));
-
-        // Glossary Category
-        register_taxonomy( 'glossary_category', array( 'naboo_glossary' ), array(
-            'hierarchical'      => true,
-            'labels'            => array(
-                'name'              => _x( 'Glossary Categories', 'taxonomy general name', 'naboodatabase' ),
-                'singular_name'     => _x( 'Glossary Category', 'taxonomy singular name', 'naboodatabase' ),
-                'search_items'      => __( 'Search Categories', 'naboodatabase' ),
-                'all_items'         => __( 'All Categories', 'naboodatabase' ),
-                'parent_item'       => __( 'Parent Category', 'naboodatabase' ),
-                'parent_item_colon' => __( 'Parent Category:', 'naboodatabase' ),
-                'edit_item'         => __( 'Edit Category', 'naboodatabase' ),
-                'update_item'       => __( 'Update Category', 'naboodatabase' ),
-                'add_new_item'      => __( 'Add New Category', 'naboodatabase' ),
-                'new_item_name'     => __( 'New Category Name', 'naboodatabase' ),
-                'menu_name'         => __( 'Categories', 'naboodatabase' ),
-            ),
-            'show_ui'           => true,
-            'show_admin_column' => true,
-            'show_in_rest'      => true,
-            'query_var'         => true,
-            'rewrite'           => array( 'slug' => 'glossary-category' ),
-        ));
+        foreach ( $taxonomies as $taxonomy => $data ) {
+            $args = array_merge( $default_args, $data['args'] );
+            register_taxonomy( $taxonomy, $data['object_type'], $args );
+        }
     }
 
     private function register_glossary_cpt() {
