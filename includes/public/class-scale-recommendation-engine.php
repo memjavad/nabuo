@@ -218,7 +218,8 @@ class Scale_Recommendation_Engine {
 	 * @return \WP_REST_Response
 	 */
 	public function get_trending_recommendations( $request ) {
-		$limit = (int) $request->get_param( 'limit' ) ?? 5;
+		$limit_param = $request->get_param( 'limit' );
+		$limit = $limit_param !== null ? (int) $limit_param : 5;
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'naboo_popularity_analytics';
