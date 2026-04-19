@@ -3,7 +3,7 @@
  * Plugin Name:       Naboo Database
  * Plugin URI:        https://arabpsychology.com/
  * Description:       A database for psychological scales. «نابو» كإله للكتابة والعقلانية المنظمة. لقد مثل نابو مراحل متقدمة من التطور المعرفي البشري وتدوين السلوكيات الاجتماعية.
- * Version:           1.55.4
+ * Version:           1.55.5
  * Author:            Arab Psychology
  * Text Domain:       naboodatabase
  * Domain Path:       /languages
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version.
  */
-define( 'NABOODATABASE_VERSION', '1.55.4' );
+define( 'NABOODATABASE_VERSION', '1.55.5' );
 define( 'NABOODATABASE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NABOODATABASE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -48,23 +48,6 @@ spl_autoload_register( function ( $class_name ) {
 	// with .php
 	
 	// Map class names to file names based on WP coding standards (class-classname.php)
-	// This part is tricky because the existing structure uses 'class-naboodatabase-xyz.php'
-	// We will try to map common patterns or restructure.
-    // For now, let's assume we are going to Rename files to match the class names deeper down, or map them here.
-    
-    // Actually, to fully modernize, we should map:
-    // ArabPsychology\NabooDatabase\Core -> includes/core/class-core.php? No, that's not standard.
-    // Let's TRY to stick to a logical mapping.
-    
-    // Refactor PLan:
-    // ArabPsychology\NabooDatabase\Activator -> includes/class-activator.php
-    // ArabPsychology\NabooDatabase\Core -> includes/class-core.php
-    // ArabPsychology\NabooDatabase\Admin\Admin -> includes/admin/class-admin.php
-    
-    // Let's implement a simple mapping for now that handles the existing structure mostly, 
-    // but cleaner is to rename files. I will rename files as I go.
-    
-    // For this autoloader, let's assume we will rename files to `class-{classname}.php` lowercase.
     
     $parts = explode( '\\', $relative_class );
     $class_filename = 'class-' . str_replace( '_', '-', strtolower( array_pop( $parts ) ) ) . '.php';
