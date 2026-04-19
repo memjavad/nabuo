@@ -301,7 +301,7 @@ class Scale_Editing_Tools {
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
 		$updates   = $request->get_param( 'updates' ) ?? array();
 
-		if ( empty( $scale_ids ) || empty( $updates ) ) {
+		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) || empty( $updates ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'Missing scale IDs or updates' ),
 				400
