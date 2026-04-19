@@ -1,0 +1,496 @@
+/* ============================================
+   Naboo Database - Admin Settings Styles
+   Academic & Elegant Design
+   ============================================ */
+
+:root {
+    --naboo-primary: #1a3a52;
+    --naboo-accent: #00796b;
+    --naboo-accent-light: #4db8a8;
+    --naboo-dark-text: #2c3e50;
+    --naboo-light-text: #555;
+    --naboo-light-bg: #f5f5f5;
+    --naboo-border: #d9d9d9;
+    --naboo-white: #ffffff;
+    --naboo-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --naboo-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Settings Page Wrapper */
+.naboodatabase_page_naboodatabase_theme_settings .wrap {
+    max-width: 1100px;
+    margin: 20px auto;
+    padding: 0;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings h1 {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: var(--naboo-primary);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings h1::before {
+    content: '⚙️';
+    font-size: 1.8em;
+}
+
+/* Tabs Container */
+.naboodatabase_page_naboodatabase_theme_settings .nav-tab-wrapper {
+    border-bottom: 2px solid var(--naboo-border);
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    background: transparent;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .nav-tab {
+    background: var(--naboo-white);
+    border: 2px solid var(--naboo-border);
+    border-bottom: 2px solid var(--naboo-border);
+    border-radius: 8px 8px 0 0;
+    margin-left: 0;
+    padding: 1rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--naboo-dark-text);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    border-bottom-color: var(--naboo-border);
+    margin-bottom: -2px;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .nav-tab:hover {
+    background: var(--naboo-light-bg);
+    color: var(--naboo-primary);
+    border-color: var(--naboo-accent);
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .nav-tab-active,
+.naboodatabase_page_naboodatabase_theme_settings .nav-tab-active:hover {
+    background: var(--naboo-white);
+    color: var(--naboo-white);
+    border-color: var(--naboo-accent);
+    border-bottom-color: var(--naboo-white);
+    background: linear-gradient(135deg, var(--naboo-primary) 0%, var(--naboo-accent) 100%);
+    box-shadow: var(--naboo-shadow);
+}
+
+/* Settings Card */
+.naboo-settings-card {
+    background: var(--naboo-white);
+    border-radius: 10px;
+    box-shadow: var(--naboo-shadow);
+    padding: 2rem;
+    border: 1px solid var(--naboo-border);
+    margin-bottom: 2rem;
+}
+
+/* Settings Tabs Content */
+.naboodatabase_page_naboodatabase_theme_settings .settings-content {
+    background: transparent;
+}
+
+/* Form Tables */
+.naboodatabase_page_naboodatabase_theme_settings .form-table {
+    background: transparent;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .form-table th {
+    font-weight: 600;
+    padding: 1.5rem 1rem 1.5rem 0;
+    width: 200px;
+    color: var(--naboo-primary);
+    border-bottom: 1px solid var(--naboo-light-bg);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.05rem;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .form-table td {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid var(--naboo-light-bg);
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .form-table tr:last-child th,
+.naboodatabase_page_naboodatabase_theme_settings .form-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Inputs */
+.naboodatabase_page_naboodatabase_theme_settings input[type="text"],
+.naboodatabase_page_naboodatabase_theme_settings input[type="number"],
+.naboodatabase_page_naboodatabase_theme_settings input[type="email"],
+.naboodatabase_page_naboodatabase_theme_settings select,
+.naboodatabase_page_naboodatabase_theme_settings textarea {
+    border: 1px solid var(--naboo-border);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    box-shadow: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    min-width: 300px;
+    max-width: 100%;
+    color: var(--naboo-dark-text);
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings input[type="text"]:hover,
+.naboodatabase_page_naboodatabase_theme_settings input[type="number"]:hover,
+.naboodatabase_page_naboodatabase_theme_settings input[type="email"]:hover,
+.naboodatabase_page_naboodatabase_theme_settings select:hover,
+.naboodatabase_page_naboodatabase_theme_settings textarea:hover {
+    border-color: var(--naboo-accent);
+}
+
+.naboodatabase_page_naboodatabase_theme_settings input[type="text"]:focus,
+.naboodatabase_page_naboodatabase_theme_settings input[type="number"]:focus,
+.naboodatabase_page_naboodatabase_theme_settings input[type="email"]:focus,
+.naboodatabase_page_naboodatabase_theme_settings select:focus,
+.naboodatabase_page_naboodatabase_theme_settings textarea:focus {
+    border-color: var(--naboo-accent);
+    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.1);
+    outline: none;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings textarea.code {
+    font-family: 'Courier New', monospace;
+    background: var(--naboo-light-bg);
+    font-size: 0.9rem;
+}
+
+/* Checkbox & Radio */
+.naboodatabase_page_naboodatabase_theme_settings input[type="checkbox"],
+.naboodatabase_page_naboodatabase_theme_settings input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--naboo-accent);
+}
+
+/* Submit Button */
+.naboodatabase_page_naboodatabase_theme_settings .submit {
+    margin-top: 2rem;
+    padding: 2rem 0 0 0;
+    border-top: 1px solid var(--naboo-light-bg);
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .button-primary {
+    background: linear-gradient(135deg, var(--naboo-primary) 0%, var(--naboo-accent) 100%);
+    border-color: var(--naboo-accent);
+    color: var(--naboo-white);
+    padding: 1rem 2.5rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--naboo-shadow);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .button-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--naboo-shadow-hover);
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .button-primary:active {
+    transform: translateY(0);
+}
+
+/* Color Picker override */
+.wp-picker-container {
+    vertical-align: middle;
+    margin-top: 0.5rem;
+}
+
+.wp-picker-input-wrap input.wp-color-picker {
+    max-width: 80px !important;
+    border-radius: 6px !important;
+}
+
+/* Section Headers */
+.naboodatabase_page_naboodatabase_theme_settings h2 {
+    font-size: 1.3rem;
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--naboo-accent);
+    color: var(--naboo-primary);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight: 700;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .notice {
+    border-left: 4px solid var(--naboo-accent);
+    border-radius: 6px;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .notice-success {
+    background: rgba(76, 175, 80, 0.1);
+    border-left-color: #4caf50;
+    color: #2e7d32;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .notice-error {
+    background: rgba(244, 67, 54, 0.1);
+    border-left-color: #f44336;
+    color: #c62828;
+}
+
+/* Description Text */
+.naboodatabase_page_naboodatabase_theme_settings .description {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--naboo-light-text);
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* Media Upload Button */
+.naboodatabase_page_naboodatabase_theme_settings .naboo-upload-btn {
+    background: var(--naboo-accent);
+    color: var(--naboo-white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+    margin-left: 0.75rem;
+}
+
+.naboodatabase_page_naboodatabase_theme_settings .naboo-upload-btn:hover {
+    background: var(--naboo-primary);
+    transform: translateY(-2px);
+}
+
+/* ============================================
+   Scale Metabox Styles
+   ============================================ */
+
+.naboo-metabox-wrapper {
+    margin: -6px -12px -12px;
+}
+
+/* Tab Navigation */
+.naboo-metabox-tabs {
+    display: flex;
+    gap: 0;
+    background: var(--naboo-light-bg, #f5f5f5);
+    border-bottom: 2px solid var(--naboo-border, #d9d9d9);
+    padding: 0;
+    flex-wrap: wrap;
+}
+
+.naboo-metabox-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 18px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--naboo-dark-text, #2c3e50);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.naboo-metabox-tab:hover {
+    background: rgba(0, 121, 107, 0.05);
+    color: var(--naboo-accent, #00796b);
+}
+
+.naboo-metabox-tab.active {
+    border-bottom-color: var(--naboo-accent, #00796b);
+    color: var(--naboo-accent, #00796b);
+    background: var(--naboo-white, #fff);
+}
+
+.naboo-metabox-tab .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+}
+
+/* Panels */
+.naboo-metabox-panel {
+    display: none;
+    padding: 20px 24px;
+}
+
+.naboo-metabox-panel.active {
+    display: block;
+}
+
+.naboo-panel-header {
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+.naboo-panel-header h3 {
+    margin: 0 0 4px 0;
+    padding: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--naboo-primary, #1a3a52);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.naboo-panel-header h3 .dashicons {
+    color: var(--naboo-accent, #00796b);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+.naboo-panel-desc {
+    margin: 0;
+    font-size: 12.5px;
+    color: #888;
+    font-style: italic;
+}
+
+/* Fields */
+.naboo-field {
+    margin-bottom: 18px;
+}
+
+.naboo-field label {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--naboo-primary, #1a3a52);
+    margin-bottom: 6px;
+}
+
+.naboo-field input[type="text"],
+.naboo-field input[type="number"],
+.naboo-field input[type="email"],
+.naboo-field select,
+.naboo-field textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--naboo-border, #d9d9d9);
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    color: var(--naboo-dark-text, #2c3e50);
+    background: #fff;
+}
+
+.naboo-field input:focus,
+.naboo-field select:focus,
+.naboo-field textarea:focus {
+    border-color: var(--naboo-accent, #00796b);
+    box-shadow: 0 0 0 2px rgba(0, 121, 107, 0.08);
+    outline: none;
+}
+
+.naboo-field textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.naboo-field select {
+    max-width: 100%;
+}
+
+.naboo-field-help {
+    margin: 4px 0 0;
+    font-size: 11.5px;
+    color: #999;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Two-Column Row */
+.naboo-field-row.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* File Upload */
+.naboo-file-upload-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.naboo-upload-file-btn,
+.naboo-remove-file-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 4px;
+}
+
+.naboo-upload-file-btn .dashicons,
+.naboo-remove-file-btn .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+}
+
+.naboo-remove-file-btn {
+    color: #a00 !important;
+    border-color: #a00 !important;
+}
+
+.naboo-remove-file-btn:hover {
+    background: #a00 !important;
+    color: #fff !important;
+}
+
+.naboo-file-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--naboo-accent, #00796b);
+    font-weight: 500;
+    padding: 4px 10px;
+    background: rgba(0, 121, 107, 0.06);
+    border-radius: 4px;
+}
+
+.naboo-file-name .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .naboo-metabox-tabs {
+        flex-wrap: wrap;
+    }
+
+    .naboo-metabox-tab {
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .naboo-field-row.two-col {
+        grid-template-columns: 1fr;
+    }
+
+    .naboo-metabox-panel {
+        padding: 16px;
+    }
+}

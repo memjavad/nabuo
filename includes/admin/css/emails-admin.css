@@ -1,0 +1,76 @@
+/**
+ * Email Notifications Admin Styles
+ */
+
+.naboo-email-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.naboo-tab-btn {
+    padding: 8px 16px;
+    border: 1px solid #ccd0d4;
+    background: #f7f7f7;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+    font-weight: 500;
+}
+
+.naboo-tab-btn.active {
+    background: #007cba;
+    color: #fff;
+    border-color: #007cba;
+    margin-bottom: -12px;
+    padding-bottom: 20px;
+    z-index: 1;
+}
+
+.naboo-email-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 20px;
+}
+
+.naboo-email-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.naboo-email-card h2 {
+    margin-top: 0;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.naboo-form-row {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.naboo-checkbox-group label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.naboo-email-actions {
+    margin-top: 20px;
+}
+
+/* Status colors */
+.status-sent {
+    color: #46b450;
+    font-weight: 600;
+}
+
+.status-failed {
+    color: #dc3232;
+    font-weight: 600;
+}

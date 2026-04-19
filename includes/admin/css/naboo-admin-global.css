@@ -1,0 +1,707 @@
+/**
+ * Naboo Database - Unified Admin Design System
+ * Global CSS for all admin pages
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ── Design Tokens ───────────────────────────────────────── */
+:root {
+    --naboo-primary: #1e293b;
+    --naboo-accent: #10b981;
+    --naboo-accent-dark: #047857;
+    --naboo-accent-light: #d1fae5;
+    --naboo-blue: #3b82f6;
+    --naboo-blue-light: #eff6ff;
+    --naboo-purple: #8b5cf6;
+    --naboo-red: #ef4444;
+    --naboo-amber: #f59e0b;
+    --naboo-text: #1e293b;
+    --naboo-text-muted: #64748b;
+    --naboo-bg: #f4f7f9;
+    --naboo-surface: #ffffff;
+    --naboo-border: #e2e8f0;
+    --naboo-border-subtle: #f1f5f9;
+    --naboo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --naboo-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --naboo-shadow-hover: 0 12px 30px rgba(0, 0, 0, 0.09);
+    --naboo-radius-sm: 8px;
+    --naboo-radius-md: 12px;
+    --naboo-radius-lg: 16px;
+    --naboo-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Page Wrapper ──────────────────────────────────────────── */
+.naboo-admin-page {
+    background: var(--naboo-bg);
+    font-family: var(--naboo-font);
+    padding: 28px 28px 48px;
+    margin-right: 20px;
+    min-height: calc(100vh - 32px);
+    box-sizing: border-box;
+}
+
+/* ── Page Header ──────────────────────────────────────────── */
+.naboo-admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--naboo-border);
+}
+
+.naboo-admin-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.naboo-admin-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--naboo-primary);
+    margin: 0;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.naboo-admin-title .title-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--naboo-accent), var(--naboo-accent-dark));
+    border-radius: var(--naboo-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.naboo-admin-subtitle {
+    font-size: 14px;
+    color: var(--naboo-text-muted);
+    margin: 0;
+    font-weight: 400;
+}
+
+.naboo-admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ── Tabs Navigation ─────────────────────────────────────── */
+.naboo-admin-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--naboo-surface);
+    padding: 6px;
+    border-radius: var(--naboo-radius-md);
+    border: 1px solid var(--naboo-border);
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    box-shadow: var(--naboo-shadow-sm);
+}
+
+.naboo-tab-link {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: var(--naboo-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--naboo-text-muted);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.naboo-tab-link:hover {
+    background: var(--naboo-bg);
+    color: var(--naboo-text);
+    text-decoration: none;
+}
+
+.naboo-tab-link.active {
+    background: linear-gradient(135deg, var(--naboo-accent), var(--naboo-accent-dark));
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.naboo-tab-link .tab-icon {
+    font-size: 15px;
+    line-height: 1;
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.naboo-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 20px;
+}
+
+.naboo-admin-grid.cols-1 {
+    grid-template-columns: 1fr;
+}
+
+.naboo-admin-grid.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.naboo-admin-grid.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.naboo-admin-card {
+    background: var(--naboo-surface);
+    border: 1px solid var(--naboo-border);
+    border-radius: var(--naboo-radius-lg);
+    padding: 24px;
+    box-shadow: var(--naboo-shadow-md);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.naboo-admin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--naboo-shadow-hover);
+}
+
+.naboo-admin-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--naboo-border-subtle);
+}
+
+.naboo-admin-card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--naboo-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.naboo-admin-card-icon.green {
+    background: #dcfce7;
+}
+
+.naboo-admin-card-icon.blue {
+    background: #dbeafe;
+}
+
+.naboo-admin-card-icon.purple {
+    background: #ede9fe;
+}
+
+.naboo-admin-card-icon.amber {
+    background: #fef3c7;
+}
+
+.naboo-admin-card-icon.red {
+    background: #fee2e2;
+}
+
+.naboo-admin-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--naboo-primary);
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.naboo-admin-card.span-full {
+    grid-column: 1 / -1;
+}
+
+/* ── Stat Metrics ────────────────────────────────────────── */
+.naboo-stat-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.naboo-stat-item {
+    flex: 1;
+    min-width: 140px;
+    padding: 18px;
+    background: var(--naboo-bg);
+    border: 1px solid var(--naboo-border);
+    border-radius: var(--naboo-radius-md);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.naboo-stat-item:hover {
+    border-color: var(--naboo-accent);
+    box-shadow: 0 0 0 3px var(--naboo-accent-light);
+}
+
+.naboo-stat-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--naboo-text-muted);
+    margin-bottom: 8px;
+}
+
+.naboo-stat-value {
+    display: block;
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--naboo-primary);
+    line-height: 1;
+}
+
+.naboo-stat-value.danger {
+    color: var(--naboo-red);
+}
+
+.naboo-stat-value.success {
+    color: var(--naboo-accent);
+}
+
+.naboo-stat-value.info {
+    color: var(--naboo-blue);
+}
+
+/* ── Form Controls ───────────────────────────────────────── */
+.naboo-form-section {
+    margin-bottom: 28px;
+}
+
+.naboo-form-section-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--naboo-text-muted);
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--naboo-border-subtle);
+}
+
+.naboo-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 18px;
+}
+
+.naboo-form-row label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--naboo-text);
+}
+
+.naboo-form-row .description {
+    font-size: 12px;
+    color: var(--naboo-text-muted);
+    margin: 0;
+    font-style: normal;
+    line-height: 1.4;
+}
+
+.naboo-form-row input[type="text"],
+.naboo-form-row input[type="number"],
+.naboo-form-row input[type="email"],
+.naboo-form-row input[type="url"],
+.naboo-form-row select,
+.naboo-form-row textarea {
+    width: 100%;
+    max-width: 480px;
+    padding: 9px 12px;
+    border: 1px solid var(--naboo-border);
+    border-radius: var(--naboo-radius-sm);
+    font-size: 14px;
+    font-family: var(--naboo-font);
+    color: var(--naboo-text);
+    background: var(--naboo-surface);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.naboo-form-row input:focus,
+.naboo-form-row select:focus,
+.naboo-form-row textarea:focus {
+    outline: none;
+    border-color: var(--naboo-accent);
+    box-shadow: 0 0 0 3px var(--naboo-accent-light);
+}
+
+.naboo-toggle-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--naboo-bg);
+    border: 1px solid var(--naboo-border);
+    border-radius: var(--naboo-radius-sm);
+    margin-bottom: 10px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.naboo-toggle-row:hover {
+    border-color: var(--naboo-accent);
+    background: var(--naboo-accent-light);
+}
+
+.naboo-toggle-row input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 2px 0 0;
+    accent-color: var(--naboo-accent);
+    flex-shrink: 0;
+}
+
+.naboo-toggle-row .toggle-info strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--naboo-text);
+    margin-bottom: 2px;
+}
+
+.naboo-toggle-row .toggle-info span {
+    font-size: 12px;
+    color: var(--naboo-text-muted);
+}
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.naboo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 20px;
+    border-radius: var(--naboo-radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--naboo-font);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.naboo-btn-primary {
+    background: linear-gradient(135deg, var(--naboo-accent), var(--naboo-accent-dark));
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+}
+
+.naboo-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.naboo-btn-secondary {
+    background: var(--naboo-surface);
+    color: var(--naboo-text);
+    border-color: var(--naboo-border);
+}
+
+.naboo-btn-secondary:hover {
+    border-color: var(--naboo-accent);
+    color: var(--naboo-accent);
+    text-decoration: none;
+}
+
+.naboo-btn-danger {
+    background: #fff1f2;
+    color: var(--naboo-red);
+    border-color: #fecdd3;
+}
+
+.naboo-btn-danger:hover {
+    background: var(--naboo-red);
+    color: #ffffff;
+}
+
+/* ── Badges ──────────────────────────────────────────────── */
+.naboo-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.naboo-badge-green {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.naboo-badge-blue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.naboo-badge-amber {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.naboo-badge-red {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.naboo-badge-gray {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* ── Notices ─────────────────────────────────────────────── */
+.naboo-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--naboo-radius-sm);
+    font-size: 14px;
+    margin-bottom: 16px;
+    border-left: 4px solid;
+}
+
+.naboo-notice.success {
+    background: #f0fdf4;
+    border-color: var(--naboo-accent);
+    color: #166534;
+}
+
+.naboo-notice.error {
+    background: #fff1f2;
+    border-color: var(--naboo-red);
+    color: #991b1b;
+}
+
+.naboo-notice.warning {
+    background: #fffbeb;
+    border-color: var(--naboo-amber);
+    color: #92400e;
+}
+
+.naboo-notice.info {
+    background: var(--naboo-blue-light);
+    border-color: var(--naboo-blue);
+    color: #1e40af;
+}
+
+/* ── Tables ──────────────────────────────────────────────── */
+.naboo-admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+}
+
+.naboo-admin-table thead th {
+    background: var(--naboo-bg);
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--naboo-text-muted);
+    border-bottom: 2px solid var(--naboo-border);
+    text-align: left;
+}
+
+.naboo-admin-table tbody td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--naboo-border-subtle);
+    color: var(--naboo-text);
+    vertical-align: middle;
+}
+
+.naboo-admin-table tbody tr:hover td {
+    background: var(--naboo-bg);
+}
+
+.naboo-admin-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ── Lists (inside cards) ────────────────────────────────── */
+.naboo-item-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.naboo-item-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--naboo-border-subtle);
+    font-size: 14px;
+}
+
+.naboo-item-list li:last-child {
+    border-bottom: none;
+}
+
+.naboo-item-list .item-label {
+    font-weight: 600;
+    color: var(--naboo-text);
+}
+
+.naboo-item-list .item-meta {
+    font-size: 12px;
+    color: var(--naboo-text-muted);
+}
+
+.naboo-item-list .item-value {
+    font-weight: 700;
+    color: var(--naboo-accent);
+    font-size: 15px;
+}
+
+/* ── Save Settings bar ───────────────────────────────────── */
+.naboo-save-bar {
+    position: sticky;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--naboo-border);
+    padding: 14px 24px;
+    margin: 24px -28px -48px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    z-index: 99;
+}
+
+/* ── System Info table ───────────────────────────────────── */
+.naboo-sysinfo-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.naboo-sysinfo-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--naboo-border-subtle);
+    font-size: 13px;
+}
+
+.naboo-sysinfo-table td:first-child {
+    font-weight: 600;
+    color: var(--naboo-text-muted);
+    width: 200px;
+}
+
+.naboo-sysinfo-table td:last-child {
+    font-family: monospace;
+    color: var(--naboo-text);
+}
+
+.naboo-sysinfo-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* ── Bar charts (activity) ───────────────────────────────── */
+.naboo-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 6px;
+}
+
+.naboo-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+}
+
+.naboo-bar-label {
+    width: 50px;
+    color: var(--naboo-text-muted);
+    font-weight: 600;
+    text-align: right;
+}
+
+.naboo-bar-track {
+    flex: 1;
+    height: 10px;
+    background: var(--naboo-border-subtle);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.naboo-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--naboo-accent), var(--naboo-accent-dark));
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    transition: width 0.8s ease-out;
+}
+
+.naboo-bar-count {
+    width: 30px;
+    font-weight: 700;
+    color: var(--naboo-text);
+    text-align: right;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .naboo-admin-page {
+        padding: 16px;
+        margin-right: 0;
+    }
+
+    .naboo-admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .naboo-admin-grid.cols-2,
+    .naboo-admin-grid.cols-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .naboo-admin-tabs {
+        gap: 2px;
+    }
+
+    .naboo-tab-link {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .naboo-stat-row {
+        flex-direction: column;
+    }
+
+    .naboo-save-bar {
+        margin: 16px -16px -16px;
+        padding: 12px 16px;
+    }
+}

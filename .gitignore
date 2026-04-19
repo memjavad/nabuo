@@ -1,0 +1,27 @@
+# WordPress specific
+wp-config.php
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/plugins/hello.php
+
+# Naboo Database specific
+tmp/
+*.log
+cron_dump.txt
+tmp_check_posts.php
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# AI Assistant files
+.gemini/
+.antigravity/
+brain/
+scratch/
+implementation_plan.md
+task.md
+walkthrough.md
+*artifact*

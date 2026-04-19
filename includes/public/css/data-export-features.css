@@ -1,0 +1,312 @@
+/**
+ * Data Export Features Styles
+ * Export buttons, bars, and notification styling
+ */
+
+/* Export Bar (on Archive/Search pages) */
+.naboo-export-bar {
+	display: flex;
+	align-items: center;
+	padding: 16px 20px;
+	background: linear-gradient( 135deg, #f9fafb 0%, #f3f4f6 100% );
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	margin: 20px 0;
+	box-shadow: 0 2px 8px rgba( 0, 0, 0, 0.05 );
+}
+
+.naboo-export-bar-content {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	width: 100%;
+}
+
+.naboo-export-label {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1a3a52;
+	white-space: nowrap;
+}
+
+/* Export Buttons */
+.naboo-export-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	background: linear-gradient( 135deg, #00796b 0%, #005450 100% );
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier( 0.4, 0, 0.2, 1 );
+	box-shadow: 0 4px 12px rgba( 0, 121, 107, 0.3 );
+	white-space: nowrap;
+}
+
+.naboo-export-btn:hover:not( :disabled ) {
+	background: linear-gradient( 135deg, #1a3a52 0%, #00796b 100% );
+	box-shadow: 0 8px 24px rgba( 0, 121, 107, 0.4 );
+	transform: translateY( -2px );
+}
+
+.naboo-export-btn:active:not( :disabled ) {
+	transform: translateY( 0 );
+	box-shadow: 0 2px 8px rgba( 0, 121, 107, 0.3 );
+}
+
+.naboo-export-btn:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.naboo-export-icon {
+	width: 16px;
+	height: 16px;
+	flex-shrink: 0;
+}
+
+.naboo-export-icon-large {
+	width: 20px;
+	height: 20px;
+	color: #00796b;
+}
+
+/* Large Export Buttons (Dashboard) */
+.naboo-export-btn-large {
+	width: 100%;
+	flex-direction: column;
+	gap: 10px;
+	padding: 16px;
+	justify-content: center;
+	text-align: center;
+	font-size: 14px;
+	min-height: 80px;
+}
+
+.naboo-export-btn-large svg {
+	width: 24px;
+	height: 24px;
+}
+
+/* Dashboard Export Section */
+.naboo-dashboard-export-section {
+	margin: 32px 0;
+	padding: 24px;
+	background: #f9fafb;
+	border-radius: 12px;
+	border: 1px solid #e5e7eb;
+}
+
+.naboo-dashboard-export-section h3 {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 0 0 8px 0;
+	font-size: 18px;
+	font-weight: 700;
+	color: #1a3a52;
+}
+
+.naboo-dashboard-export-section p {
+	margin: 0 0 20px 0;
+	font-size: 13px;
+	color: #666;
+}
+
+.naboo-export-buttons {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 200px, 1fr ) );
+	gap: 12px;
+}
+
+/* Spinner Animation */
+.naboo-spinner {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border: 2px solid rgba( 255, 255, 255, 0.3 );
+	border-top: 2px solid #fff;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate( 0deg );
+	}
+	100% {
+		transform: rotate( 360deg );
+	}
+}
+
+/* Notifications */
+.naboo-notification {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	min-width: 300px;
+	max-width: 500px;
+	padding: 16px;
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 10px 40px rgba( 0, 0, 0, 0.15 );
+	z-index: 10001;
+	animation: slideInRight 0.3s cubic-bezier( 0.4, 0, 0.2, 1 );
+	border-left: 4px solid #00796b;
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX( 400px );
+	}
+	to {
+		opacity: 1;
+		transform: translateX( 0 );
+	}
+}
+
+.naboo-notification-success {
+	border-left-color: #00796b;
+}
+
+.naboo-notification-error {
+	border-left-color: #dc2626;
+}
+
+.naboo-notification-content {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: #333;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.naboo-notification-success .naboo-icon {
+	color: #00796b;
+}
+
+.naboo-notification-error .naboo-icon {
+	color: #dc2626;
+}
+
+.naboo-icon {
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+.naboo-notification-close {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: none;
+	border: none;
+	color: #999;
+	font-size: 20px;
+	cursor: pointer;
+	padding: 0;
+	transition: color 0.2s ease;
+}
+
+.naboo-notification-close:hover {
+	color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.naboo-export-bar {
+		padding: 12px 16px;
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.naboo-export-bar-content {
+		flex-direction: column;
+	}
+
+	.naboo-export-label {
+		width: 100%;
+		text-align: center;
+	}
+
+	.naboo-export-btn {
+		flex: 1;
+		justify-content: center;
+		padding: 8px 12px;
+		font-size: 12px;
+	}
+
+	.naboo-export-buttons {
+		grid-template-columns: 1fr;
+	}
+
+	.naboo-export-btn-large {
+		min-height: 60px;
+		padding: 12px;
+	}
+
+	.naboo-notification {
+		min-width: 250px;
+		right: 10px;
+		left: 10px;
+		max-width: none;
+	}
+}
+
+@media (max-width: 480px) {
+	.naboo-export-bar {
+		padding: 12px;
+	}
+
+	.naboo-export-btn {
+		padding: 8px;
+		font-size: 11px;
+	}
+
+	.naboo-export-btn span {
+		display: none;
+	}
+
+	.naboo-export-icon {
+		width: 14px;
+		height: 14px;
+	}
+
+	.naboo-dashboard-export-section {
+		padding: 16px;
+	}
+
+	.naboo-dashboard-export-section h3 {
+		font-size: 16px;
+		gap: 8px;
+	}
+
+	.naboo-export-btn-large {
+		min-height: 50px;
+		padding: 10px;
+		font-size: 12px;
+	}
+
+	.naboo-export-btn-large svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	.naboo-notification {
+		top: auto;
+		bottom: 10px;
+		right: 10px;
+		left: 10px;
+		min-width: auto;
+	}
+
+	.naboo-notification-content {
+		font-size: 13px;
+	}
+}

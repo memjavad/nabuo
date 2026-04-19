@@ -1,0 +1,129 @@
+/**
+ * Scale Recommendations Grid Styles
+ */
+
+.naboo-recommendations-wrapper {
+    margin: 48px 0 32px;
+    padding-top: 32px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.naboo-recommendations-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 24px 0;
+    font-size: 20px;
+    font-weight: 700;
+    color: #1a3a52;
+}
+
+.naboo-recommendations-title svg {
+    width: 24px;
+    height: 24px;
+    color: #eab308;
+}
+
+.naboo-recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.naboo-recommendation-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.naboo-recommendation-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #06b6d4);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.naboo-recommendation-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #cbd5e1;
+}
+
+.naboo-recommendation-card:hover::before {
+    opacity: 1;
+}
+
+.naboo-rec-content h4 {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1e293b;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+}
+
+.naboo-recommendation-card:hover .naboo-rec-content h4 {
+    color: #3b82f6;
+}
+
+.naboo-rec-reason {
+    margin: 0 0 16px 0;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.5;
+    font-style: italic;
+}
+
+.naboo-rec-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.naboo-rec-meta-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.naboo-rec-meta-rel {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.naboo-rec-meta-items {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+/* Responsive Handling */
+@media (max-width: 640px) {
+    .naboo-recommendations-grid {
+        grid-template-columns: 1fr;
+    }
+}

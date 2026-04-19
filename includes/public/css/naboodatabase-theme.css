@@ -1,0 +1,1816 @@
+/* ==========================================================================
+   Naboo Database Theme — Premium Academic Design System
+   Version: 2.0.0
+   ========================================================================== */
+
+/* ==========================================================================
+   1. DESIGN TOKENS
+   ========================================================================== */
+:root {
+    /* Color Palette */
+    --naboo-primary: #0f2b46;
+    --naboo-primary-light: #1a3d5c;
+    --naboo-primary-dark: #091e32;
+    --naboo-accent: #0d9488;
+    --naboo-accent-hover: #0f766e;
+    --naboo-accent-light: #5eead4;
+    --naboo-accent-subtle: rgba(13, 148, 136, 0.08);
+
+    /* Surfaces & Backgrounds */
+    --naboo-bg: #f8fafc;
+    --naboo-surface: #ffffff;
+    --naboo-surface-hover: #f1f5f9;
+    --naboo-surface-alt: #f0fdfa;
+    --naboo-border: #e2e8f0;
+    --naboo-border-light: #f1f5f9;
+
+    /* Text */
+    --naboo-text-primary: #1e293b;
+    --naboo-text-secondary: #64748b;
+    --naboo-text-muted: #94a3b8;
+    --naboo-text-on-primary: #ffffff;
+    --naboo-text-on-accent: #ffffff;
+
+    /* Semantic */
+    --naboo-success: #10b981;
+    --naboo-warning: #f59e0b;
+    --naboo-error: #ef4444;
+    --naboo-info: #3b82f6;
+
+    /* Typography */
+    --naboo-font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --naboo-font-heading: 'Outfit', 'Inter', system-ui, sans-serif;
+    --naboo-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --naboo-line-height: 1.7;
+    --naboo-letter-spacing: -0.01em;
+
+    /* Spacing */
+    --naboo-space-xs: 0.25rem;
+    --naboo-space-sm: 0.5rem;
+    --naboo-space-md: 1rem;
+    --naboo-space-lg: 1.5rem;
+    --naboo-space-xl: 2rem;
+    --naboo-space-2xl: 3rem;
+    --naboo-space-3xl: 4rem;
+    --naboo-space-4xl: 6rem;
+
+    /* Layout */
+    --naboo-container-width: 1200px;
+    --naboo-content-width: 75ch;
+    --naboo-header-height: 72px;
+
+    /* Shadows (Layered for depth) */
+    --naboo-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+    --naboo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --naboo-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    --naboo-shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    --naboo-shadow-xl: 0 20px 40px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+    --naboo-shadow-header: 0 4px 20px rgba(0, 0, 0, 0.06);
+    --naboo-shadow-glow: 0 0 30px rgba(13, 148, 136, 0.15);
+
+    /* Border Radius */
+    --naboo-radius-sm: 8px;
+    --naboo-radius-md: 12px;
+    --naboo-radius-lg: 16px;
+    --naboo-radius-xl: 24px;
+    --naboo-radius-full: 9999px;
+
+    /* Transitions */
+    --naboo-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --naboo-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --naboo-duration-fast: 150ms;
+    --naboo-duration: 300ms;
+    --naboo-duration-slow: 500ms;
+
+    /* Z-Index Scale */
+    --naboo-z-dropdown: 100;
+    --naboo-z-sticky: 200;
+    --naboo-z-header: 500;
+    --naboo-z-overlay: 800;
+    --naboo-z-modal: 1000;
+    --naboo-z-top: 9999;
+}
+
+/* ==========================================================================
+   2. RESET & BASE
+   ========================================================================== */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--naboo-bg);
+    color: var(--naboo-text-primary);
+    font-family: var(--naboo-font-body);
+    font-size: 1rem;
+    line-height: var(--naboo-line-height);
+    letter-spacing: var(--naboo-letter-spacing);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    max-width: none !important;
+    width: 100% !important;
+    overflow-x: hidden;
+}
+
+#page,
+.site {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+::selection {
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: var(--naboo-accent);
+    text-decoration: none;
+    transition: color var(--naboo-duration) var(--naboo-ease);
+}
+
+a:hover {
+    color: var(--naboo-accent-hover);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--naboo-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--naboo-text-muted);
+    border-radius: var(--naboo-radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--naboo-text-secondary);
+}
+
+/* ==========================================================================
+   3. TYPOGRAPHY
+   ========================================================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--naboo-font-heading);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--naboo-text-primary);
+    margin-top: 0;
+    margin-bottom: var(--naboo-space-md);
+    letter-spacing: -0.02em;
+}
+
+h1 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+}
+
+h2 {
+    font-size: clamp(1.5rem, 3vw, 2.125rem);
+}
+
+h3 {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+h5 {
+    font-size: 1.125rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+p {
+    margin: 0 0 var(--naboo-space-lg) 0;
+    color: var(--naboo-text-secondary);
+    line-height: var(--naboo-line-height);
+}
+
+/* ==========================================================================
+   4. LAYOUT SYSTEM
+   ========================================================================== */
+.naboo-container {
+    max-width: var(--naboo-container-width) !important;
+    width: 100% !important;
+    margin-inline: auto !important;
+    padding-inline: var(--naboo-space-xl);
+}
+
+/* ==========================================================================
+   5. HEADER & NAVIGATION
+   ========================================================================== */
+
+/* Progress Bar */
+.naboo-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--naboo-accent), var(--naboo-accent-light));
+    z-index: var(--naboo-z-top);
+    transition: width 100ms linear;
+}
+
+/* Header Base */
+.naboo-site-header {
+    background: var(--naboo-surface);
+    height: var(--naboo-header-height);
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: var(--naboo-z-header);
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    border-bottom: 1px solid var(--naboo-border);
+}
+
+.naboo-site-header.scrolled {
+    box-shadow: var(--naboo-shadow-header);
+}
+
+/* Header Styles */
+.naboo-site-header.header-gradient {
+    background: linear-gradient(135deg, var(--naboo-primary), var(--naboo-primary-light));
+    border-bottom-color: transparent;
+}
+
+.naboo-site-header.header-gradient .site-title a,
+.naboo-site-header.header-gradient .naboo-main-navigation a,
+.naboo-site-header.header-gradient .naboo-header-search-toggle,
+.naboo-site-header.header-gradient .site-description {
+    color: var(--naboo-text-on-primary);
+}
+
+.naboo-site-header.header-glass {
+    background: rgba(255, 255, 255, 0.75);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(180%);
+    border-bottom-color: rgba(255, 255, 255, 0.3);
+}
+
+.naboo-site-header.header-transparent {
+    background: transparent;
+    border-bottom-color: transparent;
+    position: absolute;
+    width: 100%;
+}
+
+.naboo-site-header.header-transparent .site-title a,
+.naboo-site-header.header-transparent .naboo-main-navigation a,
+.naboo-site-header.header-transparent .naboo-header-search-toggle {
+    color: var(--naboo-text-on-primary);
+}
+
+/* Header inner */
+.naboo-site-header .naboo-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.naboo-site-branding {
+    display: flex;
+    align-items: center;
+    gap: var(--naboo-space-md);
+}
+
+.naboo-custom-logo {
+    max-width: 44px;
+    height: auto;
+    border-radius: var(--naboo-radius-sm);
+}
+
+.site-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-family: var(--naboo-font-heading);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.site-title a {
+    color: var(--naboo-text-primary);
+    text-decoration: none;
+    transition: color var(--naboo-duration) var(--naboo-ease);
+    background: linear-gradient(135deg, var(--naboo-primary), var(--naboo-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.site-description {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--naboo-text-muted);
+    font-weight: 400;
+}
+
+/* Navigation */
+.naboo-main-navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--naboo-space-sm);
+}
+
+.naboo-main-navigation ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--naboo-space-xs);
+}
+
+.naboo-main-navigation a {
+    color: var(--naboo-text-secondary);
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: var(--naboo-space-sm) var(--naboo-space-md);
+    border-radius: var(--naboo-radius-sm);
+    position: relative;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+}
+
+/* Nav Style: Underline */
+.nav-style-underline .naboo-main-navigation a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--naboo-accent);
+    border-radius: var(--naboo-radius-full);
+    transition: width var(--naboo-duration) var(--naboo-ease);
+}
+
+.nav-style-underline .naboo-main-navigation a:hover::after,
+.nav-style-underline .naboo-main-navigation .current-menu-item>a::after {
+    width: 60%;
+}
+
+/* Nav Style: Pill */
+.nav-style-pill .naboo-main-navigation a:hover,
+.nav-style-pill .naboo-main-navigation .current-menu-item>a {
+    background: var(--naboo-accent-subtle);
+    color: var(--naboo-accent);
+}
+
+/* Nav Style: Highlight */
+.nav-style-highlight .naboo-main-navigation a:hover,
+.nav-style-highlight .naboo-main-navigation .current-menu-item>a {
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+}
+
+.naboo-main-navigation a:hover {
+    color: var(--naboo-accent);
+}
+
+.naboo-header-search-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--naboo-radius-full);
+    color: var(--naboo-text-secondary);
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    font-size: 1.1rem;
+    margin-inline-start: var(--naboo-space-sm);
+}
+
+.naboo-header-search-toggle:hover {
+    background: var(--naboo-accent-subtle);
+    color: var(--naboo-accent);
+}
+
+/* Mobile Menu */
+.naboo-mobile-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--naboo-radius-sm);
+    transition: background var(--naboo-duration) var(--naboo-ease);
+}
+
+.naboo-mobile-toggle:hover {
+    background: var(--naboo-surface-hover);
+}
+
+.naboo-mobile-toggle span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--naboo-text-primary);
+    border-radius: var(--naboo-radius-full);
+    transition: all var(--naboo-duration) var(--naboo-ease);
+}
+
+.naboo-mobile-toggle.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.naboo-mobile-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.naboo-mobile-toggle.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ==========================================================================
+   6. BREADCRUMBS
+   ========================================================================== */
+.naboo-breadcrumbs {
+    padding: var(--naboo-space-md) 0;
+    font-size: 0.85rem;
+    color: var(--naboo-text-muted);
+}
+
+.naboo-breadcrumbs a {
+    color: var(--naboo-text-secondary);
+    font-weight: 500;
+}
+
+.naboo-breadcrumbs a:hover {
+    color: var(--naboo-accent);
+}
+
+.naboo-breadcrumbs .separator {
+    margin: 0 var(--naboo-space-sm);
+    opacity: 0.5;
+}
+
+/* ==========================================================================
+   7. CONTENT AREA
+   ========================================================================== */
+.naboo-site-content {
+    padding: var(--naboo-space-3xl) 0;
+    min-height: 60vh;
+}
+
+.naboo-site-content .naboo-container {
+    display: flex;
+    gap: var(--naboo-space-3xl);
+}
+
+.naboo-site-content.no-sidebar .site-main {
+    width: 100%;
+}
+
+.naboo-site-content.has-sidebar .site-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.naboo-site-content.sidebar-left .site-main {
+    order: 2;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: var(--naboo-space-3xl);
+    text-align: center;
+    padding: var(--naboo-space-2xl) 0;
+}
+
+.page-title {
+    position: relative;
+    display: inline-block;
+    padding-bottom: var(--naboo-space-md);
+    font-family: var(--naboo-font-heading);
+    color: var(--naboo-text-primary);
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--naboo-accent), var(--naboo-accent-light));
+    border-radius: var(--naboo-radius-full);
+}
+
+/* ==========================================================================
+   8. CARD SYSTEM
+   ========================================================================== */
+.naboo-grid-loop {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--naboo-space-xl);
+}
+
+/* --- Card Style: Classic --- */
+.naboo-card {
+    background: var(--naboo-surface);
+    border-radius: var(--naboo-radius-md);
+    overflow: hidden;
+    box-shadow: var(--naboo-shadow-sm);
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--naboo-border);
+    position: relative;
+}
+
+.naboo-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--naboo-shadow-lg);
+    border-color: var(--naboo-accent);
+}
+
+/* --- Card Style: Modern --- */
+.card-style-modern .naboo-card {
+    border: none;
+    border-radius: var(--naboo-radius-lg);
+    box-shadow: var(--naboo-shadow-md);
+    border-inline-start: 4px solid var(--naboo-accent);
+}
+
+.card-style-modern .naboo-card:hover {
+    box-shadow: var(--naboo-shadow-xl);
+    border-inline-start-color: var(--naboo-primary);
+}
+
+/* --- Card Style: Minimal --- */
+.card-style-minimal .naboo-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid var(--naboo-border);
+    border-radius: 0;
+}
+
+.card-style-minimal .naboo-card:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--naboo-surface-hover);
+}
+
+/* --- Card Style: Glass --- */
+.card-style-glass .naboo-card {
+    background: rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--naboo-radius-lg);
+}
+
+.card-style-glass .naboo-card:hover {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: var(--naboo-shadow-glow);
+}
+
+/* Card Image */
+.naboo-card-image {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, var(--naboo-bg), var(--naboo-border-light));
+}
+
+.naboo-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--naboo-duration-slow) var(--naboo-ease);
+}
+
+.naboo-card:hover .naboo-card-image img {
+    transform: scale(1.05);
+}
+
+.naboo-card-image .naboo-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 40%, rgba(0, 0, 0, 0.3));
+    opacity: 0;
+    transition: opacity var(--naboo-duration) var(--naboo-ease);
+}
+
+.naboo-card:hover .naboo-card-image .naboo-card-overlay {
+    opacity: 1;
+}
+
+/* Card Category Badge */
+.naboo-card-badge {
+    position: absolute;
+    top: var(--naboo-space-md);
+    inset-inline-start: var(--naboo-space-md);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--naboo-space-xs);
+    padding: var(--naboo-space-xs) var(--naboo-space-sm);
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--naboo-radius-full);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+}
+
+/* Card Content */
+.naboo-card-content {
+    padding: var(--naboo-space-xl);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.naboo-card .entry-header {
+    margin-bottom: var(--naboo-space-sm);
+}
+
+.naboo-card .entry-title {
+    font-size: 1.15rem;
+    margin-bottom: var(--naboo-space-sm);
+    font-family: var(--naboo-font-heading);
+    color: var(--naboo-text-primary);
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.naboo-card .entry-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color var(--naboo-duration) var(--naboo-ease);
+}
+
+.naboo-card .entry-title a:hover {
+    color: var(--naboo-accent);
+}
+
+/* Card Meta */
+.naboo-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--naboo-space-md);
+    font-size: 0.8rem;
+    color: var(--naboo-text-muted);
+    margin-bottom: var(--naboo-space-md);
+    flex-wrap: wrap;
+}
+
+.naboo-card-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--naboo-space-xs);
+}
+
+.naboo-card .entry-excerpt {
+    color: var(--naboo-text-secondary);
+    margin-bottom: var(--naboo-space-lg);
+    flex-grow: 1;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Card Button */
+.naboo-card .naboo-card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--naboo-space-sm);
+    color: var(--naboo-accent);
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: var(--naboo-space-sm) 0;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    align-self: flex-start;
+}
+
+.naboo-card .naboo-card-link::after {
+    content: '→';
+    transition: transform var(--naboo-duration) var(--naboo-ease);
+}
+
+[dir="rtl"] .naboo-card .naboo-card-link::after {
+    content: '←';
+}
+
+.naboo-card .naboo-card-link:hover {
+    color: var(--naboo-accent-hover);
+}
+
+.naboo-card .naboo-card-link:hover::after {
+    transform: translateX(4px);
+}
+
+[dir="rtl"] .naboo-card .naboo-card-link:hover::after {
+    transform: translateX(-4px);
+}
+
+/* Legacy card button support */
+.naboo-card .button {
+    align-self: flex-start;
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+    padding: 0.625rem 1.25rem;
+    text-decoration: none;
+    border-radius: var(--naboo-radius-sm);
+    font-weight: 600;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    border: 2px solid var(--naboo-accent);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--naboo-space-sm);
+    font-size: 0.85rem;
+}
+
+.naboo-card .button:hover {
+    background: transparent;
+    color: var(--naboo-accent);
+}
+
+/* ==========================================================================
+   9. SINGLE POST / SCALE
+   ========================================================================== */
+.naboo-single-scale {
+    background: var(--naboo-surface);
+    border-radius: var(--naboo-radius-lg);
+    padding: var(--naboo-space-3xl);
+    box-shadow: var(--naboo-shadow-md);
+    border: 1px solid var(--naboo-border);
+}
+
+.naboo-single-scale .entry-header {
+    border-bottom: 1px solid var(--naboo-border);
+    padding-bottom: var(--naboo-space-xl);
+    margin-bottom: var(--naboo-space-xl);
+}
+
+.naboo-single-scale .entry-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    margin-bottom: var(--naboo-space-md);
+    font-family: var(--naboo-font-heading);
+    color: var(--naboo-text-primary);
+    line-height: 1.3;
+}
+
+.naboo-single-scale .entry-meta {
+    color: var(--naboo-text-secondary);
+    font-size: 0.9rem;
+    display: flex;
+    gap: var(--naboo-space-lg);
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.naboo-single-scale .entry-meta .naboo-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--naboo-space-xs) var(--naboo-space-md);
+    background: var(--naboo-accent-subtle);
+    color: var(--naboo-accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: var(--naboo-radius-full);
+}
+
+.naboo-single-scale .entry-content {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--naboo-text-secondary);
+}
+
+.entry-content {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Page Template */
+article.page .entry-header {
+    margin-bottom: var(--naboo-space-2xl);
+    padding-bottom: var(--naboo-space-xl);
+    border-bottom: 1px solid var(--naboo-border);
+}
+
+article.page .entry-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-family: var(--naboo-font-heading);
+    color: var(--naboo-text-primary);
+}
+
+article.page .entry-content {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--naboo-text-secondary);
+    max-width: var(--naboo-content-width);
+}
+
+/* ==========================================================================
+   10. FORMS & INPUTS
+   ========================================================================== */
+input[type="text"],
+input[type="email"],
+input[type="url"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+textarea,
+select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--naboo-border);
+    border-radius: var(--naboo-radius-sm);
+    background: var(--naboo-surface);
+    color: var(--naboo-text-primary);
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: var(--naboo-accent);
+    box-shadow: 0 0 0 3px var(--naboo-accent-subtle);
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: var(--naboo-space-sm);
+    color: var(--naboo-text-primary);
+    font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   11. BUTTONS
+   ========================================================================== */
+.naboo-btn,
+.naboo-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--naboo-space-sm);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: var(--naboo-radius-sm);
+    cursor: pointer;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--naboo-accent), var(--naboo-accent-hover));
+    color: var(--naboo-text-on-accent);
+    box-shadow: var(--naboo-shadow-sm);
+}
+
+.naboo-btn:hover,
+.naboo-btn-primary:hover {
+    box-shadow: var(--naboo-shadow-md);
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+.naboo-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--naboo-space-sm);
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: 1.5px solid var(--naboo-border);
+    border-radius: var(--naboo-radius-sm);
+    cursor: pointer;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    text-decoration: none;
+    background: var(--naboo-surface);
+    color: var(--naboo-text-primary);
+}
+
+.naboo-btn-secondary:hover {
+    border-color: var(--naboo-accent);
+    color: var(--naboo-accent);
+    background: var(--naboo-accent-subtle);
+}
+
+/* ==========================================================================
+   12. SIDEBAR & WIDGETS
+   ========================================================================== */
+.widget-area {
+    flex: 0 0 280px;
+    min-width: 0;
+}
+
+.widget-area .widget {
+    margin-bottom: var(--naboo-space-xl);
+    background: var(--naboo-surface);
+    padding: var(--naboo-space-xl);
+    border-radius: var(--naboo-radius-md);
+    box-shadow: var(--naboo-shadow-sm);
+    border: 1px solid var(--naboo-border);
+}
+
+.widget-title {
+    font-size: 1rem;
+    margin-bottom: var(--naboo-space-lg);
+    color: var(--naboo-text-primary);
+    font-family: var(--naboo-font-heading);
+    font-weight: 700;
+    padding-bottom: var(--naboo-space-sm);
+    border-bottom: 2px solid var(--naboo-accent);
+}
+
+/* ==========================================================================
+   13. PAGINATION
+   ========================================================================== */
+.naboo-pagination,
+.nav-links {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--naboo-space-sm);
+    margin-top: var(--naboo-space-3xl);
+    flex-wrap: wrap;
+}
+
+.nav-links .page-numbers {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--naboo-space-sm);
+    border-radius: var(--naboo-radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--naboo-text-secondary);
+    background: var(--naboo-surface);
+    border: 1px solid var(--naboo-border);
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    text-decoration: none;
+}
+
+.nav-links .page-numbers:hover {
+    border-color: var(--naboo-accent);
+    color: var(--naboo-accent);
+}
+
+.nav-links .page-numbers.current {
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+    border-color: var(--naboo-accent);
+}
+
+/* ==========================================================================
+   14. FOOTER
+   ========================================================================== */
+.naboo-site-footer {
+    background: var(--naboo-primary);
+    color: rgba(255, 255, 255, 0.85);
+    padding: var(--naboo-space-4xl) 0 var(--naboo-space-xl);
+    margin-top: var(--naboo-space-4xl);
+    position: relative;
+}
+
+.naboo-site-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--naboo-accent), var(--naboo-accent-light), var(--naboo-accent));
+}
+
+.naboo-site-footer a {
+    color: var(--naboo-accent-light);
+    transition: color var(--naboo-duration) var(--naboo-ease);
+}
+
+.naboo-site-footer a:hover {
+    color: var(--naboo-text-on-primary);
+}
+
+/* Footer Widgets */
+.naboo-footer-widgets {
+    display: grid;
+    grid-template-columns: repeat(var(--naboo-footer-columns, 3), 1fr);
+    gap: var(--naboo-space-2xl);
+    margin-bottom: var(--naboo-space-2xl);
+}
+
+.naboo-footer-widgets .widget {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    padding: 0;
+}
+
+.naboo-footer-widgets .widget-title {
+    color: var(--naboo-text-on-primary);
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: var(--naboo-space-lg);
+    padding-bottom: var(--naboo-space-sm);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.naboo-footer-widgets .widget li {
+    margin-bottom: var(--naboo-space-sm);
+}
+
+.naboo-footer-widgets .widget a {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.naboo-footer-widgets .widget a:hover {
+    color: var(--naboo-accent-light);
+}
+
+/* Social Links */
+.naboo-footer-social {
+    display: flex;
+    justify-content: center;
+    gap: var(--naboo-space-md);
+    padding: var(--naboo-space-xl) 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: var(--naboo-space-xl);
+}
+
+.naboo-footer-social a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--naboo-radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    transition: all var(--naboo-duration) var(--naboo-ease);
+    text-decoration: none;
+}
+
+.naboo-footer-social a:hover {
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+    transform: translateY(-2px);
+}
+
+/* Footer Bottom */
+.naboo-site-info {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+}
+
+.naboo-site-info p {
+    color: inherit;
+    margin: 0;
+}
+
+/* Footer Style: Minimal */
+.footer-style-minimal .naboo-site-footer {
+    padding: var(--naboo-space-xl) 0;
+    background: var(--naboo-surface);
+    color: var(--naboo-text-secondary);
+}
+
+.footer-style-minimal .naboo-site-footer::before {
+    display: none;
+}
+
+.footer-style-minimal .naboo-site-info {
+    color: var(--naboo-text-muted);
+}
+
+.footer-style-minimal .naboo-site-footer a {
+    color: var(--naboo-accent);
+}
+
+/* ==========================================================================
+   15. BACK TO TOP
+   ========================================================================== */
+.naboo-back-to-top {
+    position: fixed;
+    bottom: var(--naboo-space-xl);
+    inset-inline-end: var(--naboo-space-xl);
+    width: 46px;
+    height: 46px;
+    border-radius: var(--naboo-radius-full);
+    background: var(--naboo-accent);
+    color: var(--naboo-text-on-accent);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: var(--naboo-shadow-lg);
+    z-index: var(--naboo-z-sticky);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all var(--naboo-duration) var(--naboo-ease);
+}
+
+.naboo-back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.naboo-back-to-top:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--naboo-shadow-xl);
+}
+
+/* ==========================================================================
+   16. ANIMATIONS & KEYFRAMES
+   ========================================================================== */
+@keyframes naboo-fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes naboo-fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes naboo-slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes naboo-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* Scroll animations */
+.naboo-animate {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity var(--naboo-duration-slow) var(--naboo-ease),
+        transform var(--naboo-duration-slow) var(--naboo-ease);
+}
+
+.naboo-animate.animated {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered cards */
+.naboo-grid-loop .naboo-card.naboo-animate {
+    transition-delay: calc(var(--naboo-stagger, 0) * 80ms);
+}
+
+/* ==========================================================================
+   17. DARK MODE
+   ========================================================================== */
+body.naboo-dark-mode {
+    --naboo-bg: #0f172a;
+    --naboo-surface: #1e293b;
+    --naboo-surface-hover: #334155;
+    --naboo-surface-alt: #1a2332;
+    --naboo-border: #334155;
+    --naboo-border-light: #1e293b;
+    --naboo-text-primary: #f1f5f9;
+    --naboo-text-secondary: #94a3b8;
+    --naboo-text-muted: #64748b;
+    --naboo-accent-subtle: rgba(13, 148, 136, 0.15);
+    --naboo-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+    --naboo-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25);
+    --naboo-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.3);
+    --naboo-shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.35);
+}
+
+body.naboo-dark-mode .site-title a {
+    -webkit-text-fill-color: var(--naboo-text-primary);
+    background: none;
+}
+
+body.naboo-dark-mode .naboo-site-header.header-glass {
+    background: rgba(15, 23, 42, 0.8);
+    border-bottom-color: rgba(51, 65, 85, 0.5);
+}
+
+body.naboo-dark-mode .card-style-glass .naboo-card {
+    background: rgba(30, 41, 59, 0.6);
+    border-color: rgba(51, 65, 85, 0.5);
+}
+
+/* ==========================================================================
+   18. UTILITY CLASSES
+   ========================================================================== */
+.naboo-text-center {
+    text-align: center;
+}
+
+.naboo-text-end {
+    text-align: end;
+}
+
+.naboo-text-start {
+    text-align: start;
+}
+
+.naboo-mt-1 {
+    margin-top: var(--naboo-space-sm);
+}
+
+.naboo-mt-2 {
+    margin-top: var(--naboo-space-md);
+}
+
+.naboo-mt-3 {
+    margin-top: var(--naboo-space-lg);
+}
+
+.naboo-mt-4 {
+    margin-top: var(--naboo-space-xl);
+}
+
+.naboo-mb-1 {
+    margin-bottom: var(--naboo-space-sm);
+}
+
+.naboo-mb-2 {
+    margin-bottom: var(--naboo-space-md);
+}
+
+.naboo-mb-3 {
+    margin-bottom: var(--naboo-space-lg);
+}
+
+.naboo-mb-4 {
+    margin-bottom: var(--naboo-space-xl);
+}
+
+.naboo-p-1 {
+    padding: var(--naboo-space-sm);
+}
+
+.naboo-p-2 {
+    padding: var(--naboo-space-md);
+}
+
+.naboo-p-3 {
+    padding: var(--naboo-space-lg);
+}
+
+.naboo-p-4 {
+    padding: var(--naboo-space-xl);
+}
+
+.naboo-gap-1 {
+    gap: var(--naboo-space-sm);
+}
+
+.naboo-gap-2 {
+    gap: var(--naboo-space-md);
+}
+
+.naboo-gap-3 {
+    gap: var(--naboo-space-lg);
+}
+
+.naboo-gap-4 {
+    gap: var(--naboo-space-xl);
+}
+
+.naboo-flex {
+    display: flex;
+}
+
+.naboo-flex-col {
+    flex-direction: column;
+}
+
+.naboo-flex-wrap {
+    flex-wrap: wrap;
+}
+
+.naboo-items-center {
+    align-items: center;
+}
+
+.naboo-justify-between {
+    justify-content: space-between;
+}
+
+.naboo-rounded {
+    border-radius: var(--naboo-radius-sm);
+}
+
+.naboo-shadow {
+    box-shadow: var(--naboo-shadow-sm);
+}
+
+.naboo-hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   19. RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .naboo-grid-loop {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+
+    .naboo-site-content .naboo-container {
+        flex-direction: column;
+    }
+
+    .widget-area {
+        flex: 1;
+    }
+}
+
+/* ==========================================================================
+   10. SCHOLARLY ACADEMIC REDESIGN BLOCKS
+   ========================================================================== */
+.naboo-scholarly-layout {
+    display: grid;
+    grid-template-columns: 7fr 3fr;
+    /* Reduced sidebar width by 15% (from 3.5fr to 3fr) */
+    gap: var(--naboo-space-2xl);
+    margin-top: var(--naboo-space-xl);
+    align-items: start;
+    font-family: Georgia, "Times New Roman", Times, serif;
+    color: #222;
+    line-height: 1.6;
+}
+
+/* Header / Title Block */
+.naboo-scholarly-header {
+    text-align: center;
+    border-bottom: 2px solid #0b2239;
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+    font-family: Georgia, "Times New Roman", Times, serif;
+}
+
+.naboo-scholarly-title {
+    font-family: var(--naboo-font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #0b2239;
+    line-height: 1.2;
+    margin: 0 0 1rem 0;
+}
+
+.naboo-scholarly-byline {
+    font-size: 1.25rem;
+    font-style: italic;
+    color: #334155;
+    margin-bottom: 1rem;
+}
+
+.naboo-scholarly-categories {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-family: var(--naboo-font-body);
+}
+
+.naboo-scholarly-categories strong {
+    color: #0b2239;
+}
+
+/* Typography Basics */
+.naboo-scholarly-heading {
+    font-family: var(--naboo-font-heading);
+    color: #0b2239;
+    /* Deep academic navy */
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 2rem 0 1rem;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0.25rem;
+}
+
+.naboo-scholarly-layout .naboo-scholarly-heading:first-child {
+    margin-top: 0;
+}
+
+/* Direct children of layout need min-width to prevent CSS grid overflow from long code blocks */
+.naboo-scholarly-layout>* {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.naboo-scholarly-text {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+}
+
+.naboo-scholarly-text ul,
+.naboo-scholarly-text ol,
+.naboo-scholarly-sidebar-block ul,
+.naboo-scholarly-sidebar-block ol {
+    padding-inline-start: 1.5em;
+    margin-bottom: 1rem;
+}
+
+ul.naboo-scholarly-meta-list {
+    padding-inline-start: 0;
+}
+
+.naboo-scholarly-text li,
+.naboo-scholarly-sidebar-block ul:not(.naboo-scholarly-meta-list) li,
+.naboo-scholarly-sidebar-block ol li {
+    margin-bottom: 0.5rem;
+}
+
+.naboo-scholarly-abstract {
+    font-size: 1.05rem;
+    line-height: 1.75;
+}
+
+.naboo-scholarly-references {
+    font-size: 0.95rem;
+    padding-left: 2em;
+    text-indent: -2em;
+    text-align: justify;
+    /* Hanging indent */
+}
+
+/* Formal Tables */
+.naboo-scholarly-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    font-family: var(--naboo-font-body);
+    /* Tables often look better in sans-serif */
+    font-size: 0.95rem;
+}
+
+.naboo-scholarly-table th,
+.naboo-scholarly-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: justify;
+}
+
+.naboo-scholarly-table th {
+    font-weight: 600;
+    color: #4a5568;
+    width: 20%;
+    vertical-align: top;
+}
+
+.naboo-scholarly-table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Sidebar Styling */
+.naboo-scholarly-sidebar {
+    font-family: var(--naboo-font-body);
+    position: sticky;
+    top: 100px;
+    z-index: 10;
+}
+
+.naboo-scholarly-sidebar-block {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 1rem;
+    /* Reduced from 1.5rem to make more room */
+    margin-bottom: 1.5rem;
+}
+
+.naboo-scholarly-sidebar-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #0b2239;
+    margin: 0 0 1rem 0;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 0.5rem;
+}
+
+.naboo-scholarly-meta-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.naboo-scholarly-meta-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #cbd5e1;
+    display: block;
+    font-size: 0.75rem;
+    /* Reduced by ~20% */
+}
+
+.naboo-scholarly-meta-list li:last-child {
+    border-bottom: none;
+}
+
+.naboo-scholarly-meta-list strong {
+    color: #4a5568;
+    display: inline;
+    /* Changed to inline for 1-liner */
+    margin-right: 0.25rem;
+}
+
+/* Force AI-generated paragraphs in strict inline lists or fields to not break lines */
+.naboo-scholarly-meta-list span p,
+#naboo-val-keywords p {
+    display: inline;
+    margin: 0;
+}
+
+/* Download Button variant */
+.naboo-scholarly-download {
+    background: #0b2239;
+    padding: 1rem;
+    text-align: center;
+    border: none;
+}
+
+.naboo-scholarly-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    width: 100%;
+}
+
+.naboo-scholarly-btn:hover {
+    color: #e2e8f0;
+}
+
+/* Linked Versions */
+.naboo-scholarly-linked-versions {
+    margin-bottom: 2rem;
+    padding: 1rem 1.5rem;
+    background: #f8fafc;
+    border-left: 4px solid #0b2239;
+}
+
+.naboo-scholarly-linked-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family: var(--naboo-font-body);
+}
+
+.naboo-scholarly-linked-list li {
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.naboo-scholarly-linked-list a {
+    color: #0b2239;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.naboo-scholarly-linked-list a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 992px) {
+    .naboo-scholarly-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    :root {
+        --naboo-header-height: 60px;
+    }
+
+    .naboo-container {
+        padding-inline: var(--naboo-space-md) !important;
+    }
+
+    /* Mobile navigation */
+    .naboo-mobile-toggle {
+        display: flex;
+    }
+
+    .naboo-main-navigation {
+        position: fixed;
+        top: var(--naboo-header-height);
+        inset-inline-start: 0;
+        width: 100%;
+        background: var(--naboo-surface);
+        flex-direction: column;
+        padding: var(--naboo-space-lg);
+        border-bottom: 1px solid var(--naboo-border);
+        box-shadow: var(--naboo-shadow-lg);
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--naboo-duration) var(--naboo-ease);
+        z-index: var(--naboo-z-overlay);
+    }
+
+    .naboo-main-navigation.open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .naboo-main-navigation ul {
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+    }
+
+    .naboo-main-navigation a {
+        display: block;
+        padding: var(--naboo-space-md);
+        border-radius: var(--naboo-radius-sm);
+    }
+
+    .naboo-header-search-toggle {
+        width: 100%;
+        justify-content: flex-start;
+        padding: var(--naboo-space-md);
+        margin: 0;
+    }
+
+    /* Content */
+    .naboo-grid-loop {
+        grid-template-columns: 1fr;
+    }
+
+    .naboo-single-scale {
+        padding: var(--naboo-space-xl);
+    }
+
+    .naboo-footer-widgets {
+        grid-template-columns: 1fr !important;
+    }
+
+    .naboo-footer-social {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .naboo-container {
+        padding-inline: var(--naboo-space-md) !important;
+    }
+
+    .naboo-single-scale {
+        padding: var(--naboo-space-lg);
+        border-radius: var(--naboo-radius-sm);
+    }
+
+    .naboo-card-content {
+        padding: var(--naboo-space-lg);
+    }
+
+    .naboo-btn,
+    .naboo-btn-primary,
+    .naboo-btn-secondary {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* AI PDF Extractor */
+.naboo-ai-upload-zone {
+    border: 2px dashed #cbd5e1;
+    border-radius: var(--naboo-radius-md);
+    background: #f8fafc;
+    padding: var(--naboo-space-xxl);
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: var(--naboo-space-xl);
+}
+
+.naboo-ai-upload-zone.dragover,
+.naboo-ai-upload-zone:hover {
+    border-color: var(--naboo-primary);
+    background: #f1f5f9;
+}
+
+.naboo-ai-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--naboo-primary);
+    margin-bottom: var(--naboo-space-md);
+}
+
+.naboo-ai-upload-zone h3 {
+    font-family: var(--naboo-font-heading);
+    font-size: 1.5rem;
+    color: var(--naboo-heading-color);
+    margin: 0 0 var(--naboo-space-sm) 0;
+}
+
+.naboo-ai-upload-zone p {
+    color: var(--naboo-text-muted);
+    margin-bottom: var(--naboo-space-lg);
+}
+
+.naboo-ai-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--naboo-space-xl);
+}
+
+.naboo-ai-form-wrapper {
+    background: #fff;
+    border-radius: var(--naboo-radius-lg);
+    box-shadow: var(--naboo-shadow-md);
+    padding: var(--naboo-space-xxl);
+    margin-bottom: var(--naboo-space-xl);
+}

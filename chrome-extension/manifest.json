@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Naboo Database to Grokipedia Sync",
+  "version": "1.1.0",
+  "description": "Syncs scales from Naboo Database to Grokipedia as suggested articles.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://arabpsychology.com/*",
+    "https://grokipedia.com/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://grokipedia.com/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,545 @@
+/**
+ * Naboo Glossary — Final Clean UI (v1.23.7)
+ * No breakout css tricks. Fills content area naturally.
+ * Always light mode.
+ */
+
+/* ── Variables ────────────────────────────────────────────────────── */
+.naboo-glossary-app {
+    --ngg-accent: #5b5ef4;
+    --ngg-accent-dk: #4344c8;
+    --ngg-soft: rgba(91, 94, 244, .10);
+    --ngg-glow: rgba(91, 94, 244, .20);
+    --ngg-radius: 12px;
+    --ngg-bg: #f5f6ff;
+    --ngg-surface: #ffffff;
+    --ngg-border: #e2e4f8;
+    --ngg-text: #111827;
+    --ngg-text2: #374151;
+    --ngg-muted: #6b7280;
+    --ngg-shadow: 0 1px 4px rgba(91, 94, 244, .07);
+    --ngg-shadow-md: 0 4px 16px rgba(91, 94, 244, .11);
+    --ngg-shadow-lg: 0 10px 28px rgba(91, 94, 244, .16);
+}
+
+/* ── App wrapper ──────────────────────────────────────────────────── */
+.naboo-glossary-app {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    color: var(--ngg-text);
+    background: var(--ngg-bg);
+    position: relative;
+    padding: 48px 0 80px;
+    /* Escape article/entry-content horizontal padding via negative margin */
+    margin-left: -9999px;
+    margin-right: -9999px;
+    padding-left: 9999px;
+    padding-right: 9999px;
+    /* Clip so the 9999px doesn't create scroll */
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Dot texture */
+.naboo-glossary-app::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(91, 94, 244, .06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.naboo-glossary-app>* {
+    position: relative;
+    z-index: 1;
+}
+
+/* Max-width inner wrapper for all content sections */
+.ngg-controls,
+.ngg-alpha-nav,
+.ngg-items-wrap,
+.ngg-pagination {
+    max-width: 1360px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Admin bar compensation */
+body.admin-bar .naboo-glossary-app {
+    padding-top: 72px;
+}
+
+/* ── Controls ─────────────────────────────────────────────────────── */
+.ngg-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.ngg-search-wrap {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.ngg-search-icon {
+    position: absolute;
+    left: 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--ngg-muted);
+    pointer-events: none;
+}
+
+.ngg-search-input {
+    width: 100%;
+    padding: 12px 40px 12px 44px;
+    border: 2px solid var(--ngg-border);
+    border-radius: 50px;
+    background: var(--ngg-surface);
+    font-size: 0.93rem;
+    color: var(--ngg-text);
+    box-shadow: var(--ngg-shadow);
+    box-sizing: border-box;
+    outline: none;
+    font-family: inherit;
+    transition: border-color .2s, box-shadow .2s;
+}
+
+.ngg-search-input::placeholder {
+    color: var(--ngg-muted);
+}
+
+.ngg-search-input:focus {
+    border-color: var(--ngg-accent);
+    box-shadow: 0 0 0 4px var(--ngg-soft);
+}
+
+.ngg-search-clear {
+    position: absolute;
+    right: 12px;
+    background: none;
+    border: none;
+    color: var(--ngg-muted);
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 7px;
+    border-radius: 50%;
+    line-height: 1;
+    transition: color .18s, background .18s;
+}
+
+.ngg-search-clear:hover {
+    color: var(--ngg-text);
+    background: var(--ngg-border);
+}
+
+.ngg-stats {
+    font-size: 0.855rem;
+    font-weight: 600;
+    color: var(--ngg-muted);
+    background: var(--ngg-surface);
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 2px solid var(--ngg-border);
+    white-space: nowrap;
+    box-shadow: var(--ngg-shadow);
+}
+
+/* ── Alphabet nav ─────────────────────────────────────────────────── */
+.ngg-alpha-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 28px;
+    padding: 12px 14px;
+    background: var(--ngg-surface);
+    border: 2px solid var(--ngg-border);
+    border-radius: 14px;
+    box-shadow: var(--ngg-shadow);
+}
+
+.ngg-alpha-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ngg-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all .16s ease;
+}
+
+.ngg-alpha-btn:hover {
+    background: var(--ngg-bg);
+    color: var(--ngg-text);
+    border-color: var(--ngg-border);
+}
+
+.ngg-alpha-btn.active {
+    background: var(--ngg-accent);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 3px 10px var(--ngg-glow);
+}
+
+.ngg-alpha-btn[data-letter="all"] {
+    padding: 0 16px;
+    border-radius: 50px;
+}
+
+/* ── Items ────────────────────────────────────────────────────────── */
+.ngg-items-wrap {
+    min-height: 200px;
+}
+
+.ngg-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+    gap: 14px;
+}
+
+.naboo-glossary-app.layout-list .ngg-items {
+    grid-template-columns: 1fr;
+}
+
+.naboo-glossary-app.layout-compact .ngg-items {
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    gap: 10px;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────── */
+.ngg-card {
+    animation: nggFade .28s ease both;
+}
+
+@keyframes nggFade {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Card — compact & elegant ─────────────────────────────────────── */
+.ngg-card-inner {
+    background: var(--ngg-surface);
+    border: 1.5px solid var(--ngg-border);
+    border-radius: var(--ngg-radius);
+    padding: 14px 16px 14px 14px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    box-shadow: 0 1px 3px rgba(91, 94, 244, .05);
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/* Slim left accent bar */
+.ngg-card-inner::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 14%;
+    bottom: 14%;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--ngg-accent);
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.ngg-card:hover .ngg-card-inner {
+    border-color: rgba(91, 94, 244, .3);
+    box-shadow: var(--ngg-shadow-md);
+    transform: translateY(-2px);
+}
+
+.ngg-card:hover .ngg-card-inner::before {
+    opacity: 1;
+}
+
+/* Letter badge — inline pill top-right */
+.ngg-card-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 20px;
+    min-width: 20px;
+    padding: 0 6px;
+    border-radius: 5px;
+    background: var(--ngg-soft);
+    color: var(--ngg-accent);
+    font-size: 0.67rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: .04em;
+    transition: background .2s, color .2s;
+}
+
+.ngg-card:hover .ngg-card-badge {
+    background: var(--ngg-accent);
+    color: #fff;
+}
+
+.ngg-card-header {
+    padding-right: 32px;
+}
+
+/* Clickable title */
+.ngg-card-title {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--ngg-text);
+    margin: 0;
+    line-height: 1.35;
+    text-decoration: none;
+    transition: color .16s;
+}
+
+.ngg-card-title:hover {
+    color: var(--ngg-accent);
+}
+
+/* Secondary meta (author, etc.) */
+.ngg-card-secondary {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--ngg-muted);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.ngg-meta-label {
+    color: var(--ngg-accent);
+    font-weight: 700;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-right: 3px;
+}
+
+.naboo-glossary-app[data-post-type="naboo_glossary"] .ngg-card-secondary {
+    font-family: 'Amiri', 'Scheherazade New', serif;
+    font-size: 0.92rem;
+    direction: rtl;
+}
+
+/* Excerpt — 2-line clamp */
+.ngg-card-excerpt {
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--ngg-muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    overflow: hidden;
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────── */
+.ngg-skeleton {
+    background: var(--ngg-surface);
+    border: 2px solid var(--ngg-border);
+    border-radius: var(--ngg-radius);
+    padding: 18px 16px;
+}
+
+.ngg-skeleton-title,
+.ngg-skeleton-sub,
+.ngg-skeleton-text {
+    background: linear-gradient(90deg,
+            var(--ngg-border) 25%,
+            rgba(91, 94, 244, .07) 50%,
+            var(--ngg-border) 75%);
+    background-size: 400% 100%;
+    animation: nggShimmer 1.5s infinite;
+    border-radius: 5px;
+}
+
+.ngg-skeleton-title {
+    height: 16px;
+    width: 65%;
+    margin-bottom: 10px;
+}
+
+.ngg-skeleton-sub {
+    height: 12px;
+    width: 40%;
+    margin-bottom: 14px;
+}
+
+.ngg-skeleton-text {
+    height: 11px;
+    width: 100%;
+    margin-bottom: 7px;
+}
+
+.ngg-skeleton-text.short {
+    width: 58%;
+}
+
+@keyframes nggShimmer {
+    0% {
+        background-position: -400% 0;
+    }
+
+    100% {
+        background-position: 400% 0;
+    }
+}
+
+/* ── Loader ───────────────────────────────────────────────────────── */
+.ngg-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 60px 20px;
+    color: var(--ngg-muted);
+    font-weight: 500;
+}
+
+.ngg-spinner {
+    width: 34px;
+    height: 34px;
+    border: 3px solid var(--ngg-border);
+    border-top-color: var(--ngg-accent);
+    border-radius: 50%;
+    animation: nggSpin .7s linear infinite;
+}
+
+@keyframes nggSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Empty ────────────────────────────────────────────────────────── */
+.ngg-empty {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 70px 20px;
+    color: var(--ngg-muted);
+}
+
+.ngg-empty-icon {
+    font-size: 2.8rem;
+    margin-bottom: 14px;
+    display: block;
+    opacity: .45;
+}
+
+.ngg-empty p {
+    font-size: .95rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 0;
+}
+
+/* ── Pagination ───────────────────────────────────────────────────── */
+.ngg-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 44px;
+    padding-top: 24px;
+    border-top: 2px solid var(--ngg-border);
+    flex-wrap: wrap;
+}
+
+.ngg-page-btn {
+    padding: 9px 22px;
+    border-radius: 50px;
+    border: 2px solid var(--ngg-border);
+    background: var(--ngg-surface);
+    color: var(--ngg-text2);
+    font-size: .87rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .18s;
+    font-family: inherit;
+}
+
+.ngg-page-btn:hover:not(:disabled) {
+    background: var(--ngg-accent);
+    color: #fff;
+    border-color: var(--ngg-accent);
+    box-shadow: 0 4px 12px var(--ngg-glow);
+}
+
+.ngg-page-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.ngg-page-info {
+    font-size: .87rem;
+    color: var(--ngg-muted);
+    font-weight: 600;
+    background: var(--ngg-surface);
+    padding: 8px 16px;
+    border-radius: 50px;
+    border: 2px solid var(--ngg-border);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .naboo-glossary-app {
+        padding: 28px 0 60px;
+    }
+
+    .ngg-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .ngg-stats {
+        text-align: center;
+    }
+
+    .ngg-alpha-btn {
+        min-width: 28px;
+        height: 28px;
+        font-size: .74rem;
+        padding: 0 6px;
+    }
+}
+
+@media (max-width: 420px) {
+    .ngg-card-inner {
+        padding: 14px 12px;
+    }
+
+    .ngg-alpha-btn {
+        min-width: 24px;
+        height: 25px;
+        font-size: .7rem;
+        border-radius: 6px;
+    }
+}

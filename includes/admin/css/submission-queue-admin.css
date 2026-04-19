@@ -1,0 +1,263 @@
+/**
+ * Submission Queue Admin Styles - Premium Version
+ */
+
+.naboo-admin-wrap {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important;
+    padding: 20px;
+    max-width: 1400px;
+}
+
+.naboo-queue-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    background: #f1f5f9;
+    padding: 6px;
+    border-radius: 14px;
+    width: fit-content;
+    border: 1px solid #e2e8f0;
+}
+
+.naboo-tab-btn {
+    padding: 12px 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 14px;
+    color: #64748b;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.naboo-tab-btn:hover {
+    color: #1e293b;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.naboo-tab-btn.active {
+    background: #fff;
+    color: #1e293b;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.naboo-queue-container {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+#naboo-queue-list-wrapper {
+    flex: 1;
+    background: white;
+    border-radius: 20px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    overflow: hidden;
+}
+
+.naboo-side-panel {
+    width: 420px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    max-height: calc(100vh - 100px);
+    position: sticky;
+    top: 50px;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+.naboo-panel-header {
+    padding: 24px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.naboo-panel-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e293b;
+}
+
+.naboo-close-panel {
+    background: #edf2f7;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.naboo-close-panel:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+    transform: rotate(90deg);
+}
+
+.naboo-panel-content {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.naboo-panel-footer {
+    padding: 24px;
+    border-top: 1px solid #f1f5f9;
+    background: #f8fafc;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+/* Modal */
+.naboo-modal {
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.naboo-modal-content {
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 24px;
+    width: 550px;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    transform: scale(0.95);
+    animation: modalScale 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes modalScale {
+    to { transform: scale(1); }
+}
+
+.naboo-modal-content h3 {
+    margin-top: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+.naboo-modal-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Details helpers */
+.naboo-detail-group {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.naboo-detail-group:last-child {
+    border-bottom: none;
+}
+
+.naboo-detail-label {
+    display: block;
+    font-weight: 800;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+    margin-bottom: 8px;
+}
+
+.naboo-detail-value {
+    font-size: 15px;
+    color: #1e293b;
+    font-weight: 500;
+    line-height: 1.6;
+}
+
+.naboo-queue-item-row {
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.naboo-queue-item-row:hover td {
+    background-color: #f8fafc !important;
+}
+
+.naboo-queue-item-row.active td {
+    background-color: #f1f5f9 !important;
+    position: relative;
+}
+
+.naboo-queue-item-row.active td:first-child::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #4f46e5;
+}
+
+/* Buttons modernized */
+.naboo-side-panel .button {
+    height: auto !important;
+    padding: 10px 20px !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+}
+
+.naboo-approve-btn {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+}
+
+.naboo-approve-btn:hover {
+    background: #059669 !important;
+    transform: translateY(-1px);
+}
+
+.naboo-reject-btn {
+    color: #ef4444 !important;
+    text-decoration: none !important;
+}
+
+.naboo-reject-btn:hover {
+    color: #dc2626 !important;
+}

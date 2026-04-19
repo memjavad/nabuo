@@ -1,0 +1,206 @@
+/**
+ * PDF Export Styles
+ * Button and notification styling for PDF export feature
+ */
+
+/* PDF Export Button */
+.naboo-export-pdf-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 16px;
+	background: linear-gradient(135deg, #1a3a52 0%, #00796b 100%);
+	color: #fff;
+	border: none;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.naboo-export-pdf-btn:hover:not( :disabled) {
+	background: linear-gradient(135deg, #0d2236 0%, #005450 100%);
+	box-shadow: 0 8px 24px rgba(0, 121, 107, 0.4);
+	transform: translateY(-2px);
+}
+
+.naboo-export-pdf-btn:active:not( :disabled) {
+	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(0, 121, 107, 0.3);
+}
+
+.naboo-export-pdf-btn:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.naboo-pdf-icon {
+	width: 18px;
+	height: 18px;
+	flex-shrink: 0;
+}
+
+/* Export Button Container */
+.naboo-pdf-export-action {
+	margin-top: 8px;
+}
+
+/* Spinner Animation */
+.naboo-spinner {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border: 2px solid rgba(0, 121, 107, 0.3);
+	border-top: 2px solid #00796b;
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+	vertical-align: middle;
+	margin-right: 6px;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Notifications */
+.naboo-notification {
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	min-width: 300px;
+	max-width: 500px;
+	padding: 16px;
+	background: #fff;
+	border-radius: 8px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+	z-index: 10001;
+	animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	border-left: 4px solid #00796b;
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(400px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+.naboo-notification-success {
+	border-left-color: #00796b;
+}
+
+.naboo-notification-error {
+	border-left-color: #dc2626;
+}
+
+.naboo-notification-content {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	color: #333;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.naboo-notification-success .naboo-icon {
+	color: #00796b;
+}
+
+.naboo-notification-error .naboo-icon {
+	color: #dc2626;
+}
+
+.naboo-icon {
+	width: 20px;
+	height: 20px;
+	flex-shrink: 0;
+}
+
+.naboo-notification-close {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: none;
+	border: none;
+	color: #999;
+	font-size: 20px;
+	cursor: pointer;
+	padding: 0;
+	transition: color 0.2s ease;
+}
+
+.naboo-notification-close:hover {
+	color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.naboo-export-pdf-btn {
+		padding: 8px 12px;
+		font-size: 13px;
+		gap: 6px;
+	}
+
+	.naboo-pdf-icon {
+		width: 16px;
+		height: 16px;
+	}
+
+	.naboo-notification {
+		min-width: 250px;
+		right: 10px;
+		left: 10px;
+		max-width: none;
+	}
+}
+
+@media (max-width: 480px) {
+	.naboo-export-pdf-btn {
+		width: 100%;
+		justify-content: center;
+		padding: 10px 12px;
+	}
+
+	.naboo-export-pdf-btn span {
+		display: none;
+	}
+
+	.naboo-export-pdf-btn::before {
+		content: 'PDF';
+		font-size: 12px;
+	}
+
+	.naboo-notification {
+		top: auto;
+		bottom: 10px;
+		right: 10px;
+		left: 10px;
+		min-width: auto;
+	}
+
+	.naboo-notification-content {
+		font-size: 13px;
+	}
+}
+
+/* Print Styles */
+@media print {
+
+	.naboo-export-pdf-btn,
+	.naboo-export-button-container,
+	.naboo-notification {
+		display: none;
+	}
+}
