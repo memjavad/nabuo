@@ -148,14 +148,13 @@ class Batch_AI_Processor {
 		if ( ! $queue_item ) {
 			// Queue is empty. Check if there are un-queued drafts we can load.
 			global $wpdb;
-			$table = $wpdb->prefix . 'naboo_process_queue';
 			$now = current_time( 'mysql' );
 
 			$refilled = $wpdb->query( $wpdb->prepare( "
-                INSERT IGNORE INTO {$table} (draft_id, status, queued_at)
+                INSERT IGNORE INTO {$wpdb->prefix}naboo_process_queue (draft_id, status, queued_at)
                 SELECT p.ID, 'pending', %s
                 FROM {$wpdb->posts} p
-                LEFT JOIN {$table} q ON p.ID = q.draft_id
+                LEFT JOIN {$wpdb->prefix}naboo_process_queue q ON p.ID = q.draft_id
                 WHERE p.post_type = 'naboo_raw_draft'
                 AND p.post_status IN ('publish', 'draft', 'pending')
                 AND q.draft_id IS NULL
@@ -394,8 +393,7 @@ class Batch_AI_Processor {
 
 		$next_title = 'None';
 		global $wpdb;
-		$q_table = $wpdb->prefix . 'naboo_process_queue';
-		$next_id = $wpdb->get_var( "SELECT draft_id FROM $q_table WHERE status = 'pending' ORDER BY id ASC LIMIT 1" );
+		$next_id = $wpdb->get_var( "SELECT draft_id FROM {$wpdb->prefix}naboo_process_queue WHERE status = 'pending' ORDER BY id ASC LIMIT 1" );
 		if ( $next_id ) {
 			$next_title = get_the_title( $next_id );
 		}
@@ -507,8 +505,7 @@ class Batch_AI_Processor {
 
 		foreach ( $fields_to_refine as $field_name ) {
 			global $wpdb;
-			$q_table = $wpdb->prefix . 'naboo_process_queue';
-			$q_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM $q_table WHERE draft_id = %d", $draft_id ) );
+			$q_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}naboo_process_queue WHERE draft_id = %d", $draft_id ) );
 			if ( $q_status === 'failed' || $q_status === 'done' ) break;
 
 			sleep( 5 );

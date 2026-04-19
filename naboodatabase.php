@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version.
  */
-define( 'NABOODATABASE_VERSION', '1.55.4' );
+define( 'NABOODATABASE_VERSION', '1.55.5' );
 define( 'NABOODATABASE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NABOODATABASE_URL', plugin_dir_url( __FILE__ ) );
 
