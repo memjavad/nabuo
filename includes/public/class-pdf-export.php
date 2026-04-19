@@ -48,8 +48,6 @@ class PDF_Export {
 
 		try {
 			$pdf_content = $this->generate_pdf( $post );
-			
-			// Return PDF as binary response
 			return new WP_REST_Response(
 				array(
 					'success' => true,
