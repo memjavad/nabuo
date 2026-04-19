@@ -1,0 +1,8 @@
+🎯 **What:**
+Fixed a "double-prepare" SQL injection vulnerability in the Comments Moderation admin view. The original code prepared strings individually and then concatenated them into a final query string which was passed to `$wpdb->prepare()` again. This could interpret unintended literal `%` characters (e.g. from a search term) as format strings.
+
+⚠️ **Risk:**
+An attacker with sufficient permissions to interact with the filtering mechanisms could inject arbitrary SQL to manipulate queries. Depending on how input was formatted, this could lead to error-based SQL injection or unauthorized data disclosure.
+
+🛡️ **Solution:**
+Refactored the query construction to collect raw placeholders (`%s`) in a single query string while pushing actual parameter values into a separate tracking array (`$where_args`). The final query string and the tracking array are then combined into one safe call using `$wpdb->prepare()`.
