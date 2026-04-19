@@ -464,8 +464,6 @@ class Advanced_Search {
 					if ( ! isset( $counts[ $part ] ) ) {
 						$counts[ $part ] = 0;
 					}
-					// If the string was just one item, add the pre-aggregated cc
-					// If it was comma separated, we estimate by adding cc. Ideally we normalize these tables.
 					$counts[ $part ] += (int) $row->cc;
 				}
 			}
