@@ -172,10 +172,17 @@ class Performance_Metrics_Dashboard {
 		);
 
 		$missing_tables = array();
-		foreach ( $tables as $table ) {
-			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . $table ) ) === null ) {
-				$missing_tables[] = $table;
+		$existing_tables = $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $wpdb->prefix ) . '%' ) );
+
+		if ( is_array( $existing_tables ) ) {
+			$existing_tables_flipped = array_flip( $existing_tables );
+			foreach ( $tables as $table ) {
+				if ( ! isset( $existing_tables_flipped[ $wpdb->prefix . $table ] ) ) {
+					$missing_tables[] = $table;
+				}
 			}
+		} else {
+			$missing_tables = $tables;
 		}
 
 		$health['tables_status'] = empty( $missing_tables ) ? 'healthy' : 'warning';
