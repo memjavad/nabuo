@@ -254,7 +254,7 @@ class Advanced_Admin_Dashboard {
 		global $wpdb;
 
 		$top_scales = $wpdb->get_results(
-			"SELECT ID, post_title, post_name 
+			"SELECT ID, post_title, post_name, pm.meta_value as view_count
 			FROM {$wpdb->posts} p
 			LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_naboo_view_count'
 			WHERE p.post_type = 'psych_scale' AND p.post_status = 'publish'
@@ -265,7 +265,7 @@ class Advanced_Admin_Dashboard {
 		if ( $top_scales ) {
 			echo '<ol class="naboo-top-scales-list">';
 			foreach ( $top_scales as $scale ) {
-				$views = get_post_meta( $scale->ID, '_naboo_view_count', true ) ?? 0;
+				$views = $scale->view_count ?? 0;
 				echo '<li>';
 				echo '<a href="' . esc_url( get_edit_post_link( $scale->ID ) ) . '">';
 				echo esc_html( $scale->post_title );
