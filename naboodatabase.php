@@ -46,26 +46,6 @@ spl_autoload_register( function ( $class_name ) {
 	// Replace the namespace prefix with the base directory, replace namespace
 	// separators with directory separators in the relative class name, append
 	// with .php
-	
-	// Map class names to file names based on WP coding standards (class-classname.php)
-	// This part is tricky because the existing structure uses 'class-naboodatabase-xyz.php'
-	// We will try to map common patterns or restructure.
-    // For now, let's assume we are going to Rename files to match the class names deeper down, or map them here.
-    
-    // Actually, to fully modernize, we should map:
-    // ArabPsychology\NabooDatabase\Core -> includes/core/class-core.php? No, that's not standard.
-    // Let's TRY to stick to a logical mapping.
-    
-    // Refactor PLan:
-    // ArabPsychology\NabooDatabase\Activator -> includes/class-activator.php
-    // ArabPsychology\NabooDatabase\Core -> includes/class-core.php
-    // ArabPsychology\NabooDatabase\Admin\Admin -> includes/admin/class-admin.php
-    
-    // Let's implement a simple mapping for now that handles the existing structure mostly, 
-    // but cleaner is to rename files. I will rename files as I go.
-    
-    // For this autoloader, let's assume we will rename files to `class-{classname}.php` lowercase.
-    
     $parts = explode( '\\', $relative_class );
     $class_filename = 'class-' . str_replace( '_', '-', strtolower( array_pop( $parts ) ) ) . '.php';
     
