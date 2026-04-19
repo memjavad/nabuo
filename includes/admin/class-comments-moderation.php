@@ -155,30 +155,44 @@ class Comments_Moderation {
 		}
 		$counts['all'] = array_sum( $counts );
 
-		// Build WHERE
-		$where = $active_tab !== 'all'
-			? $wpdb->prepare( 'WHERE c.status = %s', $active_tab )
-			: 'WHERE 1=1';
+		// Build WHERE safely
+		$where_clauses = array();
+		$where_args    = array();
 
-		if ( $search ) {
-			$like   = '%' . $wpdb->esc_like( $search ) . '%';
-			$where .= $wpdb->prepare( ' AND (c.comment_text LIKE %s OR c.user_name LIKE %s)', $like, $like );
+		if ( $active_tab !== 'all' ) {
+			$where_clauses[] = 'c.status = %s';
+$where_args[]    = $active_tab;
 		}
 
-		$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` c {$where}" );
+		if ( $search ) {
+			$like            = '%' . $wpdb->esc_like( $search ) . '%';
+			$where_clauses[] = '(c.comment_text LIKE %s OR c.user_name LIKE %s)';
+$where_args[]    = $like;
+$where_args[]    = $like;
+		}
 
-		$comments = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT c.*, p.post_title AS scale_title
+		$where_sql = '';
+		if ( ! empty( $where_clauses ) ) {
+			$where_sql = 'WHERE ' . implode( ' AND ', $where_clauses );
+		} else {
+			$where_sql = 'WHERE 1=1';
+		}
+
+		if ( ! empty( $where_args ) ) {
+			$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$table}` c {$where_sql}", $where_args ) );
+		} else {
+			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` c {$where_sql}" );
+		}
+
+		$query_string = "SELECT c.*, p.post_title AS scale_title
 				 FROM `{$table}` c
 				 LEFT JOIN {$wpdb->posts} p ON p.ID = c.scale_id
-				 {$where}
+				 {$where_sql}
 				 ORDER BY c.created_at DESC
-				 LIMIT %d OFFSET %d",
-				$per_page,
-				$offset
-			)
-		);
+				 LIMIT %d OFFSET %d";
+
+		$merged_args = array_merge( $where_args, array( $per_page, $offset ) );
+		$comments    = $wpdb->get_results( $wpdb->prepare( $query_string, $merged_args ) );
 
 		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( $_GET['notice'] ) : '';
 
