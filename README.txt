@@ -3,7 +3,7 @@ Contributors: ArabPsychology
 Tags: database, scales, psychology, research, directory
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.55.4
+Stable tag: 1.55.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -1345,3 +1345,6 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 = 1.0.0 =
 *   Initial release.
+
+= 1.55.5 =
+*   Refactored `register_endpoints` in `class-search-result-improvements.php` to improve code maintainability and readability by extracting route registration into smaller, private methods.
