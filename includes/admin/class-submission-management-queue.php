@@ -629,7 +629,7 @@ Best regards,
 				<div id="naboo-submission-details-panel" class="naboo-side-panel" style="display:none;">
 					<div class="naboo-panel-header">
 						<h2><?php esc_html_e( 'Submission Details', 'naboodatabase' ); ?></h2>
-						<button type="button" class="naboo-close-panel">&times;</button>
+						<button type="button" class="naboo-close-panel" aria-label="<?php esc_attr_e( 'Close panel', 'naboodatabase' ); ?>">&times;</button>
 					</div>
 					<div class="naboo-panel-content">
 						<!-- Populated via AJAX -->
