@@ -306,7 +306,7 @@
                     
                     <input type="text" name="_naboo_scale_linked_versions[<?php echo $index; ?>][type]" value="<?php echo esc_attr( $v_type ); ?>" placeholder="<?php _e( 'e.g., Short Form, Arabic Translation', 'naboodatabase' ); ?>" style="flex:2;">
                     
-                    <button type="button" class="button naboo-remove-version-btn" style="flex:none;"><span class="dashicons dashicons-trash" style="color:#a00;"></span></button>
+                    <button type="button" class="button naboo-remove-version-btn" style="flex:none;" aria-label="<?php esc_attr_e( 'Remove version', 'naboodatabase' ); ?>"><span class="dashicons dashicons-trash" style="color:#a00;"></span></button>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -331,7 +331,7 @@
                 
                 <input type="text" name="_naboo_scale_linked_versions[{{INDEX}}][type]" value="" placeholder="<?php _e( 'e.g., Short Form, Arabic Translation', 'naboodatabase' ); ?>" style="flex:2;">
                 
-                <button type="button" class="button naboo-remove-version-btn" style="flex:none;"><span class="dashicons dashicons-trash" style="color:#a00;"></span></button>
+                <button type="button" class="button naboo-remove-version-btn" style="flex:none;" aria-label="<?php esc_attr_e( 'Remove version', 'naboodatabase' ); ?>"><span class="dashicons dashicons-trash" style="color:#a00;"></span></button>
             </div>
         </script>
     </div>
