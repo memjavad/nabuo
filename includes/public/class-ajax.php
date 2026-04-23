@@ -189,6 +189,7 @@ class Ajax {
             'posts_per_page' => 1,
             'orderby'        => 'date',
             'order'          => 'ASC',
+            'no_found_rows'  => true, // Optimizes query performance
         ) );
 
         $next_url = '';

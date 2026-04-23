@@ -30,6 +30,7 @@ class Admin_Bar {
 				'posts_per_page' => 1,
 				'orderby'        => 'date',
 				'order'          => 'ASC',
+				'no_found_rows'  => true, // Optimizes query performance
 			);
 
 			if ( $is_unpublished_scale ) {
