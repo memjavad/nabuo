@@ -46,9 +46,11 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 3.  Submission form
 
 
+
 == Changelog ==
+
 = 1.55.5 =
-* Added empty file upload validation to import_scale method in Import_Processor and corresponding tests.
+* Refactored taxonomy registration to improve maintainability.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
