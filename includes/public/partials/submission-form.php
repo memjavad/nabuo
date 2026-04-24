@@ -1,4 +1,4 @@
-<?php if ( isset( $message ) ) echo $message; ?>
+<?php if ( isset( $message ) ) echo wp_kses_post( $message ); ?>
 
 <div class="naboo-submission-form-wrapper">
     <div class="naboo-submission-form-header">
