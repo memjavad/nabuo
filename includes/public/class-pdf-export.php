@@ -354,8 +354,6 @@ HTML;
 	 * Returns HTML that will be processed by client.
 	 */
 	private function html_to_pdf( $html, $filename ) {
-		// Using html2pdf.js library (client-side)
-		// Return the HTML and let JavaScript handle PDF generation
 		return $html;
 	}
 

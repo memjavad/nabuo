@@ -47,10 +47,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-
 = 1.55.5 =
-* Security: Fixed a SQL injection vulnerability in the Batch AI processor.
-
+*   Removed commented-out code in `html_to_pdf` function for cleaner code health.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
