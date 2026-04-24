@@ -49,7 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Enhancement: Added array validation and unit tests for bulk operations and submission queue.
+* Refactored register_taxonomies() in CPT core class to improve code health.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
