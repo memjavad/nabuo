@@ -1,9 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit colors="true"
-         stopOnFailure="false">
-    <testsuites>
-        <testsuite name="Naboo Tests">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/phpunit/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="naboodatabase">
+			<directory prefix="test-" suffix=".php">./tests/phpunit/</directory>
+		</testsuite>
+	</testsuites>
 </phpunit>

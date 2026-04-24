@@ -1,23 +1,35 @@
 <?php
-// PHPUnit bootstrap for Naboo Database
-define( 'ABSPATH', dirname( __DIR__ ) . '/../' );
+/**
+ * PHPUnit bootstrap file
+ *
+ * @package NabooDatabase
+ */
 
-// Mock WordPress functions
-function wp_insert_post( $post ) {
-    if ( empty( $post['post_title'] ) ) return 0;
-    return rand( 1, 1000 );
+// Load PHPUnit Polyfills
+define( 'WP_TESTS_PHPUNIT_POLYFILLS_PATH', '/tmp/phpunit-polyfills/phpunitpolyfills-autoload.php' );
+require_once '/tmp/phpunit-polyfills/phpunitpolyfills-autoload.php';
+
+$_tests_dir = getenv( 'WP_TESTS_DIR' );
+
+if ( ! $_tests_dir ) {
+	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
-function sanitize_text_field( $str ) { return $str; }
-function wp_kses_post( $str ) { return $str; }
-function sanitize_textarea_field( $str ) { return $str; }
-function get_current_user_id() { return 1; }
-function update_post_meta( $id, $key, $val ) { return true; }
-function get_term_by( $field, $value, $taxonomy ) {
-    $term = new stdClass();
-    $term->term_id = rand( 1, 100 );
-    return $term;
+if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
+	echo "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	exit( 1 );
 }
-function wp_set_post_terms( $id, $term, $taxonomy ) { return true; }
 
-require_once __DIR__ . '/../../includes/admin/import/class-import-processor.php';
+// Give access to tests_add_filter() function.
+require_once $_tests_dir . '/includes/functions.php';
+
+/**
+ * Manually load the plugin being tested.
+ */
+function _manually_load_plugin() {
+	require dirname( dirname( __DIR__ ) ) . '/naboodatabase.php';
+}
+tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+
+// Start up the WP testing environment.
+require $_tests_dir . '/includes/bootstrap.php';
