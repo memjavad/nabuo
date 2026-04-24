@@ -195,16 +195,16 @@ function createNewGrokTab(url, title, link) {
 
 function sendMessageToTab(tabId, title, link) {
   // Wait for the page to load and the content script to be ready
-  setTimeout(() => {
-    chrome.tabs.sendMessage(tabId, {
-      action: 'fillForm',
-      title: title,
-      link: link
-    }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.warn('Message send failed, might still be loading:', chrome.runtime.lastError.message);
-      }
-    });
+  setTimeout(async () => {
+    try {
+      await chrome.tabs.sendMessage(tabId, {
+        action: 'fillForm',
+        title: title,
+        link: link
+      });
+    } catch (error) {
+      console.error('Failed to send message to tab', error);
+    }
   }, 3000); // Give it some time to load
 }
 
