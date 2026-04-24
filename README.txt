@@ -49,8 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-*   **Security Fix:** Addressed a potential Reflected XSS vulnerability in the 404 template when rendering scale abstracts.
-
+* ⚡ Performance: Optimized contributor statistics bulk updater, resolving a major N+1 query bottleneck by using a batched `INSERT ... ON DUPLICATE KEY UPDATE` implementation.
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
 * Config: Added .gitignore for clean project tracking.

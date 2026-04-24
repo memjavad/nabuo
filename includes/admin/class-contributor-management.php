@@ -60,7 +60,7 @@ class Contributor_Management {
 				first_contribution datetime,
 				last_contribution datetime,
 				PRIMARY KEY (id),
-				KEY user_id (user_id),
+				UNIQUE KEY user_id (user_id),
 				KEY total_scales (total_scales)
 			) $charset_collate;";
 
@@ -324,6 +324,7 @@ class Contributor_Management {
 		);
 
 		$updated = 0;
+		$values  = array();
 
 		$values       = array();
 		$placeholders = array();
@@ -331,28 +332,36 @@ class Contributor_Management {
 		foreach ( $users as $user ) {
 			$stats = $this->calculate_contributor_stats( $user->ID );
 
-			$placeholders[] = '(%d, %d, %d, %d, %d, %d, %f, %s, %s)';
-			$values         = array_merge(
-				$values,
-				array(
-					$user->ID,
-					$stats->total_scales,
-					$stats->approved_scales,
-					$stats->rejected_scales,
-					$stats->total_comments,
-					$stats->total_ratings,
-					$stats->avg_rating,
-					$stats->first_contribution,
-					$stats->last_contribution,
-				)
+			$values[] = $wpdb->prepare(
+				"(%d, %d, %d, %d, %d, %d, %f, %s, %s)",
+				$user->ID,
+				$stats->total_scales,
+				$stats->approved_scales,
+				$stats->rejected_scales,
+				$stats->total_comments,
+				$stats->total_ratings,
+				$stats->avg_rating,
+				$stats->first_contribution,
+				$stats->last_contribution
 			);
 
 			$updated++;
 		}
 
-		if ( ! empty( $placeholders ) ) {
-			$query = "INSERT INTO $table_name (user_id, total_scales, approved_scales, rejected_scales, total_comments, total_ratings, avg_rating, first_contribution, last_contribution) VALUES " . implode( ', ', $placeholders ) . " ON DUPLICATE KEY UPDATE total_scales = VALUES(total_scales), approved_scales = VALUES(approved_scales), rejected_scales = VALUES(rejected_scales), total_comments = VALUES(total_comments), total_ratings = VALUES(total_ratings), avg_rating = VALUES(avg_rating), last_contribution = VALUES(last_contribution)";
-			$wpdb->query( $wpdb->prepare( $query, $values ) );
+		if ( ! empty( $values ) ) {
+			$query = "INSERT INTO $table_name
+				(user_id, total_scales, approved_scales, rejected_scales, total_comments, total_ratings, avg_rating, first_contribution, last_contribution)
+				VALUES " . implode( ', ', $values ) . "
+				ON DUPLICATE KEY UPDATE
+				total_scales = VALUES(total_scales),
+				approved_scales = VALUES(approved_scales),
+				rejected_scales = VALUES(rejected_scales),
+				total_comments = VALUES(total_comments),
+				total_ratings = VALUES(total_ratings),
+				avg_rating = VALUES(avg_rating),
+				last_contribution = VALUES(last_contribution)";
+
+			$wpdb->query( $query );
 		}
 
 		return new \WP_REST_Response(
