@@ -148,47 +148,57 @@ class Scale_Validation {
 	 */
 	private function perform_validation( $scale ) {
 		$issues = array();
+		$is_valid = true;
 
-		// Check title
-		if ( empty( $scale->post_title ) || strlen( $scale->post_title ) < 3 ) {
-			$issues[] = 'Title is too short (minimum 3 characters)';
-		}
+		try {
+			// Check title
+			if ( empty( $scale->post_title ) || strlen( $scale->post_title ) < 3 ) {
+				$issues[] = 'Title is too short (minimum 3 characters)';
+			}
 
-		// Check content
-		if ( empty( $scale->post_content ) || strlen( $scale->post_content ) < 50 ) {
-			$issues[] = 'Description is too short (minimum 50 characters)';
-		}
+			// Check content
+			if ( empty( $scale->post_content ) || strlen( $scale->post_content ) < 50 ) {
+				$issues[] = 'Description is too short (minimum 50 characters)';
+			}
 
-		// Check metadata
-		$items = get_post_meta( $scale->ID, '_naboo_scale_items', true );
-		if ( empty( $items ) || ! is_numeric( $items ) || $items < 1 ) {
-			$issues[] = 'Missing or invalid item count';
-		}
+			// Check metadata
+			$items = get_post_meta( $scale->ID, '_naboo_scale_items', true );
+			if ( empty( $items ) || ! is_numeric( $items ) || $items < 1 ) {
+				$issues[] = 'Missing or invalid item count';
+			}
 
-		$year = get_post_meta( $scale->ID, '_naboo_scale_year', true );
-		if ( empty( $year ) || ! is_numeric( $year ) || $year < 1900 || $year > gmdate( 'Y' ) ) {
-			$issues[] = 'Missing or invalid year';
-		}
+			$year = get_post_meta( $scale->ID, '_naboo_scale_year', true );
+			if ( empty( $year ) || ! is_numeric( $year ) || $year < 1900 || $year > gmdate( 'Y' ) ) {
+				$issues[] = 'Missing or invalid year';
+			}
 
-		$language = get_post_meta( $scale->ID, '_naboo_scale_language', true );
-		if ( empty( $language ) ) {
-			$issues[] = 'Missing language information';
-		}
+			$language = get_post_meta( $scale->ID, '_naboo_scale_language', true );
+			if ( empty( $language ) ) {
+				$issues[] = 'Missing language information';
+			}
 
-		$population = get_post_meta( $scale->ID, '_naboo_scale_population', true );
-		if ( empty( $population ) ) {
-			$issues[] = 'Missing population information';
-		}
+			$population = get_post_meta( $scale->ID, '_naboo_scale_population', true );
+			if ( empty( $population ) ) {
+				$issues[] = 'Missing population information';
+			}
 
-		// Check taxonomy
-		$categories = wp_get_post_terms( $scale->ID, 'scale_category' );
-		if ( is_wp_error( $categories ) || count( $categories ) === 0 ) {
-			$issues[] = 'Scale must be assigned to at least one category';
+			// Check taxonomy
+			$categories = wp_get_post_terms( $scale->ID, 'scale_category' );
+			if ( is_wp_error( $categories ) || count( $categories ) === 0 ) {
+				$issues[] = 'Scale must be assigned to at least one category';
+			}
+
+			$is_valid = count( $issues ) === 0;
+
+		} catch ( \Exception $e ) {
+			$is_valid = false;
+			$issues[] = 'Validation exception: ' . $e->getMessage();
+			error_log( 'Validation failed: ' . $e->getMessage() );
 		}
 
 		return array(
 			'scale_id'  => $scale->ID,
-			'is_valid'  => count( $issues ) === 0,
+			'is_valid'  => $is_valid,
 			'issues'    => $issues,
 			'issue_count' => count( $issues ),
 		);

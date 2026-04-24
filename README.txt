@@ -47,9 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-= 1.55.5 =
-* Maintenance: Removed commented-out dead code in class-advanced-search.php.
 
+= 1.55.5 =
+* Fix: Add exception handling block and test for scale validation.
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
 * Config: Added .gitignore for clean project tracking.
