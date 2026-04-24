@@ -49,7 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Refactored Tab_General render function to improve readability and maintainability.
+* Security: Fixed Reflected XSS vulnerability in 404 template by properly escaping output using esc_html().
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
