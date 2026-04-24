@@ -179,21 +179,22 @@ class Comments_Moderation {
 
 		$count_query = "SELECT COUNT(*) FROM `{$table}` c {$where_sql}";
 		if ( ! empty( $where_args ) ) {
-			$count_query = $wpdb->prepare( $count_query, $where_args );
+			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_query, ...$where_args ) );
+		} else {
+			$total = (int) $wpdb->get_var( $count_query );
 		}
-		$total = (int) $wpdb->get_var( $count_query );
 
-		$results_query = "SELECT c.*, p.post_title AS scale_title\n" .
-			 "\t\t\t\t FROM `{$table}` c\n" .
-			 "\t\t\t\t LEFT JOIN {$wpdb->posts} p ON p.ID = c.scale_id\n" .
-			 "\t\t\t\t {$where_sql}\n" .
-			 "\t\t\t\t ORDER BY c.created_at DESC\n" .
-			 "\t\t\t\t LIMIT %d OFFSET %d";
+		$main_query = "SELECT c.*, p.post_title AS scale_title
+					 FROM `{$table}` c
+					 LEFT JOIN {$wpdb->posts} p ON p.ID = c.scale_id
+					 {$where_sql}
+					 ORDER BY c.created_at DESC
+					 LIMIT %d OFFSET %d";
+		$query_args   = $where_args;
+		$query_args[] = $per_page;
+		$query_args[] = $offset;
 
-		$results_args  = array_merge( $where_args, array( $per_page, $offset ) );
-		$results_query = $wpdb->prepare( $results_query, $results_args );
-
-		$comments = $wpdb->get_results( $results_query );
+		$comments = $wpdb->get_results( $wpdb->prepare( $main_query, ...$query_args ) );
 
 		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( $_GET['notice'] ) : '';
 

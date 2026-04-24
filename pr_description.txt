@@ -1,10 +1,8 @@
-🔒 Fix SQL Injection in Batch AI Processor
+🎯 **What:**
+Fixed a "double-prepare" SQL injection vulnerability in the Comments Moderation admin view. The original code prepared strings individually and then concatenated them into a final query string which was passed to `$wpdb->prepare()` again. This could interpret unintended literal `%` characters (e.g. from a search term) as format strings.
 
-🎯 What:
-Fixed an SQL Injection vulnerability in `includes/admin/batch-ai/class-batch-ai-processor.php` where a dynamic variable (`$q_table` or `$table`) containing the table name was concatenated into `$wpdb->query` and `$wpdb->get_var` SQL queries.
+⚠️ **Risk:**
+An attacker with sufficient permissions to interact with the filtering mechanisms could inject arbitrary SQL to manipulate queries. Depending on how input was formatted, this could lead to error-based SQL injection or unauthorized data disclosure.
 
-⚠️ Risk:
-While `$q_table` is derived from `$wpdb->prefix`, direct concatenation of variables into SQL queries bypasses static analysis checks for parameterization and is a bad practice. Although exploiting this would typically require prefix modification, it represents a potential security flaw.
-
-🛡️ Solution:
-Replaced the intermediate variable concatenation with the secure direct inline interpolation of `{$wpdb->prefix}naboo_process_queue` within the SQL query strings. This aligns with WordPress coding standards for table names and mitigates the injection risk. Also incremented the plugin version to `1.55.5` in `naboodatabase.php` and `README.txt` as per GEMINI.md guidelines.
+🛡️ **Solution:**
+Refactored the query construction to collect raw placeholders (`%s`) in a single query string while pushing actual parameter values into a separate tracking array (`$where_args`). The final query string and the tracking array are then combined into one safe call using `$wpdb->prepare()`.
