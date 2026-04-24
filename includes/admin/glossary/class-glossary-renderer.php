@@ -78,87 +78,135 @@ class Glossary_Renderer {
 
 		?>
 		<div class="wrap naboo-admin-page naboo-glossary-settings-wrap" style="font-family: 'Inter', sans-serif;">
-			
-			<!-- Header -->
-			<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
-				<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99, 102, 241, 0.1); filter: blur(80px); border-radius: 50%;"></div>
-				<h1 style="color: white !important; font-size: 36px !important; margin: 0 !important; font-weight: 800; letter-spacing: -0.025em; display: flex; align-items: center; gap: 20px;">
-					<span style="background: rgba(255,255,255,0.1); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">📚</span>
-					<?php esc_html_e( 'Glossary & Index', 'naboodatabase' ); ?>
-				</h1>
-				<p style="margin: 16px 0 0 84px !important; color: #94a3b8; font-size: 18px; max-width: 600px; line-height: 1.6;"><?php esc_html_e( 'Manage how your term collection and automated scale indexing appear to users. Enable bilingual support and customize layouts.', 'naboodatabase' ); ?></p>
-			</div>
+			<?php $this->render_settings_header(); ?>
 
 			<form method="post" action="options.php">
 				<?php settings_fields( 'naboodatabase_settings_group' ); ?>
 				<input type="hidden" name="naboo_settings_tab" value="glossary">
 
-				<!-- Glossary Section -->
-				<div class="naboo-admin-card" style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-					<div class="naboo-admin-card-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; align-items: center; gap: 12px;">
-						<span style="background: #e0f2fe; color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">📖</span>
-						<h2 style="margin: 0 !important; font-size: 18px !important; font-weight: 800 !important; color: #1e293b;"><?php esc_html_e( 'Glossary Configuration', 'naboodatabase' ); ?></h2>
-					</div>
-					<div class="section-body">
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Enable Glossary Module', 'naboodatabase' ); ?></label>
-							<?php $this->render_toggle( $option_name . '[enable_glossary]', $options['enable_glossary'] ?? 0 ); ?>
-						</div>
-
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Glossary Main Page', 'naboodatabase' ); ?></label>
-							<?php wp_dropdown_pages( array( 'name' => $option_name . '[glossary_page]', 'selected' => $options['glossary_page'] ?? 0, 'show_option_none' => __( '-- Select Page --', 'naboodatabase' ) ) ); ?>
-						</div>
-
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Default Layout', 'naboodatabase' ); ?></label>
-							<select name="<?php echo esc_attr( $option_name ); ?>[glossary_layout]">
-								<option value="grid" <?php selected( $options['glossary_layout'] ?? '', 'grid' ); ?>>Grid Cards</option>
-								<option value="list" <?php selected( $options['glossary_layout'] ?? '', 'list' ); ?>>Clean List</option>
-								<option value="compact" <?php selected( $options['glossary_layout'] ?? '', 'compact' ); ?>>Compact Rows</option>
-							</select>
-						</div>
-
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Terms Per Page', 'naboodatabase' ); ?></label>
-							<input type="number" name="<?php echo esc_attr( $option_name ); ?>[glossary_per_page]" value="<?php echo esc_attr( $options['glossary_per_page'] ?? 50 ); ?>" min="5" max="200">
-						</div>
-					</div>
-				</div>
-
-				<!-- Scale Index Section -->
-				<div class="naboo-admin-card" style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-					<div class="naboo-admin-card-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; align-items: center; gap: 12px;">
-						<span style="background: #fef2f2; color: #dc2626; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">📑</span>
-						<h2 style="margin: 0 !important; font-size: 18px !important; font-weight: 800 !important; color: #1e293b;"><?php esc_html_e( 'Scale Index Engine', 'naboodatabase' ); ?></h2>
-					</div>
-					<div class="section-body">
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Enable Automated Scale Index', 'naboodatabase' ); ?></label>
-							<?php $this->render_toggle( $option_name . '[scale_index_enabled]', get_option( 'naboo_scale_index_enabled', 0 ) ); ?>
-						</div>
-
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Index URL Slug', 'naboodatabase' ); ?></label>
-							<input type="text" name="<?php echo esc_attr( $option_name ); ?>[scale_index_slug]" value="<?php echo esc_attr( get_option( 'naboo_scale_index_slug', 'scales-index' ) ); ?>">
-							<p class="field-description"><?php printf( esc_html__( 'Index will be accessible at %s', 'naboodatabase' ), '<code>' . home_url( '/' ) . '<strong>' . get_option( 'naboo_scale_index_slug', 'scales-index' ) . '</strong></code>' ); ?></p>
-						</div>
-
-						<div class="field-row">
-							<label class="field-label"><?php esc_html_e( 'Page Title', 'naboodatabase' ); ?></label>
-							<input type="text" name="<?php echo esc_attr( $option_name ); ?>[scale_index_title]" value="<?php echo esc_attr( get_option( 'naboo_scale_index_title', 'Scale Index' ) ); ?>">
-						</div>
-					</div>
-				</div>
-
-				<div class="naboo-save-bar" style="position: sticky; bottom: 24px; z-index: 100; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); padding: 24px 40px; border-radius: 20px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); display: flex; justify-content: flex-end; align-items: center; margin-top: 60px;">
-					<button type="submit" class="naboo-btn" style="background: #4f46e5; color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);">
-						<?php esc_html_e( 'Save Glossary Engine Settings', 'naboodatabase' ); ?>
-					</button>
-				</div>
+				<?php $this->render_glossary_configuration_card( $options, $option_name ); ?>
+				<?php $this->render_scale_index_engine_card( $option_name ); ?>
+				<?php $this->render_save_button(); ?>
 			</form>
 		</div>
 
+		<?php
+		$this->render_settings_styles();
+	}
+
+
+	/**
+	 * Render the settings header
+	 */
+	private function render_settings_header() {
+		?>
+		<!-- Header -->
+		<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
+			<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99, 102, 241, 0.1); filter: blur(80px); border-radius: 50%;"></div>
+			<h1 style="color: white !important; font-size: 36px !important; margin: 0 !important; font-weight: 800; letter-spacing: -0.025em; display: flex; align-items: center; gap: 20px;">
+				<span style="background: rgba(255,255,255,0.1); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">📚</span>
+				<?php esc_html_e( 'Glossary & Index', 'naboodatabase' ); ?>
+			</h1>
+			<p style="margin: 16px 0 0 84px !important; color: #94a3b8; font-size: 18px; max-width: 600px; line-height: 1.6;"><?php esc_html_e( 'Manage how your term collection and automated scale indexing appear to users. Enable bilingual support and customize layouts.', 'naboodatabase' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render glossary configuration card
+	 *
+	 * @param array  $options Plugin options.
+	 * @param string $option_name Option name.
+	 */
+	private function render_glossary_configuration_card( $options, $option_name ) {
+		?>
+		<!-- Glossary Section -->
+		<div class="naboo-admin-card" style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+			<div class="naboo-admin-card-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; align-items: center; gap: 12px;">
+				<span style="background: #e0f2fe; color: #0284c7; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">📖</span>
+				<h2 style="margin: 0 !important; font-size: 18px !important; font-weight: 800 !important; color: #1e293b;"><?php esc_html_e( 'Glossary Configuration', 'naboodatabase' ); ?></h2>
+			</div>
+			<div class="section-body">
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Enable Glossary Module', 'naboodatabase' ); ?></label>
+					<?php $this->render_toggle( $option_name . '[enable_glossary]', $options['enable_glossary'] ?? 0 ); ?>
+				</div>
+
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Glossary Main Page', 'naboodatabase' ); ?></label>
+					<?php wp_dropdown_pages( array( 'name' => $option_name . '[glossary_page]', 'selected' => $options['glossary_page'] ?? 0, 'show_option_none' => __( '-- Select Page --', 'naboodatabase' ) ) ); ?>
+				</div>
+
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Default Layout', 'naboodatabase' ); ?></label>
+					<select name="<?php echo esc_attr( $option_name ); ?>[glossary_layout]">
+						<option value="grid" <?php selected( $options['glossary_layout'] ?? '', 'grid' ); ?>>Grid Cards</option>
+						<option value="list" <?php selected( $options['glossary_layout'] ?? '', 'list' ); ?>>Clean List</option>
+						<option value="compact" <?php selected( $options['glossary_layout'] ?? '', 'compact' ); ?>>Compact Rows</option>
+					</select>
+				</div>
+
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Terms Per Page', 'naboodatabase' ); ?></label>
+					<input type="number" name="<?php echo esc_attr( $option_name ); ?>[glossary_per_page]" value="<?php echo esc_attr( $options['glossary_per_page'] ?? 50 ); ?>" min="5" max="200">
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render scale index engine card
+	 *
+	 * @param string $option_name Option name.
+	 */
+	private function render_scale_index_engine_card( $option_name ) {
+		?>
+		<!-- Scale Index Section -->
+		<div class="naboo-admin-card" style="background: white; border-radius: 16px; border: 1px solid #e2e8f0; margin-bottom: 32px; overflow: hidden; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+			<div class="naboo-admin-card-header" style="padding: 20px 24px; border-bottom: 1px solid #f1f5f9; background: #f8fafc; display: flex; align-items: center; gap: 12px;">
+				<span style="background: #fef2f2; color: #dc2626; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px;">📑</span>
+				<h2 style="margin: 0 !important; font-size: 18px !important; font-weight: 800 !important; color: #1e293b;"><?php esc_html_e( 'Scale Index Engine', 'naboodatabase' ); ?></h2>
+			</div>
+			<div class="section-body">
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Enable Automated Scale Index', 'naboodatabase' ); ?></label>
+					<?php $this->render_toggle( $option_name . '[scale_index_enabled]', get_option( 'naboo_scale_index_enabled', 0 ) ); ?>
+				</div>
+
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Index URL Slug', 'naboodatabase' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $option_name ); ?>[scale_index_slug]" value="<?php echo esc_attr( get_option( 'naboo_scale_index_slug', 'scales-index' ) ); ?>">
+					<p class="field-description"><?php printf( esc_html__( 'Index will be accessible at %s', 'naboodatabase' ), '<code>' . home_url( '/' ) . '<strong>' . get_option( 'naboo_scale_index_slug', 'scales-index' ) . '</strong></code>' ); ?></p>
+				</div>
+
+				<div class="field-row">
+					<label class="field-label"><?php esc_html_e( 'Page Title', 'naboodatabase' ); ?></label>
+					<input type="text" name="<?php echo esc_attr( $option_name ); ?>[scale_index_title]" value="<?php echo esc_attr( get_option( 'naboo_scale_index_title', 'Scale Index' ) ); ?>">
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render save button
+	 */
+	private function render_save_button() {
+		?>
+		<div class="naboo-save-bar" style="position: sticky; bottom: 24px; z-index: 100; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); padding: 24px 40px; border-radius: 20px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); display: flex; justify-content: flex-end; align-items: center; margin-top: 60px;">
+			<button type="submit" class="naboo-btn" style="background: #4f46e5; color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);">
+				<?php esc_html_e( 'Save Glossary Engine Settings', 'naboodatabase' ); ?>
+			</button>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render settings styles
+	 */
+	private function render_settings_styles() {
+		?>
 		<style>
 			.field-row { margin-bottom: 24px; }
 			.field-label { display: block; font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
