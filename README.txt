@@ -49,7 +49,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Added unit tests for trending recommendations API endpoint
+* Enhancement: Added array validation and unit tests for bulk operations and submission queue.
+
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
 * Config: Added .gitignore for clean project tracking.

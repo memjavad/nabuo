@@ -1,105 +1,34 @@
 <?php
+require_once __DIR__ . '/mock-wp-classes.php';
+require_once dirname(__DIR__) . '/includes/admin/class-bulk-operations.php';
 
-require_once __DIR__ . '/../includes/admin/class-bulk-operations.php';
+use ArabPsychology\NabooDatabase\Admin\Bulk_Operations;
 
-class Mock_WP_REST_Request {
-    private $params = [];
+echo "Running tests for Bulk_Operations...\n";
 
-    public function __construct( $params = [] ) {
-        $this->params = $params;
-    }
+$bulk_ops = new Bulk_Operations( 'naboodatabase', '1.0.0' );
 
-    public function get_param( $key ) {
-        return isset( $this->params[$key] ) ? $this->params[$key] : null;
-    }
-}
+// Test change_status with non-array scale_ids
+$request1 = new WP_REST_Request( array( 'scale_ids' => '123', 'status' => 'publish' ) );
+$response1 = $bulk_ops->change_status( $request1 );
+assert_status( $response1, 400 );
 
-class Mock_WP_REST_Response {
-    public $data;
-    public $status;
+// Test add_taxonomy with non-array scale_ids
+$request2 = new WP_REST_Request( array( 'scale_ids' => '123', 'term_ids' => array(1) ) );
+$response2 = $bulk_ops->add_taxonomy( $request2 );
+assert_status( $response2, 400 );
 
-    public function __construct( $data = null, $status = 200, $headers = [] ) {
-        $this->data = $data;
-        $this->status = $status;
-    }
-}
+// Test add_taxonomy with non-array term_ids
+$request3 = new WP_REST_Request( array( 'scale_ids' => array(123), 'term_ids' => '1' ) );
+$response3 = $bulk_ops->add_taxonomy( $request3 );
+assert_status( $response3, 400 );
 
-// Mock WordPress functions
-function wp_update_post( $post ) {
-    return true; // Simulate success
-}
+// Test delete_scales with non-array scale_ids
+$request4 = new WP_REST_Request( array( 'scale_ids' => '123' ) );
+$response4 = $bulk_ops->delete_scales( $request4 );
+assert_status( $response4, 400 );
 
-function wp_set_post_terms( $post_id, $tags = '', $taxonomy = 'post_tag', $append = false ) {
-    return true; // Simulate success
-}
-
-function wp_delete_post( $postid = 0, $force_delete = false ) {
-    return true; // Simulate success
-}
-
-function get_post( $post = null, $output = 'OBJECT', $filter = 'raw' ) {
-    $p = new stdClass();
-    $p->ID = $post;
-    $p->post_title = "Test Scale";
-    $p->post_content = "Content";
-    $p->post_excerpt = "Excerpt";
-    return $p;
-}
-
-function get_post_meta( $post_id, $key = '', $single = false ) {
-    return "meta_value";
-}
-
-function wp_get_post_terms( $post_id, $taxonomy = 'post_tag', $args = [] ) {
-    return ["term1", "term2"];
-}
-
-// Map WP class to mock
-class WP_REST_Response extends Mock_WP_REST_Response {}
-
-function assert_response_400($response, $method_name) {
-    if ( ! is_a( $response, '\WP_REST_Response' ) ) {
-        echo "FAIL [$method_name]: Expected \WP_REST_Response, got " . gettype($response) . "\n";
-        return false;
-    }
-
-    if ( $response->status !== 400 ) {
-        echo "FAIL [$method_name]: Expected status 400, got " . $response->status . "\n";
-        return false;
-    }
-
-    if ( ! isset( $response->data['error'] ) ) {
-        echo "FAIL [$method_name]: Expected error message in response data.\n";
-        return false;
-    }
-
-    echo "PASS [$method_name]: Correctly returned 400 \WP_REST_Response with error message.\n";
-    return true;
-}
-
-function test_validation() {
-    $bulk_ops = new \ArabPsychology\NabooDatabase\Admin\Bulk_Operations( 'test', '1.0' );
-
-    $methods = [
-        'change_status' => ['status' => 'publish'],
-        'add_taxonomy' => ['taxonomy' => 'scale_category', 'term_ids' => [1, 2]],
-        'delete_scales' => ['permanent' => false],
-        'export_scales' => ['format' => 'json']
-    ];
-
-    foreach ($methods as $method => $extra_params) {
-        $params = array_merge( ['scale_ids' => '1,2,3'], $extra_params ); // String instead of array
-        $request = new Mock_WP_REST_Request( $params );
-
-        try {
-            $response = $bulk_ops->$method( $request );
-            assert_response_400( $response, $method );
-        } catch (Exception $e) {
-            echo "FAIL [$method]: Exception caught: " . $e->getMessage() . "\n";
-        } catch (Error $e) {
-            echo "FAIL [$method]: Error caught: " . $e->getMessage() . "\n";
-        }
-    }
-}
-
-test_validation();
+// Test export_scales with non-array scale_ids
+$request5 = new WP_REST_Request( array( 'scale_ids' => '123' ) );
+$response5 = $bulk_ops->export_scales( $request5 );
+assert_status( $response5, 400 );
