@@ -404,19 +404,19 @@ $where_args[]    = $like;
 								<div style="display:flex; gap:8px; justify-content: flex-end;">
 									<?php if ( $r->status !== 'approved' ) : ?>
 									<button type="submit" name="naboo_action" value="approve" onclick="document.querySelector('#rating-row-<?php echo absint( $r->id ); ?> input[type=checkbox]').checked=true;"
-									        class="naboo-tool-btn" style="background:#ecfdf5; color:#059669; border:1px solid #d1fae5; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Approve">
+									        class="naboo-tool-btn" style="background:#ecfdf5; color:#059669; border:1px solid #d1fae5; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Approve" aria-label="<?php esc_attr_e( 'Approve', 'naboodatabase' ); ?>">
 										<strong>✓</strong>
 									</button>
 									<?php endif; ?>
 									<?php if ( $r->status !== 'rejected' ) : ?>
 									<button type="submit" name="naboo_action" value="reject" onclick="document.querySelector('#rating-row-<?php echo absint( $r->id ); ?> input[type=checkbox]').checked=true;"
-									        class="naboo-tool-btn" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Reject">
+									        class="naboo-tool-btn" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Reject" aria-label="<?php esc_attr_e( 'Reject', 'naboodatabase' ); ?>">
 										<strong>✕</strong>
 									</button>
 									<?php endif; ?>
 									<button type="submit" name="naboo_action" value="delete"
 									        onclick="if(!confirm('<?php esc_attr_e( 'Permanently delete this rating?', 'naboodatabase' ); ?>'))return false;document.querySelector('#rating-row-<?php echo absint( $r->id ); ?> input[type=checkbox]').checked=true;"
-									        class="naboo-tool-btn" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Delete">
+									        class="naboo-tool-btn" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Delete" aria-label="<?php esc_attr_e( 'Delete', 'naboodatabase' ); ?>">
 										<strong>🗑️</strong>
 									</button>
 								</div>

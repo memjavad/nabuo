@@ -1,0 +1,3 @@
+## 2025-04-21 - Added missing ARIA labels to admin buttons
+**Learning:** Found that multiple icon-only buttons (like times, checkmark, cross, trash) across admin interface views (`includes/admin/class-submission-management-queue.php`, `includes/admin/class-ratings-moderation.php`, `includes/admin/class-comments-moderation.php`) were lacking `aria-label` tags, rendering them inaccessible to screen readers. This highlights a recurring pattern of overlooking accessibility on purely visual buttons in backend management views.
+**Action:** Always verify that interactive elements without text nodes explicitly define an `aria-label` attribute.

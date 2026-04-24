@@ -1352,3 +1352,6 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 = 1.0.0 =
 *   Initial release.
+
+= 1.55.6 =
+* UX: Add `aria-label` to icon-only buttons in the admin screens for better screen reader accessibility.
