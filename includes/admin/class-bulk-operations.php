@@ -139,7 +139,7 @@ class Bulk_Operations {
 		$taxonomy  = $request->get_param( 'taxonomy' ) ?? 'scale_category';
 		$term_ids  = $request->get_param( 'term_ids' ) ?? array();
 
-		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) || empty( $term_ids ) ) {
+		if ( empty( $scale_ids ) || empty( $term_ids ) || ! is_array( $scale_ids ) || ! is_array( $term_ids ) ) {
 			return new \WP_REST_Response(
 				array( 'error' => 'Missing parameters' ),
 				400

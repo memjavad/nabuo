@@ -49,7 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-*   **Security Fix:** Addressed an XSS vulnerability in the frontend submission form by wrapping the success/error message output in `wp_kses_post()`. Ensure safe HTML rendering.
+* Fix: Add type validation for array inputs in bulk API endpoints to prevent foreach errors on non-array payloads.
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
 * Config: Added .gitignore for clean project tracking.
