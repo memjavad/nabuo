@@ -3,7 +3,7 @@ Contributors: ArabPsychology
 Tags: database, scales, psychology, research, directory
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.55.6
+Stable tag: 1.55.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,12 +47,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-
-= 1.55.6 =
-* Performance: Optimized WP_Query in single-post lookups by adding `no_found_rows => true`.
-
 = 1.55.5 =
-* Testing: Add array validation checks to all bulk operation endpoints. Added unit tests for bulk operation validation.
+* Code health improvements: removed dead/commented-out code.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
