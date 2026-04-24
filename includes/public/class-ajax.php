@@ -28,7 +28,8 @@ class Ajax {
             'post_type' => 'psych_scale',
             'posts_per_page' => 10,
             's' => $search_query,
-            'post_status' => 'publish'
+            'post_status' => 'publish',
+            'no_found_rows' => true,
         );
         
         // Sorting Logic
@@ -118,6 +119,7 @@ class Ajax {
             'post_status'    => 'publish',
             'posts_per_page' => 20,
             's'              => $search_term,
+            'no_found_rows'  => true,
         );
 
         if ( $taxonomy && $term_id ) {
@@ -189,6 +191,7 @@ class Ajax {
             'posts_per_page' => 1,
             'orderby'        => 'date',
             'order'          => 'ASC',
+            'no_found_rows'  => true,
         ) );
 
         $next_url = '';

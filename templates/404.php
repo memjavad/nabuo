@@ -57,6 +57,7 @@ if ( function_exists( 'wpa_get_header' ) ) {
                     'meta_key'       => '_naboo_view_count',
                     'orderby'        => 'meta_value_num',
                     'order'          => 'DESC',
+                    'no_found_rows'  => true,
                 );
                 
                 $popular = new WP_Query( $args );

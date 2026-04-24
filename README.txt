@@ -3,7 +3,7 @@ Contributors: ArabPsychology
 Tags: database, scales, psychology, research, directory
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.55.5
+Stable tag: 1.55.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
+= 1.55.6 =
+*   Performance: Added `no_found_rows` to `WP_Query` arguments for unpaginated queries to bypass `SQL_CALC_FOUND_ROWS` and reduce unnecessary database overhead.
 
 = 1.55.5 =
 *   Fixed SQL injection vulnerability in comments and ratings moderation tables.
