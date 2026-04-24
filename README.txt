@@ -48,7 +48,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 == Changelog ==
 = 1.55.5 =
-* 🧪 [Testing Improvement] Add tests for Health Optimizer scoring and fix Division By Zero bug
+* Added try-catch and tests for scale validation.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.

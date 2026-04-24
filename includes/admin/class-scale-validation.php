@@ -189,10 +189,9 @@ class Scale_Validation {
 			}
 
 			$is_valid = count( $issues ) === 0;
-
 		} catch ( \Exception $e ) {
 			$is_valid = false;
-			$issues[] = 'Validation exception: ' . $e->getMessage();
+			$issues[] = 'An unexpected error occurred during validation.';
 			error_log( 'Validation failed: ' . $e->getMessage() );
 		}
 
