@@ -47,9 +47,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-
 = 1.55.5 =
-*   Security fix: Patched SQL Injection vulnerability in Ratings Moderation query generation.
+* Maintenance: Removed commented-out dead code in class-advanced-search.php.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
