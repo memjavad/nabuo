@@ -31,178 +31,19 @@ class SEO_Renderer {
 		?>
 		<div class="wrap naboo-admin-page naboodatabase-seo-wrap" style="font-family: 'Inter', sans-serif;">
 			
-			<!-- Header -->
-			<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
-				<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(59, 130, 246, 0.1); filter: blur(80px); border-radius: 50%;"></div>
-				<h1 style="color: white !important; font-size: 36px !important; margin: 0 !important; font-weight: 800; letter-spacing: -0.025em; display: flex; align-items: center; gap: 16px;">
-					<span style="background: rgba(255,255,255,0.1); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">🔍</span>
-					<?php esc_html_e( 'SEO & Schema Settings', 'naboodatabase' ); ?>
-				</h1>
-				<p style="margin: 16px 0 0 80px !important; color: #94a3b8; font-size: 18px; max-width: 600px; line-height: 1.6;"><?php esc_html_e( 'Control global SEO configurations, Schema.org output, and social sharing fallbacks for the academic scales database.', 'naboodatabase' ); ?></p>
-			</div>
+			<?php $this->render_header(); ?>
 
 			<form method="post" action="options.php">
 				<?php settings_fields( 'naboodatabase_seo_group' ); ?>
 
 				<div class="naboo-admin-grid">
-					
-					<!-- General Toggles -->
-					<div class="naboo-admin-card">
-						<h2><?php _e( 'Global SEO Toggles', 'naboodatabase' ); ?></h2>
-						<div class="naboo-settings-rows">
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'JSON-LD Schema (Dataset)', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<label>
-										<input type="checkbox" name="<?php echo $option_name; ?>[enable_schema]" value="1" <?php checked( isset( $options['enable_schema'] ) ? $options['enable_schema'] : 1 ); ?> />
-										<?php _e( 'Enable Schema.org Dataset output on single scales', 'naboodatabase' ); ?>
-									</label>
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'OpenGraph (Facebook/LinkedIn)', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<label>
-										<input type="checkbox" name="<?php echo $option_name; ?>[enable_opengraph]" value="1" <?php checked( isset( $options['enable_opengraph'] ) ? $options['enable_opengraph'] : 1 ); ?> />
-										<?php _e( 'Enable OpenGraph meta tags', 'naboodatabase' ); ?>
-									</label>
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Twitter Cards', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<label>
-										<input type="checkbox" name="<?php echo $option_name; ?>[enable_twitter]" value="1" <?php checked( isset( $options['enable_twitter'] ) ? $options['enable_twitter'] : 1 ); ?> />
-										<?php _e( 'Enable Twitter summary card meta tags', 'naboodatabase' ); ?>
-									</label>
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Google Scholar (Highwire Press)', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<label>
-										<input type="checkbox" name="<?php echo $option_name; ?>[enable_scholar]" value="1" <?php checked( isset( $options['enable_scholar'] ) ? $options['enable_scholar'] : 1 ); ?> />
-										<?php _e( 'Enable academic citation meta tags for Google Scholar', 'naboodatabase' ); ?>
-									</label>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Organization Info -->
-					<div class="naboo-admin-card">
-						<h2><?php _e( 'Organization & Publisher Info', 'naboodatabase' ); ?></h2>
-						<div class="naboo-settings-rows">
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Publisher Name', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<input type="text" class="regular-text" name="<?php echo $option_name; ?>[publisher_name]" value="<?php echo esc_attr( isset( $options['publisher_name'] ) ? $options['publisher_name'] : get_bloginfo( 'name' ) ); ?>" />
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Publisher Logo URL', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-										<input type="text" class="regular-text" id="publisher_logo_url" name="<?php echo $option_name; ?>[publisher_logo_url]" value="<?php echo esc_attr( isset( $options['publisher_logo_url'] ) ? $options['publisher_logo_url'] : '' ); ?>" style="flex: 1;" />
-										<button type="button" class="naboo-btn naboo-btn-secondary js-naboo-media-upload" data-target="publisher_logo_url" style="padding: 10px; min-width: 44px; flex-shrink: 0;" title="<?php _e('Upload Logo', 'naboodatabase'); ?>">
-											<span>📸</span>
-										</button>
-									</div>
-									<p class="description"><?php _e( 'Used in structured data. Minimum 112x112px.', 'naboodatabase' ); ?></p>
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Default Author', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<input type="text" class="regular-text" name="<?php echo $option_name; ?>[default_author]" value="<?php echo esc_attr( isset( $options['default_author'] ) ? $options['default_author'] : '' ); ?>" />
-									<p class="description"><?php _e( 'Fallback if a scale has no authors set.', 'naboodatabase' ); ?></p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Academic Defaults -->
-					<div class="naboo-admin-card">
-						<h2><?php _e( 'Academic Default Settings', 'naboodatabase' ); ?></h2>
-						<div class="naboo-settings-rows">
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Default License URL', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<input type="text" class="regular-text" name="<?php echo $option_name; ?>[default_license]" value="<?php echo esc_attr( isset( $options['default_license'] ) ? $options['default_license'] : 'https://creativecommons.org/licenses/by-nc/4.0/' ); ?>" />
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Accessible For Free', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<label>
-										<input type="checkbox" name="<?php echo $option_name; ?>[is_accessible_for_free]" value="1" <?php checked( isset( $options['is_accessible_for_free'] ) ? $options['is_accessible_for_free'] : 1 ); ?> />
-										<?php _e( 'Are these datasets open-access by default?', 'naboodatabase' ); ?>
-									</label>
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Default Language', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<input type="text" class="regular-text" name="<?php echo $option_name; ?>[default_language]" value="<?php echo esc_attr( isset( $options['default_language'] ) ? $options['default_language'] : 'ar' ); ?>" />
-									<p class="description"><?php _e( 'e.g., "ar", "en". Fallback if empty.', 'naboodatabase' ); ?></p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Social Fallbacks -->
-					<div class="naboo-admin-card">
-						<h2><?php _e( 'Sharing Fallbacks', 'naboodatabase' ); ?></h2>
-						<div class="naboo-settings-rows">
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Global Social Image', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
-										<input type="text" class="regular-text" id="social_image_url" name="<?php echo $option_name; ?>[social_image_url]" value="<?php echo esc_attr( isset( $options['social_image_url'] ) ? $options['social_image_url'] : '' ); ?>" style="flex: 1;" />
-										<button type="button" class="naboo-btn naboo-btn-secondary js-naboo-media-upload" data-target="social_image_url" style="padding: 10px; min-width: 44px; flex-shrink: 0;" title="<?php _e('Upload Image', 'naboodatabase'); ?>">
-											<span>📸</span>
-										</button>
-									</div>
-									<p class="description"><?php _e( 'Used when a scale lacks a featured image.', 'naboodatabase' ); ?></p>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Sitemap Generation -->
-					<div class="naboo-admin-card">
-						<h2><?php _e( 'XML Sitemap generation', 'naboodatabase' ); ?></h2>
-						<div class="naboo-settings-rows">
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Enable Static XML Sitemap', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<label>
-										<input type="checkbox" name="<?php echo $option_name; ?>[enable_sitemap]" value="1" <?php checked( isset( $options['enable_sitemap'] ) ? $options['enable_sitemap'] : 0 ); ?> />
-										<?php _e( 'Enables automatic and manual XML Sitemap generation.', 'naboodatabase' ); ?>
-									</label>
-								</div>
-							</div>
-							<div class="naboo-setting-row">
-								<div class="naboo-setting-label"><?php _e( 'Generate Sitemap Builder', 'naboodatabase' ); ?></div>
-								<div class="naboo-setting-content">
-									<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
-										<button type="button" class="naboo-btn naboo-btn-primary" id="naboo-generate-sitemap">
-											<span>🚀</span> <?php _e( 'Build Now', 'naboodatabase' ); ?>
-										</button>
-										<span class="spinner" id="naboo-sitemap-spinner"></span>
-										<span id="naboo-sitemap-msg" style="font-weight: bold; font-size: 13px;"></span>
-									</div>
-									<?php
-									$sitemap_url = site_url( '/naboo-sitemap.xml' );
-									if ( file_exists( ABSPATH . 'naboo-sitemap.xml' ) ) {
-										echo '<p class="description" style="color:#059669; font-weight: 600;">' . sprintf( __( '✅ Sitemap live at <a href="%s" target="_blank" style="color:inherit; text-decoration:underline;">%s</a>', 'naboodatabase' ), esc_url( $sitemap_url ), esc_url( $sitemap_url ) ) . '</p>';
-									}
-									?>
-								</div>
-							</div>
-						</div>
-					</div>
-
+					<?php
+					$this->render_toggles_card( $option_name, $options );
+					$this->render_organization_card( $option_name, $options );
+					$this->render_academic_card( $option_name, $options );
+					$this->render_social_card( $option_name, $options );
+					$this->render_sitemap_card( $option_name, $options );
+					?>
 				</div>
 
 				<div class="naboo-save-bar">
@@ -211,6 +52,240 @@ class SEO_Renderer {
 			</form>
 		</div>
 
+		<?php $this->render_scripts(); ?>
+		<?php $this->render_styles(); ?>
+		<?php
+	}
+
+	/**
+	 * Render the page header
+	 */
+	private function render_header() {
+		?>
+		<!-- Header -->
+		<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
+			<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(59, 130, 246, 0.1); filter: blur(80px); border-radius: 50%;"></div>
+			<h1 style="color: white !important; font-size: 36px !important; margin: 0 !important; font-weight: 800; letter-spacing: -0.025em; display: flex; align-items: center; gap: 16px;">
+				<span style="background: rgba(255,255,255,0.1); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">🔍</span>
+				<?php esc_html_e( 'SEO & Schema Settings', 'naboodatabase' ); ?>
+			</h1>
+			<p style="margin: 16px 0 0 80px !important; color: #94a3b8; font-size: 18px; max-width: 600px; line-height: 1.6;"><?php esc_html_e( 'Control global SEO configurations, Schema.org output, and social sharing fallbacks for the academic scales database.', 'naboodatabase' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the General Toggles card
+	 *
+	 * @param string $option_name Option name.
+	 * @param array  $options     Current options.
+	 */
+	private function render_toggles_card( $option_name, $options ) {
+		?>
+		<!-- General Toggles -->
+		<div class="naboo-admin-card">
+			<h2><?php _e( 'Global SEO Toggles', 'naboodatabase' ); ?></h2>
+			<div class="naboo-settings-rows">
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'JSON-LD Schema (Dataset)', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>[enable_schema]" value="1" <?php checked( isset( $options['enable_schema'] ) ? $options['enable_schema'] : 1 ); ?> />
+							<?php _e( 'Enable Schema.org Dataset output on single scales', 'naboodatabase' ); ?>
+						</label>
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'OpenGraph (Facebook/LinkedIn)', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>[enable_opengraph]" value="1" <?php checked( isset( $options['enable_opengraph'] ) ? $options['enable_opengraph'] : 1 ); ?> />
+							<?php _e( 'Enable OpenGraph meta tags', 'naboodatabase' ); ?>
+						</label>
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Twitter Cards', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>[enable_twitter]" value="1" <?php checked( isset( $options['enable_twitter'] ) ? $options['enable_twitter'] : 1 ); ?> />
+							<?php _e( 'Enable Twitter summary card meta tags', 'naboodatabase' ); ?>
+						</label>
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Google Scholar (Highwire Press)', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>[enable_scholar]" value="1" <?php checked( isset( $options['enable_scholar'] ) ? $options['enable_scholar'] : 1 ); ?> />
+							<?php _e( 'Enable academic citation meta tags for Google Scholar', 'naboodatabase' ); ?>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the Organization Info card
+	 *
+	 * @param string $option_name Option name.
+	 * @param array  $options     Current options.
+	 */
+	private function render_organization_card( $option_name, $options ) {
+		?>
+		<!-- Organization Info -->
+		<div class="naboo-admin-card">
+			<h2><?php _e( 'Organization & Publisher Info', 'naboodatabase' ); ?></h2>
+			<div class="naboo-settings-rows">
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Publisher Name', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<input type="text" class="regular-text" name="<?php echo esc_attr( $option_name ); ?>[publisher_name]" value="<?php echo esc_attr( isset( $options['publisher_name'] ) ? $options['publisher_name'] : get_bloginfo( 'name' ) ); ?>" />
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Publisher Logo URL', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+							<input type="text" class="regular-text" id="publisher_logo_url" name="<?php echo esc_attr( $option_name ); ?>[publisher_logo_url]" value="<?php echo esc_attr( isset( $options['publisher_logo_url'] ) ? $options['publisher_logo_url'] : '' ); ?>" style="flex: 1;" />
+							<button type="button" class="naboo-btn naboo-btn-secondary js-naboo-media-upload" data-target="publisher_logo_url" style="padding: 10px; min-width: 44px; flex-shrink: 0;" title="<?php _e('Upload Logo', 'naboodatabase'); ?>">
+								<span>📸</span>
+							</button>
+						</div>
+						<p class="description"><?php _e( 'Used in structured data. Minimum 112x112px.', 'naboodatabase' ); ?></p>
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Default Author', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<input type="text" class="regular-text" name="<?php echo esc_attr( $option_name ); ?>[default_author]" value="<?php echo esc_attr( isset( $options['default_author'] ) ? $options['default_author'] : '' ); ?>" />
+						<p class="description"><?php _e( 'Fallback if a scale has no authors set.', 'naboodatabase' ); ?></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the Academic Default Settings card
+	 *
+	 * @param string $option_name Option name.
+	 * @param array  $options     Current options.
+	 */
+	private function render_academic_card( $option_name, $options ) {
+		?>
+		<!-- Academic Defaults -->
+		<div class="naboo-admin-card">
+			<h2><?php _e( 'Academic Default Settings', 'naboodatabase' ); ?></h2>
+			<div class="naboo-settings-rows">
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Default License URL', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<input type="text" class="regular-text" name="<?php echo esc_attr( $option_name ); ?>[default_license]" value="<?php echo esc_attr( isset( $options['default_license'] ) ? $options['default_license'] : 'https://creativecommons.org/licenses/by-nc/4.0/' ); ?>" />
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Accessible For Free', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>[is_accessible_for_free]" value="1" <?php checked( isset( $options['is_accessible_for_free'] ) ? $options['is_accessible_for_free'] : 1 ); ?> />
+							<?php _e( 'Are these datasets open-access by default?', 'naboodatabase' ); ?>
+						</label>
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Default Language', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<input type="text" class="regular-text" name="<?php echo esc_attr( $option_name ); ?>[default_language]" value="<?php echo esc_attr( isset( $options['default_language'] ) ? $options['default_language'] : 'ar' ); ?>" />
+						<p class="description"><?php _e( 'e.g., "ar", "en". Fallback if empty.', 'naboodatabase' ); ?></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the Sharing Fallbacks card
+	 *
+	 * @param string $option_name Option name.
+	 * @param array  $options     Current options.
+	 */
+	private function render_social_card( $option_name, $options ) {
+		?>
+		<!-- Social Fallbacks -->
+		<div class="naboo-admin-card">
+			<h2><?php _e( 'Sharing Fallbacks', 'naboodatabase' ); ?></h2>
+			<div class="naboo-settings-rows">
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Global Social Image', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+							<input type="text" class="regular-text" id="social_image_url" name="<?php echo esc_attr( $option_name ); ?>[social_image_url]" value="<?php echo esc_attr( isset( $options['social_image_url'] ) ? $options['social_image_url'] : '' ); ?>" style="flex: 1;" />
+							<button type="button" class="naboo-btn naboo-btn-secondary js-naboo-media-upload" data-target="social_image_url" style="padding: 10px; min-width: 44px; flex-shrink: 0;" title="<?php _e('Upload Image', 'naboodatabase'); ?>">
+								<span>📸</span>
+							</button>
+						</div>
+						<p class="description"><?php _e( 'Used when a scale lacks a featured image.', 'naboodatabase' ); ?></p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render the Sitemap card
+	 *
+	 * @param string $option_name Option name.
+	 * @param array  $options     Current options.
+	 */
+	private function render_sitemap_card( $option_name, $options ) {
+		?>
+		<!-- Sitemap Generation -->
+		<div class="naboo-admin-card">
+			<h2><?php _e( 'XML Sitemap generation', 'naboodatabase' ); ?></h2>
+			<div class="naboo-settings-rows">
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Enable Static XML Sitemap', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( $option_name ); ?>[enable_sitemap]" value="1" <?php checked( isset( $options['enable_sitemap'] ) ? $options['enable_sitemap'] : 0 ); ?> />
+							<?php _e( 'Enables automatic and manual XML Sitemap generation.', 'naboodatabase' ); ?>
+						</label>
+					</div>
+				</div>
+				<div class="naboo-setting-row">
+					<div class="naboo-setting-label"><?php _e( 'Generate Sitemap Builder', 'naboodatabase' ); ?></div>
+					<div class="naboo-setting-content">
+						<div style="display: flex; align-items: center; gap: 16px; margin-bottom: 12px;">
+							<button type="button" class="naboo-btn naboo-btn-primary" id="naboo-generate-sitemap">
+								<span>🚀</span> <?php _e( 'Build Now', 'naboodatabase' ); ?>
+							</button>
+							<span class="spinner" id="naboo-sitemap-spinner"></span>
+							<span id="naboo-sitemap-msg" style="font-weight: bold; font-size: 13px;"></span>
+						</div>
+						<?php
+						$sitemap_url = site_url( '/naboo-sitemap.xml' );
+						if ( file_exists( ABSPATH . 'naboo-sitemap.xml' ) ) {
+							echo '<p class="description" style="color:#059669; font-weight: 600;">' . sprintf( __( '✅ Sitemap live at <a href="%s" target="_blank" style="color:inherit; text-decoration:underline;">%s</a>', 'naboodatabase' ), esc_url( $sitemap_url ), esc_url( $sitemap_url ) ) . '</p>';
+						}
+						?>
+					</div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render scripts
+	 */
+	private function render_scripts() {
+		?>
 		<script>
 		jQuery(document).ready(function($){
 			var custom_uploader;
@@ -269,6 +344,14 @@ class SEO_Renderer {
 			});
 		});
 		</script>
+		<?php
+	}
+
+	/**
+	 * Render styles
+	 */
+	private function render_styles() {
+		?>
 		<style>
 			.naboo-admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 24px; }
 			.naboo-admin-card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow: hidden; height: 100%; transition: transform 0.2s ease; }
