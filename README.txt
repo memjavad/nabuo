@@ -1347,5 +1347,5 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 = 1.0.0 =
 *   Initial release.
 
-= 1.55.6 =
-* UX: Add `aria-label` to icon-only buttons in the admin screens for better screen reader accessibility.
+= 1.55.5 =
+*   Refactored `register_endpoints` in `class-search-result-improvements.php` to improve code maintainability and readability by extracting route registration into smaller, private methods.

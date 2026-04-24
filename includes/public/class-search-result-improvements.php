@@ -54,14 +54,16 @@ class Search_Result_Improvements {
 	 * Register REST API endpoints.
 	 */
 	public function register_endpoints() {
-		$this->register_facet_endpoints();
-		$this->register_saved_searches_endpoints();
+		$this->register_search_facets_endpoint();
+		$this->register_saved_searches_collection_endpoints();
+		$this->register_saved_searches_single_endpoints();
+		$this->register_public_saved_searches_endpoint();
 	}
 
 	/**
-	 * Register facet REST API endpoints.
+	 * Register search facets endpoint.
 	 */
-	private function register_facet_endpoints() {
+	private function register_search_facets_endpoint() {
 		register_rest_route(
 			'apa/v1',
 			'/search/facets',
@@ -81,15 +83,7 @@ class Search_Result_Improvements {
 	}
 
 	/**
-	 * Register saved searches REST API endpoints.
-	 */
-	private function register_saved_searches_endpoints() {
-		$this->register_saved_searches_collection_endpoints();
-		$this->register_saved_searches_item_endpoints();
-	}
-
-	/**
-	 * Register saved searches collection REST API endpoints.
+	 * Register saved searches collection endpoints (GET, POST).
 	 */
 	private function register_saved_searches_collection_endpoints() {
 		register_rest_route(
@@ -133,7 +127,12 @@ class Search_Result_Improvements {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register single saved search endpoints (GET, POST, DELETE).
+	 */
+	private function register_saved_searches_single_endpoints() {
 		register_rest_route(
 			'apa/v1',
 			'/saved-searches/public',
@@ -193,6 +192,28 @@ class Search_Result_Improvements {
 				'methods'             => 'DELETE',
 				'callback'            => array( $this, 'delete_saved_search' ),
 				'permission_callback' => array( $this, 'check_write_permission' ),
+			)
+		);
+	}
+
+	/**
+	 * Register public saved searches endpoint.
+	 */
+	private function register_public_saved_searches_endpoint() {
+		register_rest_route(
+			'apa/v1',
+			'/saved-searches/public',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_public_saved_searches' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'limit' => array(
+						'type'              => 'integer',
+						'default'           => 10,
+						'sanitize_callback' => 'absint',
+					),
+				),
 			)
 		);
 	}
