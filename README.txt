@@ -48,7 +48,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 == Changelog ==
 = 1.55.5 =
-* Added try-catch and tests for scale validation.
+* 🧹 Code health improvement: Removed commented-out code in includes/class-loader.php.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.

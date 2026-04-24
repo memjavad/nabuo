@@ -43,13 +43,11 @@ class Loader {
 
 	public function run() {
 		foreach ( $this->filters as $hook ) {
-			// If component is already a callable array (e.g. static method), use it directly.
 			$cb = is_array( $hook['component'] ) ? $hook['component'] : array( $hook['component'], $hook['callback'] );
 			add_filter( $hook['hook'], $cb, $hook['priority'], $hook['accepted_args'] );
 		}
 
 		foreach ( $this->actions as $hook ) {
-			// If component is already a callable array (e.g. static method), use it directly.
 			$cb = is_array( $hook['component'] ) ? $hook['component'] : array( $hook['component'], $hook['callback'] );
 			add_action( $hook['hook'], $cb, $hook['priority'], $hook['accepted_args'] );
 		}
