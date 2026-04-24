@@ -268,7 +268,6 @@ class Advanced_Search {
 		$order_by_sql = "post_id DESC"; // Default
 		$relevance_col = "";
 
-		// If relevance is requested AND we have a keyword, we need to select the MATCH score
 		if ( $sort === 'relevance' && ! empty( $keyword ) && empty( $rows ) ) {
 			$relevance_col = ", MATCH (title, abstract, purpose, construct, population) AGAINST ('" . esc_sql( $this->format_boolean_keyword($keyword) ) . "' IN BOOLEAN MODE) AS score";
 			$order_by_sql = "score DESC, post_id DESC";
