@@ -225,7 +225,7 @@ class Advanced_Admin_Dashboard {
 			'posts_per_page' => 5,
 			'orderby'        => 'date',
 			'order'          => 'DESC',
-			'no_found_rows'  => true,
+			'no_found_rows'  => true, // Optimizes query performance
 		);
 
 		$query = new \WP_Query( $args );
