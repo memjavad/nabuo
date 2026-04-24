@@ -47,8 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
 = 1.55.5 =
-* Security: Fixed SQL Injection vulnerability in Batch AI Processor by properly preparing dynamic table names in queries.
+* Security: Fixed SQL Injection vulnerability in Ratings Moderation query.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
