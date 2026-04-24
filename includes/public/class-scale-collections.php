@@ -72,15 +72,16 @@ class Scale_Collections {
 	 * Register REST API endpoints.
 	 */
 	public function register_endpoints() {
-		$this->register_collection_routes();
+		$this->register_base_routes();
+		$this->register_single_routes();
 		$this->register_item_routes();
 		$this->register_public_routes();
 	}
 
 	/**
-	 * Register collection routes.
+	 * Register base collection routes.
 	 */
-	private function register_collection_routes() {
+	private function register_base_routes() {
 		// Get user's collections
 		register_rest_route(
 			'apa/v1',
@@ -124,7 +125,12 @@ class Scale_Collections {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register single collection routes.
+	 */
+	private function register_single_routes() {
 		// Get single collection
 		register_rest_route(
 			'apa/v1',
@@ -178,7 +184,7 @@ class Scale_Collections {
 	}
 
 	/**
-	 * Register item routes.
+	 * Register collection item routes.
 	 */
 	private function register_item_routes() {
 		// Add scale to collection
@@ -216,7 +222,7 @@ class Scale_Collections {
 	}
 
 	/**
-	 * Register public routes.
+	 * Register public collection routes.
 	 */
 	private function register_public_routes() {
 		// Get public collections
