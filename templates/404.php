@@ -80,7 +80,7 @@ if ( function_exists( 'wpa_get_header' ) ) {
                                     <?php
                                     $abstract = get_post_meta( get_the_ID(), '_naboo_scale_abstract', true );
                                     if ( ! empty( $abstract ) ) {
-                                        echo '<p class="naboo-card-excerpt">' . wp_trim_words( wp_strip_all_tags( $abstract ), 12 ) . '</p>';
+                                        echo '<p class="naboo-card-excerpt">' . esc_html( wp_trim_words( wp_strip_all_tags( $abstract ), 12 ) ) . '</p>';
                                     }
                                     ?>
                                 </article>

@@ -49,7 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Testing improvement: Add missing array validation for bulk edit post_ids
+*   **Security Fix:** Addressed a potential Reflected XSS vulnerability in the 404 template when rendering scale abstracts.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
