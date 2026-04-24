@@ -49,7 +49,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Security Fix: Resolve SQL injection vulnerability in Batch AI Processor module.
+* Security: Fix SQL injection vulnerability in comments moderation view.
+
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
