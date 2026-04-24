@@ -47,8 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
 = 1.55.5 =
-* Bug Fix: Fixed a division by zero error in the health optimizer scoring when no tests are run.
+*   Security fix: Patched SQL Injection vulnerability in Ratings Moderation query generation.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
