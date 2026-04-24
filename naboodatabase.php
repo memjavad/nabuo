@@ -46,6 +46,7 @@ spl_autoload_register( function ( $class_name ) {
 	// Replace the namespace prefix with the base directory, replace namespace
 	// separators with directory separators in the relative class name, append
 	// with .php
+    
     $parts = explode( '\\', $relative_class );
     $class_filename = 'class-' . str_replace( '_', '-', strtolower( array_pop( $parts ) ) ) . '.php';
     
@@ -53,9 +54,6 @@ spl_autoload_register( function ( $class_name ) {
     if ( ! empty( $parts ) ) {
         $sub_path = str_replace( '_', '-', strtolower( implode( '/', $parts ) ) ) . '/';
     }
-    
-    // Special case for root classes in 'includes' which are currently namespaced as just NabooDatabase in my mind, 
-    // but files are in includes/.
     
     $file = $base_dir . $sub_path . $class_filename;
 
