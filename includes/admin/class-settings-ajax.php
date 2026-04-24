@@ -88,7 +88,10 @@ class Settings_Ajax {
 	 * AJAX Handler: Export settings as JSON string.
 	 */
 	public function ajax_export_settings() {
-		check_ajax_referer( 'naboo_settings_import_export_nonce', 'nonce' );
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'naboo_settings_import_export_nonce' ) ) {
+			wp_send_json_error( array( 'message' => 'Security check failed.' ) );
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized.' ) );
 		}
@@ -100,7 +103,10 @@ class Settings_Ajax {
 	 * AJAX Handler: Import settings from JSON string.
 	 */
 	public function ajax_import_settings() {
-		check_ajax_referer( 'naboo_settings_import_export_nonce', 'nonce' );
+		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'naboo_settings_import_export_nonce' ) ) {
+			wp_send_json_error( array( 'message' => 'Security check failed.' ) );
+		}
+
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error( array( 'message' => 'Unauthorized.' ) );
 		}
