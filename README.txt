@@ -47,10 +47,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-
 = 1.55.5 =
-*   🔒 Security Fix: Resolved an SQL Injection vulnerability in the ratings moderation admin panel by implementing unified parameter preparation for dynamic queries.
-
+* Code Health: Refactored `Tab_General::render` method into smaller helper methods for improved readability and maintainability.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
