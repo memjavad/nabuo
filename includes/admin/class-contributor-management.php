@@ -194,6 +194,18 @@ class Contributor_Management {
 
 		$query = new \WP_Query( $args );
 
+		$post_ids = wp_list_pluck( $query->posts, 'ID' );
+		$views_meta = array();
+
+		if ( ! empty( $post_ids ) ) {
+			global $wpdb;
+			$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+			$meta_results = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_naboo_view_count' AND post_id IN ($placeholders)", ...$post_ids ) );
+			foreach ( $meta_results as $meta ) {
+				$views_meta[ $meta->post_id ] = $meta->meta_value;
+			}
+		}
+
 		$scales = array();
 		foreach ( $query->posts as $scale ) {
 			$scales[] = array(
@@ -201,7 +213,7 @@ class Contributor_Management {
 				'title'    => $scale->post_title,
 				'date'     => $scale->post_date,
 				'status'   => $scale->post_status,
-				'views'    => get_post_meta( $scale->ID, '_naboo_view_count', true ) ?? 0,
+				'views'    => isset( $views_meta[ $scale->ID ] ) ? $views_meta[ $scale->ID ] : 0,
 			);
 		}
 
