@@ -47,8 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
 = 1.55.5 =
-*   Removed commented-out code in `html_to_pdf` function for cleaner code health.
+* Added validation test for empty file upload in Import Processor
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.

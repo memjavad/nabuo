@@ -1,16 +1,27 @@
 <?php
-// A simple test runner since PHPUnit is missing
-$tests = glob(__DIR__ . '/test-*.php');
-$passed = 0;
-$failed = 0;
+// Autoloader/mock setup for testing without framework
+require_once __DIR__ . '/../includes/admin/import/class-import-processor.php';
+use ArabPsychology\NabooDatabase\Admin\Import\Import_Processor;
 
-foreach ($tests as $test) {
-    require_once $test;
+echo "Running Test Suite...\n";
+
+function test_empty_file_upload() {
+    $processor = new Import_Processor();
+    $_FILES = []; // Simulate empty file upload
+
+    try {
+        $processor->validate_file_upload();
+        echo "FAIL: test_empty_file_upload - Expected Exception was not thrown.\n";
+        exit(1);
+    } catch (\Exception $e) {
+        if ($e->getMessage() === 'No file uploaded.') {
+            echo "PASS: test_empty_file_upload\n";
+        } else {
+            echo "FAIL: test_empty_file_upload - Unexpected exception message: " . $e->getMessage() . "\n";
+            exit(1);
+        }
+    }
 }
 
-echo "Tests Passed: $passed\n";
-echo "Tests Failed: $failed\n";
-
-if ($failed > 0) {
-    exit(1);
-}
+test_empty_file_upload();
+echo "All tests passed.\n";

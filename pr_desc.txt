@@ -1,0 +1,5 @@
+🧪 [Add validation test for empty file upload]
+
+🎯 **What:** The `validate_file_upload()` method was missing in the `Import_Processor` class, leaving the empty `$_FILES['import_file']` condition untested.
+📊 **Coverage:** The scenario where a file is uploaded without an `import_file` array value is now checked, and it correctly throws a `\Exception` with the message 'No file uploaded.'.
+✨ **Result:** The system is now more robust by validating input properly in the processor before performing import parsing.
