@@ -393,7 +393,8 @@ class Batch_AI_Processor {
 
 		$next_title = 'None';
 		global $wpdb;
-		$next_id = $wpdb->get_var( "SELECT draft_id FROM {$wpdb->prefix}naboo_process_queue WHERE status = 'pending' ORDER BY id ASC LIMIT 1" );
+		$q_table = $wpdb->prefix . 'naboo_process_queue';
+		$next_id = $wpdb->get_var( $wpdb->prepare( "SELECT draft_id FROM {$q_table} WHERE status = %s ORDER BY id ASC LIMIT 1", 'pending' ) );
 		if ( $next_id ) {
 			$next_title = get_the_title( $next_id );
 		}

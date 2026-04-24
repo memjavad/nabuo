@@ -49,7 +49,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Security: Fixed Reflected XSS vulnerability in 404 template by properly escaping output using esc_html().
+* Security: Fixed a SQL injection vulnerability in the Batch AI processor.
+
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
