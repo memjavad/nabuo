@@ -1331,6 +1331,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 *   Added success/error notice styling in admin settings.
 *   Full cross-browser compatibility and responsive testing.
 
+= 1.55.5 =
+*   Security fix: Patched XSS vulnerability in frontend submission form.
+
 = 1.0.2 =
 *   Redesigned frontend with Academic & Elegant styling.
 *   Enhanced color palette with deep navy, teal, and refined grays.
