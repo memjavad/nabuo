@@ -50,7 +50,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Refactor: Split long `render_settings_page` function into smaller private helper methods in `Glossary_Renderer` for better readability and maintainability.
+*   Removed unused commented-out code in the autoloader.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.

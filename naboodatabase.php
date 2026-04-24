@@ -46,6 +46,8 @@ spl_autoload_register( function ( $class_name ) {
 	// Replace the namespace prefix with the base directory, replace namespace
 	// separators with directory separators in the relative class name, append
 	// with .php
+	
+	// Map class names to file names based on WP coding standards (class-classname.php)
     
     $parts = explode( '\\', $relative_class );
     $class_filename = 'class-' . str_replace( '_', '-', strtolower( array_pop( $parts ) ) ) . '.php';
