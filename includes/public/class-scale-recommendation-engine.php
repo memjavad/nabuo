@@ -134,7 +134,7 @@ class Scale_Recommendation_Engine {
 	 */
 	public function get_personalized_recommendations( $request ) {
 		$user_id = get_current_user_id();
-		$limit = (int) $request->get_param( 'limit' ) ?? 5;
+		$limit = $request->get_param( 'limit' ) ? (int) $request->get_param( 'limit' ) : 5;
 
 		if ( ! $user_id ) {
 			// Return trending for anonymous users
@@ -154,7 +154,7 @@ class Scale_Recommendation_Engine {
 	 */
 	public function get_similar_scales( $request ) {
 		$scale_id = $request->get_param( 'scale_id' );
-		$limit = (int) $request->get_param( 'limit' ) ?? 5;
+		$limit = $request->get_param( 'limit' ) ? (int) $request->get_param( 'limit' ) : 5;
 
 		if ( ! $scale_id ) {
 			return new \WP_REST_Response(
@@ -218,8 +218,7 @@ class Scale_Recommendation_Engine {
 	 * @return \WP_REST_Response
 	 */
 	public function get_trending_recommendations( $request ) {
-		$limit_param = $request->get_param( 'limit' );
-		$limit = $limit_param !== null ? (int) $limit_param : 5;
+		$limit = $request->get_param( 'limit' ) ? (int) $request->get_param( 'limit' ) : 5;
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'naboo_popularity_analytics';

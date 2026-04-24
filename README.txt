@@ -49,7 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Maintenance: Refactored `Search_Result_Improvements::register_endpoints` to improve code readability by splitting endpoint registrations into smaller private helper methods.
+* 🧪 testing improvement: Add tests for get_trending_recommendations and fix null limit parameter bug
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.

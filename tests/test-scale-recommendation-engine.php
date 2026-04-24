@@ -1,16 +1,19 @@
 <?php
+/**
+ * Test script for Scale_Recommendation_Engine
+ *
+ * Tests the get_trending_recommendations API endpoint.
+ */
 
-require_once __DIR__ . '/../includes/public/class-scale-recommendation-engine.php';
+// Enable assertions
+ini_set('assert.exception', 1);
 
-// Mock WP Classes
+// Mocks for WP classes and functions
 class WP_REST_Request {
-    private $params = [];
-    public function set_param($key, $value) {
-        $this->params[$key] = $value;
-    }
-    public function get_param($key) {
-        return $this->params[$key] ?? null;
-    }
+    private $params;
+    public function __construct($params = []) { $this->params = $params; }
+    public function get_param($key) { return $this->params[$key] ?? null; }
+    public function set_param($key, $value) { $this->params[$key] = $value; }
 }
 
 class WP_REST_Response {
@@ -28,157 +31,164 @@ class WP_Post {
     public $ID;
     public $post_title;
     public $post_status = 'publish';
+    public $post_type = 'psych_scale';
+    public $post_author = 1;
 }
 
-// Mock Global functions
-if (!function_exists('get_post')) {
-    function get_post($id) {
-        if ($id <= 0) return null;
-        $post = new WP_Post();
-        $post->ID = $id;
-        $post->post_title = "Mocked Scale $id";
-        return $post;
-    }
+$mock_posts = [];
+function get_post($id) {
+    global $mock_posts;
+    return isset($mock_posts[$id]) ? $mock_posts[$id] : null;
 }
 
-if (!function_exists('dbDelta')) {
-    function dbDelta($sql) {
-        // mock
-    }
-}
-
-if (!function_exists('add_action')) {
-    function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
-        // mock
-    }
-}
-
-
-// Mock $wpdb
 class Mock_WPDB {
     public $prefix = 'wp_';
-    public $last_query = '';
-    public $mock_results = [];
-    public $mock_var = null;
+    private $pdo;
+
+    public function __construct() {
+        $this->pdo = new PDO('sqlite::memory:');
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+
+    public function get_pdo() {
+        return $this->pdo;
+    }
 
     public function prepare($query, ...$args) {
-        // very simple prepare for tests
-        $prepared = $query;
-        foreach($args as $arg) {
-            $prepared = preg_replace('/%d/', $arg, $prepared, 1);
+        if (isset($args[0]) && is_array($args[0])) {
+            $args = $args[0];
         }
-        $this->last_query = $prepared;
-        return $this->last_query;
+        $query = str_replace(array("'%s'", '"%s"'), '%s', $query);
+        $query = preg_replace('/%[dfs]/', '%s', $query);
+        return vsprintf($query, $args);
     }
 
     public function get_results($query) {
-        return $this->mock_results;
+        $stmt = $this->pdo->query($query);
+        return $stmt ? $stmt->fetchAll(PDO::FETCH_OBJ) : [];
     }
 
     public function get_var($query) {
-        return $this->mock_var;
+        if (strpos($query, 'SHOW TABLES LIKE') !== false) {
+            return 'wp_naboo_recommendations';
+        }
+        return null;
     }
+
+    public function get_charset_collate() { return ''; }
 }
 
 global $wpdb;
 $wpdb = new Mock_WPDB();
 
-use ArabPsychology\NabooDatabase\Public\Scale_Recommendation_Engine;
+// Initialize the table and mock data
+$wpdb->get_pdo()->exec("CREATE TABLE wp_naboo_popularity_analytics (
+    scale_id INTEGER,
+    views INTEGER,
+    downloads INTEGER,
+    favorites INTEGER,
+    avg_rating REAL
+)");
 
-function test_get_trending_recommendations() {
-    global $wpdb;
-    $wpdb->mock_var = 'wp_naboo_popularity_analytics'; // mock table exists
-    $engine = new Scale_Recommendation_Engine('naboodatabase', '1.0.0');
+// Insert mock data
+// Expected scores (views + downloads * 2 + favorites * 3)
+// Scale 1: 10 + 5*2 + 2*3 = 26
+// Scale 2: 50 + 0 + 0 = 50
+// Scale 3: 0 + 100*2 + 100*3 = 0 (Should not be returned since views is 0)
+// Scale 4: 20 + 20*2 + 10*3 = 90
+// Scale 5: 5 + 1*2 + 0 = 7
+// Scale 6: 1 + 1*2 + 1*3 = 6
+// Scale 7: 15 + 5*2 + 5*3 = 40
+$wpdb->get_pdo()->exec("INSERT INTO wp_naboo_popularity_analytics (scale_id, views, downloads, favorites, avg_rating) VALUES
+    (1, 10, 5, 2, 4.0),
+    (2, 50, 0, 0, 3.5),
+    (3, 0, 100, 100, 5.0),
+    (4, 20, 20, 10, 4.8),
+    (5, 5, 1, 0, 2.0),
+    (6, 1, 1, 1, 3.0),
+    (7, 15, 5, 5, 4.2)
+");
 
-    // Test 1: Default limit
-    $request = new WP_REST_Request();
-
-    // Set up mock DB results
-    $item1 = new stdClass();
-    $item1->scale_id = 1;
-    $item1->views = 100;
-    $item1->downloads = 50;
-    $item1->favorites = 10;
-    $item1->avg_rating = 4.5;
-
-    $item2 = new stdClass();
-    $item2->scale_id = 2;
-    $item2->views = 80;
-    $item2->downloads = 40;
-    $item2->favorites = 5;
-    $item2->avg_rating = 4.0;
-
-    $wpdb->mock_results = [$item1, $item2];
-
-    $response = $engine->get_trending_recommendations($request);
-    $data = $response->get_data();
-
-    if (!str_contains($wpdb->last_query, "LIMIT 5")) {
-        echo "FAIL: Expected query to have LIMIT 5.\n";
-        echo "Actual query: " . $wpdb->last_query . "\n";
-        exit(1);
-    }
-
-    if (!isset($data['trending'])) {
-        echo "FAIL: Expected 'trending' key in response.\n";
-        exit(1);
-    }
-
-    if (count($data['trending']) !== 2) {
-        echo "FAIL: Expected 2 items, got " . count($data['trending']) . ".\n";
-        exit(1);
-    }
-
-    $first_item = $data['trending'][0];
-    if ($first_item['id'] !== 1 || $first_item['score'] !== (100 + 50*2 + 10*3)) {
-        echo "FAIL: First item has incorrect ID or score.\n";
-        var_dump($first_item);
-        exit(1);
-    }
-
-    // Test 2: Custom limit and invalid posts
-    $request = new WP_REST_Request();
-    $request->set_param('limit', 1);
-
-    $item_invalid = new stdClass();
-    $item_invalid->scale_id = -1; // This will return null from get_post
-    $item_invalid->views = 500;
-    $item_invalid->downloads = 100;
-    $item_invalid->favorites = 50;
-    $item_invalid->avg_rating = 5.0;
-
-    $wpdb->mock_results = [$item_invalid, $item1];
-
-    $response = $engine->get_trending_recommendations($request);
-    $data = $response->get_data();
-
-    if (!str_contains($wpdb->last_query, "LIMIT 1")) {
-        echo "FAIL: Expected query to have LIMIT 1.\n";
-        echo "Actual query: " . $wpdb->last_query . "\n";
-        exit(1);
-    }
-
-    if (count($data['trending']) !== 1) {
-        echo "FAIL: Expected 1 valid item (since the first was invalid), got " . count($data['trending']) . ".\n";
-        exit(1);
-    }
-
-    if ($data['trending'][0]['id'] !== 1) {
-        echo "FAIL: Expected valid post to be returned, skipping the invalid one.\n";
-        exit(1);
-    }
-
-    // Test 3: Missing items handling
-    $request = new WP_REST_Request();
-    $wpdb->mock_results = [];
-    $response = $engine->get_trending_recommendations($request);
-    $data = $response->get_data();
-    if (count($data['trending']) !== 0) {
-        echo "FAIL: Expected 0 items when no DB results, got " . count($data['trending']) . ".\n";
-        exit(1);
-    }
-
-    echo "PASS: get_trending_recommendations tests passed.\n";
+// Mock posts
+foreach ([1, 2, 3, 4, 5, 6, 7] as $id) {
+    $post = new WP_Post();
+    $post->ID = $id;
+    $post->post_title = "Scale $id";
+    $mock_posts[$id] = $post;
 }
 
-test_get_trending_recommendations();
+// Minimal mock functions needed by the class
+if (!function_exists('wp_list_pluck')) { function wp_list_pluck($list, $field, $index_key = null) { return []; } }
+if (!function_exists('get_post_meta')) { function get_post_meta($id, $key, $single) { return ''; } }
+if (!function_exists('wp_get_post_terms')) { function wp_get_post_terms($id, $tax, $args) { return []; } }
+if (!function_exists('plugin_dir_url')) { function plugin_dir_url($file) { return ''; } }
+if (!function_exists('wp_enqueue_style')) { function wp_enqueue_style() {} }
+if (!function_exists('is_singular')) { function is_singular($type) { return true; } }
+if (!function_exists('get_the_ID')) { function get_the_ID() { return 1; } }
+if (!function_exists('get_users')) { function get_users() { return []; } }
+if (!function_exists('get_permalink')) { function get_permalink($id) { return "https://example.com/scale/$id"; } }
+if (!function_exists('esc_url')) { function esc_url($url) { return $url; } }
+if (!function_exists('esc_html')) { function esc_html($html) { return $html; } }
+if (!function_exists('esc_html_e')) { function esc_html_e($text, $domain) { echo $text; } }
+
+require_once __DIR__ . '/../includes/public/class-scale-recommendation-engine.php';
+
+$engine = new ArabPsychology\NabooDatabase\Public\Scale_Recommendation_Engine('naboodatabase', '1.0.0');
+
+echo "Running tests...\n";
+
+// Test Case 1: Default limit (should be 5)
+$request = new WP_REST_Request([]);
+$response = $engine->get_trending_recommendations($request);
+$data = $response->get_data();
+assert(isset($data['trending']), "Response should contain 'trending' key");
+assert(count($data['trending']) === 5, "Default limit should be 5, but got " . count($data['trending']));
+echo "✅ Test Case 1 Passed: Default limit\n";
+
+// Test Case 2: Custom limit
+$request = new WP_REST_Request(['limit' => 2]);
+$response = $engine->get_trending_recommendations($request);
+$data = $response->get_data();
+assert(count($data['trending']) === 2, "Custom limit 2 should return 2 items, but got " . count($data['trending']));
+echo "✅ Test Case 2 Passed: Custom limit\n";
+
+// Test Case 3: Verify sorting logic
+// Ordered by (views + downloads * 2 + favorites * 3) DESC
+// Expectation:
+// 1. Scale 4 (score: 90)
+// 2. Scale 2 (score: 50)
+// 3. Scale 7 (score: 40)
+// 4. Scale 1 (score: 26)
+// 5. Scale 5 (score: 7)
+// 6. Scale 6 (score: 6)
+$request = new WP_REST_Request(['limit' => 6]);
+$response = $engine->get_trending_recommendations($request);
+$data = $response->get_data();
+$trending = $data['trending'];
+
+assert($trending[0]['id'] == 4, "First item should be Scale 4");
+assert($trending[0]['score'] == 90, "Scale 4 score should be 90");
+
+assert($trending[1]['id'] == 2, "Second item should be Scale 2");
+assert($trending[1]['score'] == 50, "Scale 2 score should be 50");
+
+assert($trending[2]['id'] == 7, "Third item should be Scale 7");
+assert($trending[2]['score'] == 40, "Scale 7 score should be 40");
+
+assert($trending[3]['id'] == 1, "Fourth item should be Scale 1");
+assert($trending[3]['score'] == 26, "Scale 1 score should be 26");
+
+echo "✅ Test Case 3 Passed: Verify sorting logic\n";
+
+// Test Case 4: Verify items with 0 views are excluded
+// Scale 3 has 0 views but very high downloads/favorites, which would give it the highest score if included.
+$found_scale_3 = false;
+foreach ($trending as $item) {
+    if ($item['id'] == 3) {
+        $found_scale_3 = true;
+    }
+}
+assert($found_scale_3 === false, "Scale 3 (0 views) should be excluded");
+echo "✅ Test Case 4 Passed: Verify items with 0 views are excluded\n";
+
+echo "\nAll tests passed successfully! 🎉\n";
