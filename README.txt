@@ -49,7 +49,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 == Changelog ==
 
 = 1.55.5 =
-* Added validation test for empty file upload in Import Processor
+* Maintenance: Refactored `Search_Result_Improvements::register_endpoints` to improve code readability by splitting endpoint registrations into smaller private helper methods.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.

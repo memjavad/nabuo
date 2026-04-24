@@ -54,6 +54,14 @@ class Search_Result_Improvements {
 	 * Register REST API endpoints.
 	 */
 	public function register_endpoints() {
+		$this->register_facet_endpoints();
+		$this->register_saved_searches_endpoints();
+	}
+
+	/**
+	 * Register facet REST API endpoints.
+	 */
+	private function register_facet_endpoints() {
 		register_rest_route(
 			'apa/v1',
 			'/search/facets',
@@ -70,7 +78,20 @@ class Search_Result_Improvements {
 				),
 			)
 		);
+	}
 
+	/**
+	 * Register saved searches REST API endpoints.
+	 */
+	private function register_saved_searches_endpoints() {
+		$this->register_saved_searches_collection_endpoints();
+		$this->register_saved_searches_item_endpoints();
+	}
+
+	/**
+	 * Register saved searches collection REST API endpoints.
+	 */
+	private function register_saved_searches_collection_endpoints() {
 		register_rest_route(
 			'apa/v1',
 			'/saved-searches',
@@ -115,6 +136,28 @@ class Search_Result_Improvements {
 
 		register_rest_route(
 			'apa/v1',
+			'/saved-searches/public',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'get_public_saved_searches' ),
+				'permission_callback' => '__return_true',
+				'args'                => array(
+					'limit' => array(
+						'type'              => 'integer',
+						'default'           => 10,
+						'sanitize_callback' => 'absint',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Register saved searches item REST API endpoints.
+	 */
+	private function register_saved_searches_item_endpoints() {
+		register_rest_route(
+			'apa/v1',
 			'/saved-searches/(?P<id>\d+)',
 			array(
 				'methods'             => 'GET',
@@ -150,23 +193,6 @@ class Search_Result_Improvements {
 				'methods'             => 'DELETE',
 				'callback'            => array( $this, 'delete_saved_search' ),
 				'permission_callback' => array( $this, 'check_write_permission' ),
-			)
-		);
-
-		register_rest_route(
-			'apa/v1',
-			'/saved-searches/public',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_public_saved_searches' ),
-				'permission_callback' => '__return_true',
-				'args'                => array(
-					'limit' => array(
-						'type'              => 'integer',
-						'default'           => 10,
-						'sanitize_callback' => 'absint',
-					),
-				),
 			)
 		);
 	}
