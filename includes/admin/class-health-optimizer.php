@@ -605,7 +605,11 @@ class Health_Optimizer {
 			if ( $r['status'] === 'good' ) $points += 2;
 			elseif ( $r['status'] === 'warning' ) $points += 1;
 		}
-		$score = ( $points / ( count( $results ) * 2 ) ) * 100;
+		if ( count( $results ) > 0 ) {
+			$score = ( $points / ( count( $results ) * 2 ) ) * 100;
+		} else {
+			$score = 100;
+		}
 
 		// Generate HTML
 		ob_start();
