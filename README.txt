@@ -48,9 +48,8 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-
 = 1.55.5 =
-*   Removed unused commented-out code in the autoloader.
+* Tests: Added tests for search_scales in smart search suggestions.
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
