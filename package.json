@@ -1,25 +1,9 @@
 {
-  "name": "app",
+  "name": "naboodatabase-chrome-extension",
   "version": "1.0.0",
-  "description": "",
+  "description": "Chrome Extension Tests",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/memjavad/nabuo.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "bugs": {
-    "url": "https://github.com/memjavad/nabuo/issues"
-  },
-  "homepage": "https://github.com/memjavad/nabuo#readme",
-  "devDependencies": {
-    "jest": "^30.3.0",
-    "jest-environment-jsdom": "^30.3.0"
+    "test": "node chrome-extension/background.test.js"
   }
 }
