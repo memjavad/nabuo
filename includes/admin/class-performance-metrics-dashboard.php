@@ -172,8 +172,9 @@ class Performance_Metrics_Dashboard {
 		);
 
 		$missing_tables = array();
+		$existing_tables = $wpdb->get_col( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . '%' ) );
 		foreach ( $tables as $table ) {
-			if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->prefix . $table ) ) === null ) {
+			if ( ! in_array( $wpdb->prefix . $table, $existing_tables, true ) ) {
 				$missing_tables[] = $table;
 			}
 		}
