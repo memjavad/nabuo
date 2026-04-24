@@ -1354,5 +1354,7 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 = 1.0.0 =
 *   Initial release.
 
+== Changelog ==
+
 = 1.55.5 =
-*   Refactored `register_endpoints` in `class-search-result-improvements.php` to improve code maintainability and readability by extracting route registration into smaller, private methods.
+* Security Fix: Resolve SQL Injection vulnerability in Comments and Ratings Moderation via unescaped search clauses.

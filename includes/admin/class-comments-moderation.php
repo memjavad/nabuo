@@ -162,39 +162,36 @@ class Comments_Moderation {
 		$counts['all'] = array_sum( $counts );
 
 		// Build WHERE
-		$where_sql  = 'WHERE 1=1';
+		$where_sql = 'WHERE 1=1';
 		$where_args = array();
 
 		if ( $active_tab !== 'all' ) {
-			$where_sql   .= ' AND c.status = %s';
+			$where_sql .= ' AND c.status = %s';
 			$where_args[] = $active_tab;
 		}
 
 		if ( $search ) {
-			$like         = '%' . $wpdb->esc_like( $search ) . '%';
-			$where_sql   .= ' AND (c.comment_text LIKE %s OR c.user_name LIKE %s)';
+			$like = '%' . $wpdb->esc_like( $search ) . '%';
+			$where_sql .= ' AND (c.comment_text LIKE %s OR c.user_name LIKE %s)';
 			$where_args[] = $like;
 			$where_args[] = $like;
 		}
 
-		$count_query = "SELECT COUNT(*) FROM `{$table}` c {$where_sql}";
+		$total_query = "SELECT COUNT(*) FROM `{$table}` c {$where_sql}";
 		if ( ! empty( $where_args ) ) {
-			$total = (int) $wpdb->get_var( $wpdb->prepare( $count_query, ...$where_args ) );
-		} else {
-			$total = (int) $wpdb->get_var( $count_query );
+			$total_query = $wpdb->prepare( $total_query, ...$where_args );
 		}
+		$total = (int) $wpdb->get_var( $total_query );
 
-		$main_query = "SELECT c.*, p.post_title AS scale_title
-					 FROM `{$table}` c
-					 LEFT JOIN {$wpdb->posts} p ON p.ID = c.scale_id
-					 {$where_sql}
-					 ORDER BY c.created_at DESC
-					 LIMIT %d OFFSET %d";
-		$query_args   = $where_args;
-		$query_args[] = $per_page;
-		$query_args[] = $offset;
+		$results_query = "SELECT c.*, p.post_title AS scale_title
+				 FROM `{$table}` c
+				 LEFT JOIN {$wpdb->posts} p ON p.ID = c.scale_id
+				 {$where_sql}
+				 ORDER BY c.created_at DESC
+				 LIMIT %d OFFSET %d";
 
-		$comments = $wpdb->get_results( $wpdb->prepare( $main_query, ...$query_args ) );
+		$results_args = array_merge( $where_args, array( $per_page, $offset ) );
+		$comments = $wpdb->get_results( $wpdb->prepare( $results_query, ...$results_args ) );
 
 		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( $_GET['notice'] ) : '';
 

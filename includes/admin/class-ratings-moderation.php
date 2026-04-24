@@ -162,25 +162,22 @@ class Ratings_Moderation {
 			$where_args[] = $like;
 		}
 
-		if ( empty( $where_args ) ) {
-			$total = (int) $wpdb->get_var( "SELECT COUNT(*) FROM `{$table}` r LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id {$where_sql}" );
-		} else {
-			$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM `{$table}` r LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id {$where_sql}", ...$where_args ) );
+		$total_query = "SELECT COUNT(*) FROM `{$table}` r LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id {$where_sql}";
+		if ( ! empty( $where_args ) ) {
+			$total_query = $wpdb->prepare( $total_query, ...$where_args );
 		}
+		$total = (int) $wpdb->get_var( $total_query );
 
-		$query_args = array_merge( $where_args, array( $per_page, $offset ) );
-		$ratings = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT r.*, p.post_title AS scale_title, u.display_name, u.user_email
+		$results_query = "SELECT r.*, p.post_title AS scale_title, u.display_name, u.user_email
 				 FROM `{$table}` r
 				 LEFT JOIN {$wpdb->posts} p ON p.ID = r.scale_id
 				 LEFT JOIN {$wpdb->users} u ON u.ID = r.user_id
 				 {$where_sql}
 				 ORDER BY r.created_at DESC
-				 LIMIT %d OFFSET %d",
-				...$query_args
-			)
-		);
+				 LIMIT %d OFFSET %d";
+
+		$results_args = array_merge( $where_args, array( $per_page, $offset ) );
+		$ratings = $wpdb->get_results( $wpdb->prepare( $results_query, ...$results_args ) );
 
 		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( $_GET['notice'] ) : '';
 
