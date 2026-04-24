@@ -25,5 +25,4 @@ implementation_plan.md
 task.md
 walkthrough.md
 *artifact*
-/phpunit
-/.phpunit.result.cache
+phpunit
