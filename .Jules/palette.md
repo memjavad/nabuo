@@ -1,3 +1,3 @@
-## 2024-04-22 - Missing ARIA labels on dynamic repeatable UI row icon-only remove buttons
-**Learning:** In dynamic UI patterns (like repeatable rows for version links in admin metaboxes or advanced search query rows), there is a pattern of using icon-only "remove" buttons (e.g., trash dashicons or SVGs). While these sometimes have a `title` attribute, they often miss the `aria-label` attribute, rendering them inaccessible to screen readers. This happens both in server-rendered PHP loops and in client-side JS string templates (e.g. `<script type="text/template">`).
-**Action:** Always check both the PHP loop rendering the initial UI state and the associated JavaScript `<script type="text/template">` elements for identical missing accessibility attributes on icon-only buttons in repeatable rows.
+## 2024-05-24 - Form Inputs Accessibility
+**Learning:** Form inputs in the extension (popup and dashboard) lacked `for` attributes on labels connecting them to inputs, reducing screen reader support. Link icons like "↗" were also read aloud without `aria-hidden`.
+**Action:** Ensure all `<label>` tags use a `for` attribute that matches the `id` of the `<input>`, and wrap decorative text icons in `<span aria-hidden="true">` while providing an `aria-label` for context.
