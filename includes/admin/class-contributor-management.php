@@ -313,48 +313,34 @@ class Contributor_Management {
 
 		$updated = 0;
 
+		$values       = array();
+		$placeholders = array();
+
 		foreach ( $users as $user ) {
 			$stats = $this->calculate_contributor_stats( $user->ID );
 
-			$existing = $wpdb->get_var(
-				$wpdb->prepare( "SELECT id FROM $table_name WHERE user_id = %d", $user->ID )
+			$placeholders[] = '(%d, %d, %d, %d, %d, %d, %f, %s, %s)';
+			$values         = array_merge(
+				$values,
+				array(
+					$user->ID,
+					$stats->total_scales,
+					$stats->approved_scales,
+					$stats->rejected_scales,
+					$stats->total_comments,
+					$stats->total_ratings,
+					$stats->avg_rating,
+					$stats->first_contribution,
+					$stats->last_contribution,
+				)
 			);
 
-			if ( $existing ) {
-				$wpdb->update(
-					$table_name,
-					array(
-						'total_scales'       => $stats->total_scales,
-						'approved_scales'    => $stats->approved_scales,
-						'rejected_scales'    => $stats->rejected_scales,
-						'total_comments'     => $stats->total_comments,
-						'total_ratings'      => $stats->total_ratings,
-						'avg_rating'         => $stats->avg_rating,
-						'last_contribution'  => $stats->last_contribution,
-					),
-					array( 'user_id' => $user->ID ),
-					array( '%d', '%d', '%d', '%d', '%d', '%f', '%s' ),
-					array( '%d' )
-				);
-			} else {
-				$wpdb->insert(
-					$table_name,
-					array(
-						'user_id'            => $user->ID,
-						'total_scales'       => $stats->total_scales,
-						'approved_scales'    => $stats->approved_scales,
-						'rejected_scales'    => $stats->rejected_scales,
-						'total_comments'     => $stats->total_comments,
-						'total_ratings'      => $stats->total_ratings,
-						'avg_rating'         => $stats->avg_rating,
-						'first_contribution' => $stats->first_contribution,
-						'last_contribution'  => $stats->last_contribution,
-					),
-					array( '%d', '%d', '%d', '%d', '%d', '%d', '%f', '%s', '%s' )
-				);
-			}
-
 			$updated++;
+		}
+
+		if ( ! empty( $placeholders ) ) {
+			$query = "INSERT INTO $table_name (user_id, total_scales, approved_scales, rejected_scales, total_comments, total_ratings, avg_rating, first_contribution, last_contribution) VALUES " . implode( ', ', $placeholders ) . " ON DUPLICATE KEY UPDATE total_scales = VALUES(total_scales), approved_scales = VALUES(approved_scales), rejected_scales = VALUES(rejected_scales), total_comments = VALUES(total_comments), total_ratings = VALUES(total_ratings), avg_rating = VALUES(avg_rating), last_contribution = VALUES(last_contribution)";
+			$wpdb->query( $wpdb->prepare( $query, $values ) );
 		}
 
 		return new \WP_REST_Response(
