@@ -12,7 +12,16 @@ class Tab_General {
 	public function render( $options, $option_name ) {
 		?>
 		<div class="naboo-admin-grid cols-1">
-			<div class="naboo-admin-card">
+			<?php
+			$this->render_general_card( $options, $option_name );
+			$this->render_submission_card( $options, $option_name );
+			?>
+		</div>
+		<?php
+	}
+	private function render_general_card( $options, $option_name ) {
+		?>
+		<div class="naboo-admin-card">
 				<div class="naboo-admin-card-header">
 					<span class="naboo-admin-card-icon green">⚙️</span>
 					<h3><?php esc_html_e( 'General Settings', 'naboodatabase' ); ?></h3>
@@ -22,8 +31,12 @@ class Tab_General {
 
 				<?php $this->render_access_control_settings( $options, $option_name ); ?>
 			</div>
+		<?php
+	}
 
-			<div class="naboo-admin-card">
+	private function render_submission_card( $options, $option_name ) {
+		?>
+		<div class="naboo-admin-card">
 				<div class="naboo-admin-card-header">
 					<span class="naboo-admin-card-icon blue">📥</span>
 					<h3><?php esc_html_e( 'Submission Settings', 'naboodatabase' ); ?></h3>
@@ -31,7 +44,6 @@ class Tab_General {
 
 				<?php $this->render_submission_settings( $options, $option_name ); ?>
 			</div>
-		</div>
 		<?php
 	}
 
