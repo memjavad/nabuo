@@ -189,6 +189,7 @@ class Ajax {
             'post_type'      => 'psych_scale',
             'post_status'    => array( 'draft', 'pending', 'naboo_raw_draft' ),
             'posts_per_page' => 1,
+            'no_found_rows'  => true, // Performance: skips SQL_CALC_FOUND_ROWS since we only need 1 post
             'orderby'        => 'date',
             'order'          => 'ASC',
             'no_found_rows'  => true, // Optimizes query performance
