@@ -47,9 +47,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
-
 = 1.55.5 =
-* Cleanup conversational comments in the autoloader.
+* Added empty file upload validation to import_scale method in Import_Processor and corresponding tests.
+
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
 * Config: Added .gitignore for clean project tracking.
