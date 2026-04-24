@@ -47,8 +47,10 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
 = 1.55.5 =
-* Refactoring: Split `SEO_Renderer::render_admin_page` into smaller methods.
+*   🔒 Security Fix: Resolved an SQL Injection vulnerability in the ratings moderation admin panel by implementing unified parameter preparation for dynamic queries.
+
 
 = 1.55.4 =
 * Git: Initialized repository and prepared for GitHub upload.
