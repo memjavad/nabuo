@@ -40,7 +40,7 @@ class Settings_Ajax {
 		}
 
 		// Prepare a lightweight test payload using the requested gemma-3-4b-it model
-		$url = 'https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key=' . $api_key;
+		$url = 'https://generativelanguage.googleapis.com/v1beta/models/gemma-4-4b-it:generateContent?key=' . $api_key;
 		
 		$body = array(
 			'contents' => array(

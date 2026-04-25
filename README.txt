@@ -3,7 +3,7 @@ Contributors: ArabPsychology
 Tags: database, scales, psychology, research, directory
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.55.6
+Stable tag: 1.55.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,11 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+= 1.55.7 =
+* Added support for Google's Gemma 4 AI model family.
+* Updated AI extractor to use Gemma 4 31B Dense for secondary refinement.
+* Updated API test handler to use Gemma 4 4B Effective for connectivity testing.
+
 = 1.55.6 =
 * Merged 79 remote feature and refactoring branches into the main branch.
 * Synchronized local repository with all pending GitHub changes.

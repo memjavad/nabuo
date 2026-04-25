@@ -201,7 +201,7 @@ Original Text Context (first 15000 characters):
 Extracted Data:
 " . wp_json_encode( $extracted_data );
 
-		$gemma_model = 'gemma-3-27b-it';
+		$gemma_model = 'gemma-4-31b-it';
 		$refinement_api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $gemma_model . ':generateContent?key=' . $api_key;
 
 		$refinement_body = array(
@@ -460,7 +460,7 @@ Here is the extracted text:
 		$prompt .= "\nHere is the current value of the field:\n\"{$current_value}\"\n\n";
 		$prompt .= "Return ONLY the refined raw text. Do not include markdown formatting, HTML tags, or conversational filler. Just the polished text itself.";
 
-		$model_name = 'gemma-3-27b-it'; // Hardcoded per user request
+		$model_name = 'gemma-4-31b-it'; // Hardcoded per user request
 		$api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model_name . ':generateContent?key=' . $api_key;
 
 		$body = array(

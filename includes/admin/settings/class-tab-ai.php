@@ -65,6 +65,10 @@ class Tab_AI {
 							'gemma-3-4b-it'    => 'Gemma 3 (4B IT)',
 							'gemma-3-12b-it'   => 'Gemma 3 (12B IT)',
 							'gemma-3-27b-it'   => 'Gemma 3 (27B IT)',
+							'gemma-4-2b-it'    => 'Gemma 4 (2B Effective)',
+							'gemma-4-4b-it'    => 'Gemma 4 (4B Effective)',
+							'gemma-4-26b-moe-it' => 'Gemma 4 (26B MoE)',
+							'gemma-4-31b-it'   => 'Gemma 4 (31B Dense)',
 						);
 						foreach ( $models as $val => $label ) {
 							printf(
