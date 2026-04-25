@@ -1,8 +1,6 @@
 <?php
 /**
- * Plugin Name: Naboo Memcached Object Cache
- * Description: Memcached backend for the WP Object Cache, managed by Naboo Database.
- * Version: 1.0.0
+ * Drop-in: Memcached backend for the WP Object Cache, managed by Naboo Database.
  * 
  * Install this file to wp-content/object-cache.php
  */
