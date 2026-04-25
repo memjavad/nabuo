@@ -3,7 +3,7 @@
  * Plugin Name:       Naboo Database
  * Plugin URI:        https://arabpsychology.com/
  * Description:       A database for psychological scales. «نابو» كإله للكتابة والعقلانية المنظمة. لقد مثل نابو مراحل متقدمة من التطور المعرفي البشري وتدوين السلوكيات الاجتماعية.
- * Version:           1.55.8
+ * Version:           1.55.9
  * Author:            Arab Psychology
  * Text Domain:       naboodatabase
  * Domain Path:       /languages
@@ -17,7 +17,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version.
  */
-define( 'NABOODATABASE_VERSION', '1.55.8' );
+define( 'NABOODATABASE_VERSION', '1.55.9' );
 define( 'NABOODATABASE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NABOODATABASE_URL', plugin_dir_url( __FILE__ ) );
 
@@ -69,16 +69,28 @@ spl_autoload_register( function ( $class_name ) {
  * The code that runs during plugin activation.
  */
 function activate_naboodatabase() {
-	ArabPsychology\NabooDatabase\Activator::activate();
-    // Ensure our custom DB tables exist
-    ArabPsychology\NabooDatabase\Core\Installer::create_tables();
+	try {
+		ArabPsychology\NabooDatabase\Activator::activate();
+		// Ensure our custom DB tables exist
+		ArabPsychology\NabooDatabase\Core\Installer::create_tables();
+	} catch ( \Throwable $t ) {
+		$log_file = plugin_dir_path( __FILE__ ) . 'naboo_debug.txt';
+		$message = date( '[Y-m-d H:i:s] ' ) . 'Activation Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine() . PHP_EOL . $t->getTraceAsString() . PHP_EOL;
+		file_put_contents( $log_file, $message, FILE_APPEND );
+	}
 }
 
 /**
  * The code that runs during plugin deactivation.
  */
 function deactivate_naboodatabase() {
-	ArabPsychology\NabooDatabase\Deactivator::deactivate();
+	try {
+		ArabPsychology\NabooDatabase\Deactivator::deactivate();
+	} catch ( \Throwable $t ) {
+		$log_file = plugin_dir_path( __FILE__ ) . 'naboo_debug.txt';
+		$message = date( '[Y-m-d H:i:s] ' ) . 'Deactivation Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine() . PHP_EOL . $t->getTraceAsString() . PHP_EOL;
+		file_put_contents( $log_file, $message, FILE_APPEND );
+	}
 }
 
 register_activation_hook( __FILE__, 'activate_naboodatabase' );
@@ -88,8 +100,14 @@ register_deactivation_hook( __FILE__, 'deactivate_naboodatabase' );
  * Begins execution of the plugin.
  */
 function run_naboodatabase() {
-	$plugin = new ArabPsychology\NabooDatabase\Core();
-	$plugin->run();
+	try {
+		$plugin = new ArabPsychology\NabooDatabase\Core();
+		$plugin->run();
+	} catch ( \Throwable $t ) {
+		$log_file = plugin_dir_path( __FILE__ ) . 'naboo_debug.txt';
+		$message = date( '[Y-m-d H:i:s] ' ) . 'Execution Error: ' . $t->getMessage() . ' in ' . $t->getFile() . ' on line ' . $t->getLine() . PHP_EOL . $t->getTraceAsString() . PHP_EOL;
+		file_put_contents( $log_file, $message, FILE_APPEND );
+	}
 }
 
 run_naboodatabase();
