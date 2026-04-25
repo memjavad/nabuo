@@ -42,8 +42,6 @@ class Tab_General {
 				       min="3" max="100" value="<?php echo absint( $options['scales_per_page'] ?? get_option( 'naboo_scales_per_page', 12 ) ); ?>" style="max-width:100px;" />
 				<p class="description"><?php esc_html_e( 'How many scales to show per search results page.', 'naboodatabase' ); ?></p>
 			</div>
-		<?php
-	}
 
 			<div class="naboo-form-row">
 				<label for="search_placeholder"><?php esc_html_e( 'Search Box Placeholder Text', 'naboodatabase' ); ?></label>
