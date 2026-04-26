@@ -54,3 +54,29 @@ test('Advanced search handles network error correctly', async () => {
   const resultsWrap = document.getElementById('naboo-search-results-wrapper');
   expect(resultsWrap.innerHTML).toContain('Connection error: Simulated network error');
 });
+
+test('Advanced search handles query failure correctly', async () => {
+  const fs = require('fs');
+  const path = require('path');
+  const scriptContent = fs.readFileSync(path.resolve(__dirname, '../includes/public/js/advanced-search.js'), 'utf8');
+
+  const modifiedScript = scriptContent.replace(
+    'function doSearch() {',
+    'window.doSearch = function doSearch() {'
+  );
+
+  eval(modifiedScript);
+
+  window.fetch = jest.fn(() => Promise.resolve({
+    json: () => Promise.resolve({ success: false })
+  }));
+
+  window.doSearch();
+
+  await new Promise(process.nextTick);
+  await new Promise(resolve => setTimeout(resolve, 0));
+  await new Promise(resolve => setTimeout(resolve, 0)); // Add extra flush to ensure Promise chain completes
+
+  const resultsWrap = document.getElementById('naboo-search-results-wrapper');
+  expect(resultsWrap.innerHTML).toContain('Search failed. Please try again.');
+});
