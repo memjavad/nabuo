@@ -221,6 +221,7 @@ class Pending_Processor {
 
         // 3. Final validation to determine status
         $is_complete = true;
+        $still_missing = array();
         
         // Re-check essential fields after possible refinement
         $final_check = array(
@@ -228,27 +229,46 @@ class Pending_Processor {
             'items'            => get_post_meta( $post_id, '_naboo_scale_items', true ),
             'author_details'   => get_post_meta( $post_id, '_naboo_scale_author_details', true ),
         );
-        foreach ( $final_check as $value ) {
+        foreach ( $final_check as $key => $value ) {
            if ( empty( trim( $value ) ) || stripos($value, 'information not available') !== false) {
                $is_complete = false;
-               break;
+               $still_missing[] = $key;
+           } elseif ( stripos($value, 'not mentioned') !== false ) {
+               $still_missing[] = $key;
            }
         }
         
-        if ( $is_complete ) {
-            $tax_final_check = array('scale_category', 'scale_author', 'scale_year');
-            foreach ( $tax_final_check as $tax_name ) {
-               $terms = wp_get_object_terms( $post_id, $tax_name, array('fields' => 'ids') );
-               if ( empty( $terms ) || is_wp_error( $terms ) ) {
-                   $is_complete = false;
-                   break;
+        $tax_final_check = array(
+            'scale_category' => 'category',
+            'scale_author'   => 'authors',
+            'scale_year'     => 'year'
+        );
+        foreach ( $tax_final_check as $tax_name => $label ) {
+           $terms = wp_get_object_terms( $post_id, $tax_name, array('fields' => 'ids') );
+           if ( empty( $terms ) || is_wp_error( $terms ) ) {
+               $is_complete = false;
+               if ( ! in_array( $label, $still_missing, true ) ) {
+                   $still_missing[] = $label;
                }
-            }
+           }
         }
 
         // If 'failed_refine' is true from above because Gemini returned empty or "information not available"
         if ( $failed_refine ) {
            $is_complete = false;
+        }
+
+        // Re-check non-essential fields to accurately report what's still missing
+        $non_essential_check = array(
+            'validity'    => get_post_meta( $post_id, '_naboo_scale_validity', true ),
+            'reliability' => get_post_meta( $post_id, '_naboo_scale_reliability', true ),
+        );
+        foreach ( $non_essential_check as $key => $value ) {
+           if ( empty( trim( $value ) ) || stripos($value, 'information not available') !== false || stripos($value, 'not mentioned') !== false) {
+               if ( ! in_array( $key, $still_missing, true ) ) {
+                   $still_missing[] = $key;
+               }
+           }
         }
 
         // 4. Update status based on completeness
@@ -268,7 +288,11 @@ class Pending_Processor {
             $status_class = 'warning';
             
             // Log missing pieces so the user knows what to fix
-            $status_msg .= ' (Missing: ' . implode(', ', $missing_fields) . ')';
+            if ( ! empty( $still_missing ) ) {
+                $status_msg .= ' (Missing: ' . implode(', ', $still_missing) . ')';
+            } elseif ( $failed_refine ) {
+                $status_msg .= ' (Refinement failed)';
+            }
         }
 
         $title = get_the_title( $post_id );
