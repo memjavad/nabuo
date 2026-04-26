@@ -24,4 +24,26 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+function test_scale_validation() {
+    exec('php tests/test-scale-validation.php', $output1, $return_var1);
+    if ($return_var1 !== 0) {
+        echo "FAIL: test_scale_validation\n";
+        echo implode("\n", $output1) . "\n";
+        exit(1);
+    } else {
+        echo "PASS: test_scale_validation\n";
+    }
+
+    exec('php tests/test-scale-validation-error.php', $output2, $return_var2);
+    if ($return_var2 !== 0) {
+        echo "FAIL: test_scale_validation_error\n";
+        echo implode("\n", $output2) . "\n";
+        exit(1);
+    } else {
+        echo "PASS: test_scale_validation_error\n";
+    }
+}
+
+test_scale_validation();
 echo "All tests passed.\n";
