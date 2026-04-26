@@ -24,4 +24,14 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+// Run other test scripts
+$output = [];
+$return_var = 0;
+exec('php ' . __DIR__ . '/test-comments-add-comment.php', $output, $return_var);
+echo implode("\n", $output) . "\n";
+if ($return_var !== 0) {
+    echo "FAIL: test-comments-add-comment.php failed.\n";
+    exit(1);
+}
+
 echo "All tests passed.\n";

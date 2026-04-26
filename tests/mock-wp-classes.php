@@ -10,6 +10,10 @@ class WP_REST_Request {
     public function get_param( $key ) {
         return isset( $this->params[ $key ] ) ? $this->params[ $key ] : null;
     }
+
+    public function get_json_params() {
+        return $this->params;
+    }
 }
 
 class WP_REST_Response {
@@ -23,11 +27,31 @@ class WP_REST_Response {
 }
 
 // Simple mocking of WordPress functions needed by the tested methods (to prevent fatal errors)
-function get_post( $id ) { return false; }
+if (!function_exists('get_post')) {
+    function get_post( $id ) {
+        $post_id = is_object($id) ? $id->ID : (is_array($id) ? $id['ID'] : $id);
+        if ($post_id == 999) return null;
+        if ($post_id == 1) {
+            $p = new stdClass();
+            $p->ID = 1;
+            return $p;
+        }
+        return false;
+    }
+}
+
 function wp_update_post( $args ) { return true; }
 function wp_set_post_terms( $object_id, $terms, $taxonomy, $append = false ) { return true; }
 function is_wp_error( $thing ) { return false; }
 function wp_delete_post( $postid, $force_delete = false ) { return true; }
+
+if (!function_exists('get_post_type')) {
+    function get_post_type( $id ) {
+        $post_id = is_object($id) ? $id->ID : (is_array($id) ? $id['ID'] : $id);
+        if ($post_id == 999) return false;
+        return 'psych_scale';
+    }
+}
 function get_post_meta( $post_id, $key = '', $single = false ) { return ''; }
 function wp_get_post_terms( $post_id, $taxonomy, $args = array() ) { return array(); }
 
