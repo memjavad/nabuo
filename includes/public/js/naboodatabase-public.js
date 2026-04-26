@@ -40,15 +40,6 @@
                     success: function (response) {
                         resultsWrapper.css('opacity', '1');
                         if (response.success) {
-                            // If we have data, we wrap it in the results container if it's just raw items, 
-                            // but our PHP partial returns items. We might want to clear and append, or replace content.
-                            // The PHP returns the Loop content.
-                            // Inspecting `search-results.php`, it has `<div class="naboo-search-results">`.
-                            // Our Ajax returns items directly? No, `search-results-loop.php` (virtual) or manual loop.
-                            // In `class-ajax.php`, we output `partials/content-scale.php` inside a loop.
-                            // So we get a list of `<article>...</article>`.
-                            // We should check if `.naboo-search-results` exists inside wrapper.
-
                             var html = response.data.html;
                             if (resultsWrapper.find('.naboo-search-results').length) {
                                 resultsWrapper.find('.naboo-search-results').html(html);
