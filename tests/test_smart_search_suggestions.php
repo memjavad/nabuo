@@ -1,5 +1,9 @@
 <?php
 
+// Enable exceptions for assertions
+ini_set('assert.exception', 1);
+
+
 require_once __DIR__ . '/../includes/public/class-smart-search-suggestions.php';
 
 // Mock WP_REST_Request
@@ -75,11 +79,25 @@ if (!class_exists('Mock_WPDB')) {
     class Mock_WPDB {
         public $prefix = 'wp_';
         public function prepare( $query, ...$args ) {
-            return $query; // Not doing real prep in mock
+            if (empty($args)) return $query;
+            $query = str_replace(['%d', '%s'], '%s', $query);
+            return vsprintf($query, $args);
         }
         public function get_var( $query ) {
             if ( strpos( $query, 'AVG(rating)' ) !== false ) {
-                return 4.5;
+                if ( strpos( $query, 'scale_id = 991' ) !== false ) {
+                    return 4.56; // Should be rounded to 4.6
+                }
+                if ( strpos( $query, 'scale_id = 992' ) !== false ) {
+                    return null; // Should return 0
+                }
+                if ( strpos( $query, 'scale_id = 993' ) !== false ) {
+                    return 0; // Should return 0
+                }
+                if ( strpos( $query, 'scale_id = 994' ) !== false ) {
+                    return '3.14159'; // String float, should be rounded to 3.1
+                }
+                return 4.5; // Default for the happy path test
             }
             return null;
         }
@@ -134,6 +152,48 @@ if ( isset($response3->data['scales']) && count($response3->data['scales']) === 
     $tests_passed++;
 } else {
     echo "❌ Test 3 (Missing limit parameter) failed.\n";
+}
+
+
+
+// --- Test get_average_rating (Private Method) ---
+echo "\nTesting get_average_rating...\n";
+
+$reflection = new ReflectionClass(get_class($plugin));
+$method = $reflection->getMethod('get_average_rating');
+$method->setAccessible(true);
+
+try {
+    // Test normal float rounding
+    $tests_total++;
+    $res1 = $method->invokeArgs($plugin, [991]);
+    assert($res1 === 4.6, "Expected 4.6, got $res1");
+    echo "✅ Test get_average_rating: float rounding passed.\n";
+    $tests_passed++;
+
+    // Test null handling (no ratings)
+    $tests_total++;
+    $res2 = $method->invokeArgs($plugin, [992]);
+    assert($res2 === 0, "Expected 0, got $res2");
+    echo "✅ Test get_average_rating: null handling passed.\n";
+    $tests_passed++;
+
+    // Test zero rating
+    $tests_total++;
+    $res3 = $method->invokeArgs($plugin, [993]);
+    assert($res3 === 0, "Expected 0, got $res3");
+    echo "✅ Test get_average_rating: zero handling passed.\n";
+    $tests_passed++;
+
+    // Test string float rounding
+    $tests_total++;
+    $res4 = $method->invokeArgs($plugin, [994]);
+    assert($res4 === 3.1, "Expected 3.1, got $res4");
+    echo "✅ Test get_average_rating: string float rounding passed.\n";
+    $tests_passed++;
+
+} catch (AssertionError $e) {
+    echo "❌ Test get_average_rating failed: " . $e->getMessage() . "\n";
 }
 
 echo "\nTests completed: $tests_passed/$tests_total passed.\n";
