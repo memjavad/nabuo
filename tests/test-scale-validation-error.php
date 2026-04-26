@@ -87,7 +87,7 @@ try {
 
         $has_exception_message = false;
         foreach ($resp2->data['issues'] as $issue) {
-            if (strpos($issue, 'Validation exception: Simulated database error') !== false) {
+            if (strpos($issue, 'An unexpected error occurred during validation.') !== false) {
                 $has_exception_message = true;
                 break;
             }
