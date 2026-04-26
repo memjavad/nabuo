@@ -1,0 +1,3 @@
+## 2024-04-26 - Extract PDF export HTML templates to partials
+**Learning:** Extracting large inline HTML strings (like HEREDOCs) into separate template files using `ob_start()`, `require`, and `ob_get_clean()` greatly improves maintainability. It also provides a good opportunity to introduce missing output escaping (e.g., `esc_html()`, `wp_kses_post()`) which was missing in the original HEREDOC block. Remember to always clean up scratchpad test files before requesting code review.
+**Action:** When asked to refactor long functions involving HTML strings in PHP, prefer extracting them into `partials/` with proper `ABSPATH` checks and escaping. Always double check `git status` for temporary files before committing.
