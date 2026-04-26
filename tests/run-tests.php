@@ -24,4 +24,16 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+
+// Run Test_Scale_Index
+echo "Running Test_Scale_Index...\n";
+exec('php ' . __DIR__ . '/test-scale-index.php', $output, $return_var);
+foreach ($output as $line) {
+    echo $line . "\n";
+}
+if ($return_var !== 0) {
+    echo "FAIL: test-scale-index.php\n";
+    exit(1);
+}
 echo "All tests passed.\n";
