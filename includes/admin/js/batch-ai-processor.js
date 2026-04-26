@@ -664,113 +664,124 @@
                 $progress.val(0);
 
                 if (totalPosts === 0) {
-                    rLogMessage('<strong>&#127881; No more posts on page ' + pageNum + '! All done.</strong>', 'green');
-                    // Clear cursor since we are done
-                    $.post(nabooBatchAI.ajax_url, { action: 'naboo_save_cursor', nonce: nabooBatchAI.nonce, page: 0 });
-                    $btn.prop('disabled', false).text('Fetch Current Page');
-                    $allBtn.prop('disabled', false).text('Fetch All Pages');
-                    window.isFetchingAll = false;
-                    setTimeout(function () { window.location.reload(); }, 2000);
+                    handleEmptyBatch();
                     return;
                 }
 
                 $status.html('<span style="color:green;">Page ' + pageNum + ': ' + totalPosts + ' posts found. Importing...</span>');
 
-                var currentIdx = 0;
-                var importedCount = 0;
-                var preFetchTriggered = false;
-                var sessionImported = window.nabooSessionImported || 0;
+                var batchState = {
+                    totalPosts: totalPosts,
+                    currentIdx: 0,
+                    importedCount: 0,
+                    preFetchTriggered: false,
+                    sessionImported: window.nabooSessionImported || 0,
+                    posts: posts
+                };
 
-                function importNextPost(postRetryCount) {
-                    postRetryCount = postRetryCount || 0;
+                importNextPost(batchState, 0);
+            }
 
-                    // --- All posts in this batch are done ---
-                    if (currentIdx >= totalPosts) {
-                        var nextPage = pageNum + 1;
-                        rLogMessage('<strong>&#9989; Finished page ' + pageNum + ': imported ' + importedCount + ', skipped ' + (totalPosts - importedCount) + '</strong>', 'green');
+            function handleEmptyBatch() {
+                rLogMessage('<strong>&#127881; No more posts on page ' + pageNum + '! All done.</strong>', 'green');
+                $.post(nabooBatchAI.ajax_url, { action: 'naboo_save_cursor', nonce: nabooBatchAI.nonce, page: 0 });
+                $btn.prop('disabled', false).text('Fetch Current Page');
+                $allBtn.prop('disabled', false).text('Fetch All Pages');
+                window.isFetchingAll = false;
+                setTimeout(function () { window.location.reload(); }, 2000);
+            }
 
-                        if (fetchAllPages) {
-                            // Save cursor so next session can resume from here
-                            $.post(nabooBatchAI.ajax_url, { action: 'naboo_save_cursor', nonce: nabooBatchAI.nonce, page: nextPage });
-                            window.isFetchingAll = true;
-                            $('#naboo_remote_page').val(nextPage);
+            function handleBatchComplete(batchState) {
+                var nextPage = pageNum + 1;
+                rLogMessage('<strong>&#9989; Finished page ' + pageNum + ': imported ' + batchState.importedCount + ', skipped ' + (batchState.totalPosts - batchState.importedCount) + '</strong>', 'green');
 
-                            // If we already have a pre-fetched batch, use it instantly
-                            var cached = window.nabooNextPagePosts;
-                            window.nabooNextPagePosts = null;
-                            if (cached !== null) {
-                                rLogMessage('&#9889; Next page already pre-fetched \u2014 starting page ' + nextPage + ' instantly!', '#007cba');
-                                setTimeout(function () { performFetchRemote(true, cached); }, 500);
-                            } else {
-                                rLogMessage('Waiting 10 seconds before page ' + nextPage + '...', '#007cba');
-                                setTimeout(function () { performFetchRemote(true, null); }, 10000);
-                            }
-                        } else {
-                            $.post(nabooBatchAI.ajax_url, { action: 'naboo_save_cursor', nonce: nabooBatchAI.nonce, page: 0 });
-                            $btn.prop('disabled', false).text('Fetch Current Page');
-                            $allBtn.prop('disabled', false).text('Fetch All Pages');
-                            window.isFetchingAll = false;
-                            setTimeout(function () { window.location.reload(); }, 2000);
-                        }
-                        return;
-                    }
+                if (fetchAllPages) {
+                    $.post(nabooBatchAI.ajax_url, { action: 'naboo_save_cursor', nonce: nabooBatchAI.nonce, page: nextPage });
+                    window.isFetchingAll = true;
+                    $('#naboo_remote_page').val(nextPage);
 
-                    // --- Trigger pre-fetch at 50% completion ---
-                    if (!preFetchTriggered && fetchAllPages && currentIdx >= Math.floor(totalPosts / 2)) {
-                        preFetchTriggered = true;
-                        triggerPrefetch(pageNum + 1);
-                    }
-
-                    var post = posts[currentIdx];
-                    if (postRetryCount === 0) {
-                        rLogMessage('[' + (currentIdx + 1) + '/' + totalPosts + '] ' + post.title);
+                    var cached = window.nabooNextPagePosts;
+                    window.nabooNextPagePosts = null;
+                    if (cached !== null) {
+                        rLogMessage('&#9889; Next page already pre-fetched \u2014 starting page ' + nextPage + ' instantly!', '#007cba');
+                        setTimeout(function () { performFetchRemote(true, cached); }, 500);
                     } else {
-                        rLogMessage('Retrying (' + postRetryCount + '/5): ' + post.title, '#ff9900');
+                        rLogMessage('Waiting 10 seconds before page ' + nextPage + '...', '#007cba');
+                        setTimeout(function () { performFetchRemote(true, null); }, 10000);
                     }
+                } else {
+                    $.post(nabooBatchAI.ajax_url, { action: 'naboo_save_cursor', nonce: nabooBatchAI.nonce, page: 0 });
+                    $btn.prop('disabled', false).text('Fetch Current Page');
+                    $allBtn.prop('disabled', false).text('Fetch All Pages');
+                    window.isFetchingAll = false;
+                    setTimeout(function () { window.location.reload(); }, 2000);
+                }
+            }
 
-                    $.ajax({
-                        url: nabooBatchAI.ajax_url,
-                        type: 'POST',
-                        data: {
-                            action: 'naboo_import_remote_single',
-                            nonce: nabooBatchAI.nonce,
-                            post_data: post
-                        },
-                        success: function (pRes) {
-                            if (pRes.success) {
-                                if (pRes.data.status === 'imported') {
-                                    importedCount++;
-                                    sessionImported++;
-                                    window.nabooSessionImported = sessionImported;
-                                    rLogMessage('&#9989; ' + pRes.data.message, 'green');
-                                    $('#naboo-session-count').text(sessionImported);
-                                    if (pRes.data.log_count !== undefined) {
-                                        $('#naboo-log-count-live, #naboo-log-count').text(Number(pRes.data.log_count).toLocaleString());
-                                    }
-                                } else {
-                                    rLogMessage('&#9197; ' + pRes.data.message, '#aaa');
-                                }
-                            } else {
-                                rLogMessage('&#10060; ' + (pRes.data.message || 'Error occurred.'), 'red');
-                            }
-                            currentIdx++;
-                            $progress.val(currentIdx);
-                            setTimeout(function () { importNextPost(0); }, 500);
-                        },
-                        error: function (xhr, stat, err) {
-                            rLogMessage('&#10060; Server error: ' + err, 'red');
-                            if (postRetryCount < 5) {
-                                setTimeout(function () { importNextPost(postRetryCount + 1); }, 10000);
-                            } else {
-                                currentIdx++;
-                                $progress.val(currentIdx);
-                                setTimeout(function () { importNextPost(0); }, 500);
-                            }
-                        }
-                    });
+            function updatePostProgress(pRes, batchState) {
+                if (pRes.data.status === 'imported') {
+                    batchState.importedCount++;
+                    batchState.sessionImported++;
+                    window.nabooSessionImported = batchState.sessionImported;
+                    rLogMessage('&#9989; ' + pRes.data.message, 'green');
+                    $('#naboo-session-count').text(batchState.sessionImported);
+                    if (pRes.data.log_count !== undefined) {
+                        $('#naboo-log-count-live, #naboo-log-count').text(Number(pRes.data.log_count).toLocaleString());
+                    }
+                } else {
+                    rLogMessage('&#9197; ' + pRes.data.message, '#aaa');
+                }
+            }
+
+            function importNextPost(batchState, postRetryCount) {
+                postRetryCount = postRetryCount || 0;
+
+                if (batchState.currentIdx >= batchState.totalPosts) {
+                    handleBatchComplete(batchState);
+                    return;
                 }
 
-                importNextPost(0);
+                if (!batchState.preFetchTriggered && fetchAllPages && batchState.currentIdx >= Math.floor(batchState.totalPosts / 2)) {
+                    batchState.preFetchTriggered = true;
+                    triggerPrefetch(pageNum + 1);
+                }
+
+                var post = batchState.posts[batchState.currentIdx];
+                if (postRetryCount === 0) {
+                    rLogMessage('[' + (batchState.currentIdx + 1) + '/' + batchState.totalPosts + '] ' + post.title);
+                } else {
+                    rLogMessage('Retrying (' + postRetryCount + '/5): ' + post.title, '#ff9900');
+                }
+
+                $.ajax({
+                    url: nabooBatchAI.ajax_url,
+                    type: 'POST',
+                    data: {
+                        action: 'naboo_import_remote_single',
+                        nonce: nabooBatchAI.nonce,
+                        post_data: post
+                    },
+                    success: function (pRes) {
+                        if (pRes.success) {
+                            updatePostProgress(pRes, batchState);
+                        } else {
+                            rLogMessage('&#10060; ' + (pRes.data.message || 'Error occurred.'), 'red');
+                        }
+                        batchState.currentIdx++;
+                        $progress.val(batchState.currentIdx);
+                        setTimeout(function () { importNextPost(batchState, 0); }, 500);
+                    },
+                    error: function (xhr, stat, err) {
+                        rLogMessage('&#10060; Server error: ' + err, 'red');
+                        if (postRetryCount < 5) {
+                            setTimeout(function () { importNextPost(batchState, postRetryCount + 1); }, 10000);
+                        } else {
+                            batchState.currentIdx++;
+                            $progress.val(batchState.currentIdx);
+                            setTimeout(function () { importNextPost(batchState, 0); }, 500);
+                        }
+                    }
+                });
             }
 
             fetchList(0);
