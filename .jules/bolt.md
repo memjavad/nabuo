@@ -1,3 +1,3 @@
-## 2024-05-24 - Missing no_found_rows in WP_Query
-**Learning:** Found several `WP_Query` instances that fetch exactly ONE post using `posts_per_page => 1` but forget to include `no_found_rows => true`. This is a classic WordPress bottleneck as WP_Query defaults to executing `SQL_CALC_FOUND_ROWS` to calculate pagination, which is highly inefficient when only fetching 1 record and when pagination isn't needed.
-**Action:** When creating or modifying single-post `WP_Query` lookups or unpaginated lists, aggressively add `'no_found_rows' => true`.
+## 2024-05-24 - N+1 Query in WP Admin Dashboard CSV Export
+**Learning:** Fetching metadata (`get_post_meta`) and terms (`get_the_terms`) inside a `WP_Query` loop generates separate SQL queries for each post (N+1 query problem). For an export covering many posts, this creates thousands of unnecessary queries, drastically slowing down performance.
+**Action:** When iterating over a large set of posts, always batch-fetch associated metadata and terms beforehand. Pluck post IDs using `wp_list_pluck( $query->posts, 'ID' )` and fetch the data in a single SQL query using `$wpdb->prepare` with an `IN` clause. Group results by post ID to assign them back efficiently. Additionally, use `'no_found_rows' => true` in `WP_Query` to skip the costly `SQL_CALC_FOUND_ROWS` computation when pagination is not required.
