@@ -79,25 +79,6 @@ class Ajax {
             ob_start();
             while ( $query->have_posts() ) {
                 $query->the_post();
-                // We should reuse the search-results.php partial loop logic here, 
-                // but since search-results.php likely expects a loop context or is the loop itself...
-                // Let's create a partial for a SINGLE item, so we can loop here.
-                // Or just output HTML here directly or include a loop partial.
-                // For now, let's include the existing loop partial which likely iterates.
-                // Wait, if I include 'partials/search-results.php', it probably does `while(have_posts())`.
-                // Let's check `search-results.php` content in next step.
-                // Assuming it loops, I can just include it? NO, `search-results.php` might rely on global $wp_query or just $query variable if passed?
-                // Step 22 showed `search-results.php` being included if `$query->have_posts()`.
-                // I'll make sure to set the global `$post` or pass `$query` to it?
-                // The cleanest way is to pass the $query object to the partial.
-                // But `search-results.php` might be written to use the global query.
-                // I will inspect `search-results.php` before deciding.
-                
-                // For now, I will assume I can just use a simple loop here or refactor later.
-                // I'll leave a placeholder.
-                
-                // Actually, let's just output JSON? No, the plan said "Render search results".
-                // I'll output HTML.
                 include plugin_dir_path( __FILE__ ) . '../partials/content-scale.php';
             }
             $html = ob_get_clean();
