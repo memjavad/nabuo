@@ -140,13 +140,38 @@ class Comments_Moderation {
 			return;
 		}
 
-		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'pending';
-		$search     = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
+		$active_tab = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'pending';
+		$search     = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 		$paged      = max( 1, absint( $_GET['paged'] ?? 1 ) );
 		$per_page   = 20;
 		$offset     = ( $paged - 1 ) * $per_page;
 
-		// Count per status
+		$counts = $this->get_status_counts( $table );
+		$where_data = $this->build_where_clause( $active_tab, $search );
+
+		$total = $this->get_total_comments( $table, $where_data['sql'], $where_data['args'] );
+		$comments = $this->get_comments( $table, $where_data['sql'], $where_data['args'], $per_page, $offset );
+
+		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( wp_unslash( $_GET['notice'] ) ) : '';
+
+		echo '<div class="wrap naboo-admin-page">';
+		$this->render_header( $counts );
+		$this->render_notices( $notice );
+		$this->render_stat_cards( $counts );
+		$this->render_tabs( $active_tab, $search, $counts );
+		$this->render_filters( $active_tab, $search, $total );
+		$this->render_form_start( $active_tab );
+		$this->render_bulk_actions();
+		$this->render_table( $comments );
+		$this->render_pagination( $total, $per_page, $paged, $active_tab, $search );
+		$this->render_form_end();
+		$this->render_styles();
+		$this->render_scripts();
+		echo '</div><!-- /.naboo-admin-page -->';
+	}
+
+	private function get_status_counts( $table ) {
+		global $wpdb;
 		$counts = array(
 			'pending'  => 0,
 			'approved' => 0,
@@ -160,8 +185,11 @@ class Comments_Moderation {
 			}
 		}
 		$counts['all'] = array_sum( $counts );
+		return $counts;
+	}
 
-		// Build WHERE
+	private function build_where_clause( $active_tab, $search ) {
+		global $wpdb;
 		$where_sql = 'WHERE 1=1';
 		$where_args = array();
 
@@ -177,12 +205,23 @@ class Comments_Moderation {
 			$where_args[] = $like;
 		}
 
+		return array(
+			'sql'  => $where_sql,
+			'args' => $where_args,
+		);
+	}
+
+	private function get_total_comments( $table, $where_sql, $where_args ) {
+		global $wpdb;
 		$total_query = "SELECT COUNT(*) FROM `{$table}` c {$where_sql}";
 		if ( ! empty( $where_args ) ) {
-			$total_query = $wpdb->prepare( $total_query, ...$where_args );
+			$total_query = $wpdb->prepare( $total_query, $where_args );
 		}
-		$total = (int) $wpdb->get_var( $total_query );
+		return (int) $wpdb->get_var( $total_query );
+	}
 
+	private function get_comments( $table, $where_sql, $where_args, $per_page, $offset ) {
+		global $wpdb;
 		$results_query = "SELECT c.*, p.post_title AS scale_title
 				 FROM `{$table}` c
 				 LEFT JOIN {$wpdb->posts} p ON p.ID = c.scale_id
@@ -191,10 +230,94 @@ class Comments_Moderation {
 				 LIMIT %d OFFSET %d";
 
 		$results_args = array_merge( $where_args, array( $per_page, $offset ) );
-		$comments = $wpdb->get_results( $wpdb->prepare( $results_query, ...$results_args ) );
+		return $wpdb->get_results( $wpdb->prepare( $results_query, $results_args ) );
+	}
 
-		$notice = isset( $_GET['notice'] ) ? sanitize_text_field( $_GET['notice'] ) : '';
+	private function render_header( $counts ) {
+		?>
+		<!-- Header -->
+		<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
+			<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99, 102, 241, 0.1); filter: blur(80px); border-radius: 50%;"></div>
+			<div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
+				<div class="naboo-admin-header-left">
+					<h1 style="color: white !important; font-size: 36px !important; margin: 0 !important; font-weight: 800; letter-spacing: -0.025em; display: flex; align-items: center; gap: 20px;">
+						<span style="background: rgba(255,255,255,0.1); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">💬</span>
+						<?php esc_html_e( 'Comments Moderation', 'naboodatabase' ); ?>
+					</h1>
+					<p style="margin: 16px 0 0 84px !important; color: #94a3b8; font-size: 18px; max-width: 600px; line-height: 1.6;"><?php esc_html_e( 'Manage and moderate discussions on your scale submissions. Quick approve, spam management, and nested reply tracking.', 'naboodatabase' ); ?></p>
+				</div>
+				<div class="naboo-admin-header-right">
+					<?php if ( $counts['pending'] > 0 ) : ?>
+						<div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 12px;">
+							<span style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; box-shadow: 0 0 10px #f59e0b;"></span>
+							<span style="color: #fbd38d; font-weight: 700; font-size: 14px;"><?php echo absint( $counts['pending'] ); ?> <?php esc_html_e( 'Action Required', 'naboodatabase' ); ?></span>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
 
+	private function render_notices( $notice ) {
+		if ( ! $notice ) {
+			return;
+		}
+		?>
+		<!-- Notice banner -->
+		<div class="naboo-notice <?php echo $notice === 'approved' ? 'success' : ( $notice === 'deleted' ? 'warning' : 'info' ); ?>" style="margin-bottom:16px;">
+			<span>
+			<?php
+			switch ( $notice ) {
+				case 'approved': esc_html_e( '✅ Comment(s) approved successfully.', 'naboodatabase' ); break;
+				case 'rejected': esc_html_e( '🚫 Comment(s) rejected.', 'naboodatabase' ); break;
+				case 'spam':     esc_html_e( '⚠️ Comment(s) marked as spam.', 'naboodatabase' ); break;
+				case 'deleted':  esc_html_e( '🗑️ Comment(s) deleted.', 'naboodatabase' ); break;
+				case 'none_selected': esc_html_e( 'No comments selected.', 'naboodatabase' ); break;
+			}
+			?>
+			</span>
+		</div>
+		<?php
+	}
+
+	private function render_stat_cards( $counts ) {
+		?>
+		<!-- Stat Cards -->
+		<div class="naboo-stat-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px;">
+			<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
+				<div style="background: #fffbeb; color: #d97706; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🕐</div>
+				<div>
+					<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['pending'] ); ?></div>
+					<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Pending Review', 'naboodatabase' ); ?></div>
+				</div>
+			</div>
+			<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
+				<div style="background: #ecfdf5; color: #10b981; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">✅</div>
+				<div>
+					<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['approved'] ); ?></div>
+					<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Approved Live', 'naboodatabase' ); ?></div>
+				</div>
+			</div>
+			<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
+				<div style="background: #fef2f2; color: #ef4444; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🚫</div>
+				<div>
+					<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['rejected'] ); ?></div>
+					<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Rejected Items', 'naboodatabase' ); ?></div>
+				</div>
+			</div>
+			<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
+				<div style="background: #f8fafc; color: #475569; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">⚠️</div>
+				<div>
+					<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['spam'] ); ?></div>
+					<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Marked as Spam', 'naboodatabase' ); ?></div>
+				</div>
+			</div>
+		</div>
+		<?php
+	}
+
+	private function render_tabs( $active_tab, $search, $counts ) {
 		$tab_labels = array(
 			'all'      => array( 'label' => __( 'All', 'naboodatabase' ),      'icon' => '📋' ),
 			'pending'  => array( 'label' => __( 'Pending', 'naboodatabase' ),   'icon' => '🕐' ),
@@ -202,7 +325,81 @@ class Comments_Moderation {
 			'rejected' => array( 'label' => __( 'Rejected', 'naboodatabase' ),  'icon' => '🚫' ),
 			'spam'     => array( 'label' => __( 'Spam', 'naboodatabase' ),       'icon' => '⚠️' ),
 		);
+		?>
+		<!-- Tabs -->
+		<div class="naboo-tabs-container" style="margin-bottom: 32px; display: flex; gap: 4px; background: #f1f5f9; padding: 6px; border-radius: 14px; width: fit-content; border: 1px solid #e2e8f0;">
+			<?php foreach ( $tab_labels as $tab_key => $info ) : ?>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=naboo-comments-moderation&tab=' . $tab_key . ( $search ? '&s=' . urlencode( $search ) : '' ) ) ); ?>"
+				   class="naboo-tab-btn <?php echo $active_tab === $tab_key ? 'active' : ''; ?>"
+				   style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px; border-radius: 10px; font-weight: 700; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: <?php echo $active_tab === $tab_key ? 'white' : 'transparent'; ?>; color: <?php echo $active_tab === $tab_key ? '#1e293b' : '#64748b'; ?>; <?php echo $active_tab === $tab_key ? 'box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0;' : ''; ?>">
+					<span><?php echo esc_html( $info['icon'] ); ?></span>
+					<?php echo esc_html( $info['label'] ); ?>
+					<?php if ( isset( $counts[ $tab_key ] ) && $counts[ $tab_key ] > 0 ) : ?>
+						<span style="background: <?php echo $active_tab === $tab_key ? '#f1f5f9' : 'rgba(0,0,0,0.05)'; ?>; color: #475569; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.05);"><?php echo absint( $counts[ $tab_key ] ); ?></span>
+					<?php endif; ?>
+				</a>
+			<?php endforeach; ?>
+		</div>
+		<?php
+	}
 
+	private function render_filters( $active_tab, $search, $total ) {
+		?>
+		<!-- Filters -->
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: white; padding: 20px 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+			<form method="get" action="" style="display:flex;gap:12px;align-items:center; flex: 1;">
+				<input type="hidden" name="page" value="naboo-comments-moderation">
+				<input type="hidden" name="tab" value="<?php echo esc_attr( $active_tab ); ?>">
+				<div style="position: relative; flex: 1; max-width: 400px;">
+					<span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px;">🔍</span>
+					<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>"
+						   placeholder="<?php esc_attr_e( 'Search by term, author or email…', 'naboodatabase' ); ?>"
+						   style="width:100%; padding:12px 16px 12px 44px; border:1px solid #cbd5e1; border-radius:12px; font-size:14px; transition: all 0.2s; background: #fff;" />
+				</div>
+				<button type="submit" class="naboo-btn" style="background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;"><?php esc_html_e( 'Filter Results', 'naboodatabase' ); ?></button>
+				<?php if ( $search ) : ?>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=naboo-comments-moderation&tab=' . $active_tab ) ); ?>" style="color: #64748b; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><?php esc_html_e( '✕ Clear Search', 'naboodatabase' ); ?></a>
+				<?php endif; ?>
+			</form>
+			<div style="font-size: 14px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 8px 16px; border-radius: 999px;">
+				<?php printf( esc_html( _n( '%s Submission Found', '%s Submissions Found', $total, 'naboodatabase' ) ), number_format_i18n( $total ) ); ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	private function render_form_start( $active_tab ) {
+		?>
+		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+			<?php wp_nonce_field( 'naboo_comment_action', 'naboo_comment_action_nonce' ); ?>
+			<input type="hidden" name="action" value="naboo_comment_action">
+			<input type="hidden" name="current_tab" value="<?php echo esc_attr( $active_tab ); ?>">
+		<?php
+	}
+
+	private function render_form_end() {
+		?>
+		</form>
+		<?php
+	}
+
+	private function render_bulk_actions() {
+		?>
+		<!-- Bulk actions bar -->
+		<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px; padding: 0 8px;">
+			<select name="naboo_action" id="naboo-bulk-action" style="padding:10px 16px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px; background: white; font-weight: 600; cursor: pointer; min-width: 180px;">
+				<option value=""><?php esc_html_e( 'Batch Operations…', 'naboodatabase' ); ?></option>
+				<option value="approve"><?php esc_html_e( 'Approve Selected', 'naboodatabase' ); ?></option>
+				<option value="reject"><?php esc_html_e( 'Reject Selected', 'naboodatabase' ); ?></option>
+				<option value="spam"><?php esc_html_e( 'Mark as Spam', 'naboodatabase' ); ?></option>
+				<option value="delete"><?php esc_html_e( 'Permanent Delete', 'naboodatabase' ); ?></option>
+			</select>
+			<button type="submit" class="naboo-btn" style="background: #1e293b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;"><?php esc_html_e( 'Apply Batch', 'naboodatabase' ); ?></button>
+		</div>
+		<?php
+	}
+
+	private function render_table( $comments ) {
 		$badge_class = array(
 			'pending'  => 'naboo-badge-amber',
 			'approved' => 'naboo-badge-green',
@@ -210,281 +407,164 @@ class Comments_Moderation {
 			'spam'     => 'naboo-badge-red',
 		);
 		?>
-		<div class="wrap naboo-admin-page">
-
-			<!-- Header -->
-			<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
-				<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99, 102, 241, 0.1); filter: blur(80px); border-radius: 50%;"></div>
-				<div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
-					<div class="naboo-admin-header-left">
-						<h1 style="color: white !important; font-size: 36px !important; margin: 0 !important; font-weight: 800; letter-spacing: -0.025em; display: flex; align-items: center; gap: 20px;">
-							<span style="background: rgba(255,255,255,0.1); width: 64px; height: 64px; display: flex; align-items: center; justify-content: center; border-radius: 16px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1);">💬</span>
-							<?php esc_html_e( 'Comments Moderation', 'naboodatabase' ); ?>
-						</h1>
-						<p style="margin: 16px 0 0 84px !important; color: #94a3b8; font-size: 18px; max-width: 600px; line-height: 1.6;"><?php esc_html_e( 'Manage and moderate discussions on your scale submissions. Quick approve, spam management, and nested reply tracking.', 'naboodatabase' ); ?></p>
-					</div>
-					<div class="naboo-admin-header-right">
-						<?php if ( $counts['pending'] > 0 ) : ?>
-							<div style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.2); padding: 12px 20px; border-radius: 12px; backdrop-filter: blur(4px); display: flex; align-items: center; gap: 12px;">
-								<span style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; box-shadow: 0 0 10px #f59e0b;"></span>
-								<span style="color: #fbd38d; font-weight: 700; font-size: 14px;"><?php echo absint( $counts['pending'] ); ?> <?php esc_html_e( 'Action Required', 'naboodatabase' ); ?></span>
-							</div>
-						<?php endif; ?>
-					</div>
+		<!-- Comments table -->
+		<div class="naboo-admin-card" style="padding:0;overflow:hidden; background: white; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);">
+			<?php if ( empty( $comments ) ) : ?>
+				<div style="padding:80px 48px; text-align:center; color:#94a3b8;">
+					<div style="font-size:64px; margin-bottom:24px; opacity: 0.5;">💬</div>
+					<h3 style="font-size:20px; font-weight:800; color:#1e293b; margin:0;"><?php esc_html_e( 'No Comments Found', 'naboodatabase' ); ?></h3>
+					<p style="font-size:14px; margin-top:8px;"><?php esc_html_e( 'Your moderation queue is empty. Good job!', 'naboodatabase' ); ?></p>
 				</div>
-			</div>
-
-			<!-- Notice banner -->
-			<?php if ( $notice ) : ?>
-			<div class="naboo-notice <?php echo $notice === 'approved' ? 'success' : ( $notice === 'deleted' ? 'warning' : 'info' ); ?>" style="margin-bottom:16px;">
-				<span>
+			<?php else : ?>
+			<table class="naboo-log-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
+				<thead>
+					<tr>
+						<th style="width:40px; text-align:center;"><input type="checkbox" id="naboo-select-all" style="width: 18px; height: 18px; cursor: pointer; accent-color: #4f46e5;"></th>
+						<th style="width: 250px;"><?php esc_html_e( 'Author Details', 'naboodatabase' ); ?></th>
+						<th><?php esc_html_e( 'Comment Content', 'naboodatabase' ); ?></th>
+						<th style="width: 200px;"><?php esc_html_e( 'Scale Context', 'naboodatabase' ); ?></th>
+						<th style="width: 120px;"><?php esc_html_e( 'Status', 'naboodatabase' ); ?></th>
+						<th style="width: 150px;"><?php esc_html_e( 'Date', 'naboodatabase' ); ?></th>
+						<th style="width: 160px; text-align: right; padding-right: 32px;"><?php esc_html_e( 'Quick Actions', 'naboodatabase' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
 				<?php
-				switch ( $notice ) {
-					case 'approved': esc_html_e( '✅ Comment(s) approved successfully.', 'naboodatabase' ); break;
-					case 'rejected': esc_html_e( '🚫 Comment(s) rejected.', 'naboodatabase' ); break;
-					case 'spam':     esc_html_e( '⚠️ Comment(s) marked as spam.', 'naboodatabase' ); break;
-					case 'deleted':  esc_html_e( '🗑️ Comment(s) deleted.', 'naboodatabase' ); break;
-					case 'none_selected': esc_html_e( 'No comments selected.', 'naboodatabase' ); break;
-				}
+				foreach ( $comments as $comment ) :
+					$bc = $badge_class[ $comment->status ] ?? 'naboo-badge-gray';
 				?>
-				</span>
-			</div>
-			<?php endif; ?>
-
-			<!-- Stat Cards -->
-			<div class="naboo-stat-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px;">
-				<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
-					<div style="background: #fffbeb; color: #d97706; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🕐</div>
-					<div>
-						<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['pending'] ); ?></div>
-						<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Pending Review', 'naboodatabase' ); ?></div>
-					</div>
-				</div>
-				<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
-					<div style="background: #ecfdf5; color: #10b981; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">✅</div>
-					<div>
-						<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['approved'] ); ?></div>
-						<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Approved Live', 'naboodatabase' ); ?></div>
-					</div>
-				</div>
-				<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
-					<div style="background: #fef2f2; color: #ef4444; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">🚫</div>
-					<div>
-						<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['rejected'] ); ?></div>
-						<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Rejected Items', 'naboodatabase' ); ?></div>
-					</div>
-				</div>
-				<div class="naboo-stat-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 20px;">
-					<div style="background: #f8fafc; color: #475569; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">⚠️</div>
-					<div>
-						<div style="font-size: 24px; font-weight: 800; color: #1e293b; line-height: 1;"><?php echo absint( $counts['spam'] ); ?></div>
-						<div style="font-size: 13px; font-weight: 600; color: #64748b; margin-top: 4px;"><?php esc_html_e( 'Marked as Spam', 'naboodatabase' ); ?></div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Tab nav -->
-			<!-- Tabs -->
-			<div class="naboo-tabs-container" style="margin-bottom: 32px; display: flex; gap: 4px; background: #f1f5f9; padding: 6px; border-radius: 14px; width: fit-content; border: 1px solid #e2e8f0;">
-				<?php foreach ( $tab_labels as $tab_key => $info ) : ?>
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=naboo-comments-moderation&tab=' . $tab_key . ( $search ? '&s=' . urlencode( $search ) : '' ) ) ); ?>"
-					   class="naboo-tab-btn <?php echo $active_tab === $tab_key ? 'active' : ''; ?>"
-					   style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px; border-radius: 10px; font-weight: 700; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: <?php echo $active_tab === $tab_key ? 'white' : 'transparent'; ?>; color: <?php echo $active_tab === $tab_key ? '#1e293b' : '#64748b'; ?>; <?php echo $active_tab === $tab_key ? 'box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0;' : ''; ?>">
-						<span><?php echo esc_html( $info['icon'] ); ?></span>
-						<?php echo esc_html( $info['label'] ); ?>
-						<?php if ( isset( $counts[ $tab_key ] ) && $counts[ $tab_key ] > 0 ) : ?>
-							<span style="background: <?php echo $active_tab === $tab_key ? '#f1f5f9' : 'rgba(0,0,0,0.05)'; ?>; color: #475569; border-radius: 10px; padding: 2px 8px; font-size: 11px; font-weight: 800; border: 1px solid rgba(0,0,0,0.05);"><?php echo absint( $counts[ $tab_key ] ); ?></span>
-						<?php endif; ?>
-					</a>
-				<?php endforeach; ?>
-			</div>
-
-			<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: white; padding: 20px 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-				<form method="get" action="" style="display:flex;gap:12px;align-items:center; flex: 1;">
-					<input type="hidden" name="page" value="naboo-comments-moderation">
-					<input type="hidden" name="tab" value="<?php echo esc_attr( $active_tab ); ?>">
-					<div style="position: relative; flex: 1; max-width: 400px;">
-						<span style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 16px;">🔍</span>
-						<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>"
-							   placeholder="<?php esc_attr_e( 'Search by term, author or email…', 'naboodatabase' ); ?>"
-							   style="width:100%; padding:12px 16px 12px 44px; border:1px solid #cbd5e1; border-radius:12px; font-size:14px; transition: all 0.2s; background: #fff;" />
-					</div>
-					<button type="submit" class="naboo-btn" style="background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;"><?php esc_html_e( 'Filter Results', 'naboodatabase' ); ?></button>
-					<?php if ( $search ) : ?>
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=naboo-comments-moderation&tab=' . $active_tab ) ); ?>" style="color: #64748b; font-size: 14px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 4px;"><?php esc_html_e( '✕ Clear Search', 'naboodatabase' ); ?></a>
-					<?php endif; ?>
-				</form>
-				<div style="font-size: 14px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 8px 16px; border-radius: 999px;">
-					<?php printf( _n( '%s Submission Found', '%s Submissions Found', $total, 'naboodatabase' ), number_format_i18n( $total ) ); ?>
-				</div>
-			</div>
-
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
-				<?php wp_nonce_field( 'naboo_comment_action', 'naboo_comment_action_nonce' ); ?>
-				<input type="hidden" name="action" value="naboo_comment_action">
-				<input type="hidden" name="current_tab" value="<?php echo esc_attr( $active_tab ); ?>">
-
-				<!-- Bulk actions bar -->
-				<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px; padding: 0 8px;">
-					<select name="naboo_action" id="naboo-bulk-action" style="padding:10px 16px; border:1px solid #cbd5e1; border-radius:10px; font-size:14px; background: white; font-weight: 600; cursor: pointer; min-width: 180px;">
-						<option value=""><?php esc_html_e( 'Batch Operations…', 'naboodatabase' ); ?></option>
-						<option value="approve"><?php esc_html_e( 'Approve Selected', 'naboodatabase' ); ?></option>
-						<option value="reject"><?php esc_html_e( 'Reject Selected', 'naboodatabase' ); ?></option>
-						<option value="spam"><?php esc_html_e( 'Mark as Spam', 'naboodatabase' ); ?></option>
-						<option value="delete"><?php esc_html_e( 'Permanent Delete', 'naboodatabase' ); ?></option>
-					</select>
-					<button type="submit" class="naboo-btn" style="background: #1e293b; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: all 0.2s;"><?php esc_html_e( 'Apply Batch', 'naboodatabase' ); ?></button>
-				</div>
-
-				<!-- Comments table -->
-				<div class="naboo-admin-card" style="padding:0;overflow:hidden; background: white; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);">
-					<?php if ( empty( $comments ) ) : ?>
-						<div style="padding:80px 48px; text-align:center; color:#94a3b8;">
-							<div style="font-size:64px; margin-bottom:24px; opacity: 0.5;">💬</div>
-							<h3 style="font-size:20px; font-weight:800; color:#1e293b; margin:0;"><?php esc_html_e( 'No Comments Found', 'naboodatabase' ); ?></h3>
-							<p style="font-size:14px; margin-top:8px;"><?php esc_html_e( 'Your moderation queue is empty. Good job!', 'naboodatabase' ); ?></p>
+				<tr id="comment-row-<?php echo absint( $comment->id ); ?>" style="transition: all 0.2s;">
+					<td style="text-align: center; vertical-align: middle;"><input type="checkbox" name="bulk_ids[]" value="<?php echo absint( $comment->id ); ?>" style="width: 18px; height: 18px; cursor: pointer; accent-color: #4f46e5;"></td>
+					<td style="vertical-align: middle;">
+						<div style="display: flex; align-items: center; gap: 12px;">
+							<div style="background: #f1f5f9; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #475569; font-size: 14px; border: 1px solid #e2e8f0;">
+								<?php echo esc_html( strtoupper( substr( $comment->user_name ?: 'G', 0, 1 ) ) ); ?>
+							</div>
+							<div>
+								<strong style="display:block; font-size:15px; color: #1e293b; font-weight: 700;"><?php echo esc_html( $comment->user_name ?: __( 'Guest User', 'naboodatabase' ) ); ?></strong>
+								<span style="font-size:12px; color:#64748b; font-weight: 500;"><?php echo esc_html( $comment->user_email ); ?></span>
+							</div>
 						</div>
-					<?php else : ?>
-					<table class="naboo-log-table" style="width: 100%; border-collapse: separate; border-spacing: 0;">
-						<thead>
-							<tr>
-								<th style="width:48px; padding: 20px 24px; text-align: center;"><input type="checkbox" id="naboo-select-all" style="width: 18px; height: 18px; cursor: pointer; accent-color: #4f46e5;"></th>
-								<th><?php esc_html_e( 'Contributor', 'naboodatabase' ); ?></th>
-								<th><?php esc_html_e( 'Discussion Content', 'naboodatabase' ); ?></th>
-								<th><?php esc_html_e( 'Source Scale', 'naboodatabase' ); ?></th>
-								<th><?php esc_html_e( 'Moderation', 'naboodatabase' ); ?></th>
-								<th><?php esc_html_e( 'Activity Date', 'naboodatabase' ); ?></th>
-								<th style="text-align: right; padding-right: 32px;"><?php esc_html_e( 'Review Tools', 'naboodatabase' ); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-						<?php foreach ( $comments as $comment ) :
-							$bc = $badge_class[ $comment->status ] ?? 'naboo-badge-gray';
-						?>
-						<tr id="comment-row-<?php echo absint( $comment->id ); ?>" style="transition: all 0.2s;">
-							<td style="text-align: center; vertical-align: middle;"><input type="checkbox" name="bulk_ids[]" value="<?php echo absint( $comment->id ); ?>" style="width: 18px; height: 18px; cursor: pointer; accent-color: #4f46e5;"></td>
-							<td style="vertical-align: middle;">
-								<div style="display: flex; align-items: center; gap: 12px;">
-									<div style="background: #f1f5f9; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #475569; font-size: 14px; border: 1px solid #e2e8f0;">
-										<?php echo strtoupper(substr($comment->user_name ?: 'G', 0, 1)); ?>
-									</div>
-									<div>
-										<strong style="display:block; font-size:15px; color: #1e293b; font-weight: 700;"><?php echo esc_html( $comment->user_name ?: __( 'Guest User', 'naboodatabase' ) ); ?></strong>
-										<span style="font-size:12px; color:#64748b; font-weight: 500;"><?php echo esc_html( $comment->user_email ); ?></span>
-									</div>
+					</td>
+					<td>
+						<div style="max-width:400px; padding: 8px 0;">
+							<?php if ( $comment->parent_id > 0 ) : ?>
+								<div style="margin-bottom: 8px;">
+									<span style="font-size:11px; font-weight: 800; color: #4f46e5; background: #eef2ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #e0e7ff; text-transform: uppercase; letter-spacing: 0.05em;">🔗 <?php esc_html_e( 'Thread Reply', 'naboodatabase' ); ?></span>
 								</div>
-							</td>
-							<td>
-								<div style="max-width:400px; padding: 8px 0;">
-									<?php if ( $comment->parent_id > 0 ) : ?>
-										<div style="margin-bottom: 8px;">
-											<span style="font-size:11px; font-weight: 800; color: #4f46e5; background: #eef2ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #e0e7ff; text-transform: uppercase; letter-spacing: 0.05em;">🔗 <?php esc_html_e( 'Thread Reply', 'naboodatabase' ); ?></span>
-										</div>
-									<?php endif; ?>
-									<div style="font-size:14px; line-height:1.6; color:#334155; font-weight: 500;">
-										<?php echo esc_html( mb_substr( $comment->comment_text, 0, 180 ) . ( mb_strlen( $comment->comment_text ) > 180 ? '…' : '' ) ); ?>
-									</div>
-									<?php if ( $comment->helpful_count > 0 || $comment->unhelpful_count > 0 ) : ?>
-										<div style="margin-top: 12px; display: flex; gap: 16px;">
-											<span style="font-size:12px; color:#10b981; font-weight: 700; background: #ecfdf5; padding: 2px 10px; border-radius: 999px; border: 1px solid #d1fae5;">👍 <?php echo absint( $comment->helpful_count ); ?></span>
-											<span style="font-size:12px; color:#ef4444; font-weight: 700; background: #fef2f2; padding: 2px 10px; border-radius: 999px; border: 1px solid #fee2e2;">👎 <?php echo absint( $comment->unhelpful_count ); ?></span>
-										</div>
-									<?php endif; ?>
+							<?php endif; ?>
+							<div style="font-size:14px; line-height:1.6; color:#334155; font-weight: 500;">
+								<?php echo esc_html( mb_substr( $comment->comment_text, 0, 180 ) . ( mb_strlen( $comment->comment_text ) > 180 ? '…' : '' ) ); ?>
+							</div>
+							<?php if ( $comment->helpful_count > 0 || $comment->unhelpful_count > 0 ) : ?>
+								<div style="margin-top: 12px; display: flex; gap: 16px;">
+									<span style="font-size:12px; color:#10b981; font-weight: 700; background: #ecfdf5; padding: 2px 10px; border-radius: 999px; border: 1px solid #d1fae5;">👍 <?php echo absint( $comment->helpful_count ); ?></span>
+									<span style="font-size:12px; color:#ef4444; font-weight: 700; background: #fef2f2; padding: 2px 10px; border-radius: 999px; border: 1px solid #fee2e2;">👎 <?php echo absint( $comment->unhelpful_count ); ?></span>
 								</div>
-							</td>
-							<td style="vertical-align: middle;">
-								<?php if ( $comment->scale_title ) : ?>
-									<a href="<?php echo esc_url( get_permalink( $comment->scale_id ) ); ?>" target="_blank" style="font-size:14px; color:#4f46e5; font-weight: 700; text-decoration:none; display: flex; align-items: center; gap: 6px;">
-										<span style="background: #eef2ff; padding: 4px; border-radius: 6px;">📄</span>
-										<?php echo esc_html( mb_substr( $comment->scale_title, 0, 35 ) . ( mb_strlen( $comment->scale_title ) > 35 ? '…' : '' ) ); ?>
-									</a>
-								<?php else : ?>
-									<span style="color:#94a3b8; font-size:13px; font-style: italic;"><?php esc_html_e( 'Original scale removed', 'naboodatabase' ); ?></span>
-								<?php endif; ?>
-							</td>
-							<td style="vertical-align: middle;">
-								<span class="status-badge <?php echo esc_attr( str_replace('naboo-badge-', '', $bc) ); ?>"><?php echo esc_html( $comment->status ); ?></span>
-							</td>
-							<td style="vertical-align: middle; white-space: nowrap;">
-								<div style="font-size:13px; color:#1e293b; font-weight: 700;"><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $comment->created_at ) ) ); ?></div>
-								<div style="font-size:11px; color:#94a3b8; font-weight: 600;"><?php echo esc_html( date_i18n( 'H:i', strtotime( $comment->created_at ) ) ); ?></div>
-							</td>
-							<td style="vertical-align: middle; text-align: right; padding-right: 32px;">
-								<div style="display:flex; gap:8px; justify-content: flex-end;">
-									<?php if ( $comment->status !== 'approved' ) : ?>
-									<button type="submit" name="naboo_action" value="approve" onclick="document.querySelector('#comment-row-<?php echo absint( $comment->id ); ?> input[type=checkbox]').checked=true;"
-									        class="naboo-tool-btn" style="background:#ecfdf5; color:#059669; border:1px solid #d1fae5; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Approve" aria-label="<?php esc_attr_e( 'Approve', 'naboodatabase' ); ?>">
-										<strong>✓</strong>
-									</button>
-									<?php endif; ?>
-									<?php if ( $comment->status !== 'rejected' ) : ?>
-									<button type="submit" name="naboo_action" value="reject" onclick="document.querySelector('#comment-row-<?php echo absint( $comment->id ); ?> input[type=checkbox]').checked=true;"
-									        class="naboo-tool-btn" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Reject" aria-label="<?php esc_attr_e( 'Reject', 'naboodatabase' ); ?>">
-										<strong>✕</strong>
-									</button>
-									<?php endif; ?>
-									<button type="submit" name="naboo_action" value="delete"
-									        onclick="if(!confirm('<?php esc_attr_e( 'Permanently delete this comment and its replies?', 'naboodatabase' ); ?>'))return false;document.querySelector('#comment-row-<?php echo absint( $comment->id ); ?> input[type=checkbox]').checked=true;"
-									        class="naboo-tool-btn" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Delete" aria-label="<?php esc_attr_e( 'Delete', 'naboodatabase' ); ?>">
-										<strong>🗑️</strong>
-									</button>
-								</div>
-								<input type="hidden" name="comment_id" value="" id="single-id-<?php echo absint( $comment->id ); ?>">
-							</td>
-						</tr>
-						<?php endforeach; ?>
-						</tbody>
-					</table>
-					<?php endif; ?>
-				</div>
+							<?php endif; ?>
+						</div>
+					</td>
+					<td style="vertical-align: middle;">
+						<?php if ( $comment->scale_title ) : ?>
+							<a href="<?php echo esc_url( get_permalink( $comment->scale_id ) ); ?>" target="_blank" style="font-size:14px; color:#4f46e5; font-weight: 700; text-decoration:none; display: flex; align-items: center; gap: 6px;">
+								<span style="background: #eef2ff; padding: 4px; border-radius: 6px;">📄</span>
+								<?php echo esc_html( mb_substr( $comment->scale_title, 0, 35 ) . ( mb_strlen( $comment->scale_title ) > 35 ? '…' : '' ) ); ?>
+							</a>
+						<?php else : ?>
+							<span style="color:#94a3b8; font-size:13px; font-style: italic;"><?php esc_html_e( 'Original scale removed', 'naboodatabase' ); ?></span>
+						<?php endif; ?>
+					</td>
+					<td style="vertical-align: middle;">
+						<span class="status-badge <?php echo esc_attr( str_replace('naboo-badge-', '', $bc) ); ?>"><?php echo esc_html( $comment->status ); ?></span>
+					</td>
+					<td style="vertical-align: middle; white-space: nowrap;">
+						<div style="font-size:13px; color:#1e293b; font-weight: 700;"><?php echo esc_html( date_i18n( get_option( 'date_format' ), strtotime( $comment->created_at ) ) ); ?></div>
+						<div style="font-size:11px; color:#94a3b8; font-weight: 600;"><?php echo esc_html( date_i18n( 'H:i', strtotime( $comment->created_at ) ) ); ?></div>
+					</td>
+					<td style="vertical-align: middle; text-align: right; padding-right: 32px;">
+						<div style="display:flex; gap:8px; justify-content: flex-end;">
+							<?php if ( $comment->status !== 'approved' ) : ?>
+							<button type="submit" name="naboo_action" value="approve" onclick="document.querySelector('#comment-row-<?php echo absint( $comment->id ); ?> input[type=checkbox]').checked=true;"
+							        class="naboo-tool-btn" style="background:#ecfdf5; color:#059669; border:1px solid #d1fae5; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Approve" aria-label="<?php esc_attr_e( 'Approve', 'naboodatabase' ); ?>">
+								<strong>✓</strong>
+							</button>
+							<?php endif; ?>
+							<?php if ( $comment->status !== 'rejected' ) : ?>
+							<button type="submit" name="naboo_action" value="reject" onclick="document.querySelector('#comment-row-<?php echo absint( $comment->id ); ?> input[type=checkbox]').checked=true;"
+							        class="naboo-tool-btn" style="background:#fef2f2; color:#ef4444; border:1px solid #fee2e2; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Reject" aria-label="<?php esc_attr_e( 'Reject', 'naboodatabase' ); ?>">
+								<strong>✕</strong>
+							</button>
+							<?php endif; ?>
+							<button type="submit" name="naboo_action" value="delete"
+							        onclick="if(!confirm('<?php esc_attr_e( 'Permanently delete this comment and its replies?', 'naboodatabase' ); ?>'))return false;document.querySelector('#comment-row-<?php echo absint( $comment->id ); ?> input[type=checkbox]').checked=true;"
+							        class="naboo-tool-btn" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all 0.2s;" title="Delete" aria-label="<?php esc_attr_e( 'Delete', 'naboodatabase' ); ?>">
+								<strong>🗑️</strong>
+							</button>
+						</div>
+						<input type="hidden" name="comment_id" value="" id="single-id-<?php echo absint( $comment->id ); ?>">
+					</td>
+				</tr>
+				<?php endforeach; ?>
+				</tbody>
+			</table>
+			<?php endif; ?>
+		</div>
+		<?php
+	}
 
-				<!-- Pagination -->
-				<?php if ( $total > $per_page ) :
-					$total_pages = ceil( $total / $per_page );
-				?>
-				<div style="display:flex; align-items:center; justify-content:space-between; margin-top:32px; background: white; padding: 20px 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
-					<span style="font-size:14px; font-weight: 700; color: #64748b;">
-						<?php printf( esc_html__( 'Page %1$s of %2$s', 'naboodatabase' ), '<strong>' . $paged . '</strong>', $total_pages ); ?>
-					</span>
-					<div style="display:flex; gap:8px;">
-						<?php 
-						$pag_args = array( 'page' => 'naboo-comments-moderation', 'tab' => $active_tab, 's' => $search );
-						if ( $paged > 1 ) : ?>
-							<a href="<?php echo esc_url( add_query_arg( array_merge( $pag_args, array( 'paged' => $paged - 1 ) ), admin_url( 'admin.php' ) ) ); ?>" class="naboo-btn" style="background: white; border: 1px solid #cbd5e1; color: #1e293b; padding: 10px 16px; border-radius: 10px; font-weight: 700; text-decoration: none;">&larr; Previous</a>
-						<?php endif; ?>
-						
-						<?php if ( $paged < $total_pages ) : ?>
-							<a href="<?php echo esc_url( add_query_arg( array_merge( $pag_args, array( 'paged' => $paged + 1 ) ), admin_url( 'admin.php' ) ) ); ?>" class="naboo-btn" style="background: white; border: 1px solid #cbd5e1; color: #1e293b; padding: 10px 16px; border-radius: 10px; font-weight: 700; text-decoration: none;">Next &rarr;</a>
-						<?php endif; ?>
-					</div>
-				</div>
+	private function render_pagination( $total, $per_page, $paged, $active_tab, $search ) {
+		if ( $total <= $per_page ) {
+			return;
+		}
+		$total_pages = ceil( $total / $per_page );
+		?>
+		<!-- Pagination -->
+		<div style="display:flex; align-items:center; justify-content:space-between; margin-top:32px; background: white; padding: 20px 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+			<span style="font-size:14px; font-weight: 700; color: #64748b;">
+				<?php printf( esc_html__( 'Page %1$s of %2$s', 'naboodatabase' ), '<strong>' . esc_html( $paged ) . '</strong>', esc_html( $total_pages ) ); ?>
+			</span>
+			<div style="display:flex; gap:8px;">
+				<?php
+				$pag_args = array( 'page' => 'naboo-comments-moderation', 'tab' => $active_tab, 's' => $search );
+				if ( $paged > 1 ) : ?>
+					<a href="<?php echo esc_url( add_query_arg( array_merge( $pag_args, array( 'paged' => $paged - 1 ) ), admin_url( 'admin.php' ) ) ); ?>" class="naboo-btn" style="background: white; border: 1px solid #cbd5e1; color: #1e293b; padding: 10px 16px; border-radius: 10px; font-weight: 700; text-decoration: none;">&larr; <?php esc_html_e( 'Previous', 'naboodatabase' ); ?></a>
 				<?php endif; ?>
-
-			</form>
-
-			<style>
-				.naboo-admin-page { font-family: 'Inter', sans-serif !important; }
-				.naboo-status-pill { padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid transparent; }
-				.naboo-stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-				.naboo-stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
 				
-				.naboo-log-table th { background: #f8fafc; padding: 16px 24px; font-weight: 800; color: #475569; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; border-bottom: 2px solid #f1f5f9; text-align: left; }
-				.naboo-log-table td { padding: 16px 24px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
-				.naboo-log-table tr:hover td { background: #fbfcfe; }
-				.naboo-log-table tr:last-child td { border-bottom: none; }
+				<?php if ( $paged < $total_pages ) : ?>
+					<a href="<?php echo esc_url( add_query_arg( array_merge( $pag_args, array( 'paged' => $paged + 1 ) ), admin_url( 'admin.php' ) ) ); ?>" class="naboo-btn" style="background: white; border: 1px solid #cbd5e1; color: #1e293b; padding: 10px 16px; border-radius: 10px; font-weight: 700; text-decoration: none;"><?php esc_html_e( 'Next', 'naboodatabase' ); ?> &rarr;</a>
+				<?php endif; ?>
+			</div>
+		</div>
+		<?php
+	}
 
-				.status-badge { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid transparent; }
-				.status-badge.amber { background: #fffbeb; color: #92400e; border-color: #fef3c7; }
-				.status-badge.green { background: #ecfdf5; color: #065f46; border-color: #d1fae5; }
-				.status-badge.red   { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
-				.status-badge.gray  { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
+	private function render_styles() {
+		?>
+		<style>
+			.naboo-admin-page { font-family: 'Inter', sans-serif !important; }
+			.naboo-status-pill { padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid transparent; }
+			.naboo-stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+			.naboo-stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
 
-				.naboo-tool-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
-				.naboo-btn:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
-			</style>
+			.naboo-log-table th { background: #f8fafc; padding: 16px 24px; font-weight: 800; color: #475569; text-transform: uppercase; font-size: 11px; letter-spacing: 0.05em; border-bottom: 2px solid #f1f5f9; text-align: left; }
+			.naboo-log-table td { padding: 16px 24px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+			.naboo-log-table tr:hover td { background: #fbfcfe; }
+			.naboo-log-table tr:last-child td { border-bottom: none; }
 
-		</div><!-- /.naboo-admin-page -->
+			.status-badge { font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; border: 1px solid transparent; }
+			.status-badge.amber { background: #fffbeb; color: #92400e; border-color: #fef3c7; }
+			.status-badge.green { background: #ecfdf5; color: #065f46; border-color: #d1fae5; }
+			.status-badge.red   { background: #fef2f2; color: #991b1b; border-color: #fee2e2; }
+			.status-badge.gray  { background: #f8fafc; color: #64748b; border-color: #e2e8f0; }
 
+			.naboo-tool-btn:hover { transform: translateY(-2px); filter: brightness(1.05); }
+			.naboo-btn:hover { transform: translateY(-1px); filter: brightness(1.1); box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); }
+		</style>
+		<?php
+	}
+
+	private function render_scripts() {
+		?>
 		<script>
 		(function(){
 			var all = document.getElementById('naboo-select-all');
