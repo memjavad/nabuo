@@ -294,8 +294,8 @@ class Diagnostics {
 		if ( $status === 'fail' && ! is_wp_error( $response ) ) {
 			$headers = wp_remote_retrieve_headers( $response )->getAll();
 			$body = wp_remote_retrieve_body( $response );
-			$details .= '<br><br><strong>Raw Response Headers:</strong><br><pre style="background:#f1f5f9; padding:10px; border-radius:4px; max-height:150px; overflow:auto; font-size:11px;">' . esc_html( print_r( $headers, true ) ) . '</pre>';
-			$details .= '<strong>Raw Response Body (First 1000 chars):</strong><br><pre style="background:#fef2f2; padding:10px; border-radius:4px; max-height:200px; overflow:auto; font-size:11px; color:#991b1b;">' . esc_html( substr( $body, 0, 1000 ) ) . '</pre>';
+			error_log( 'NabooDatabase Diagnostics - Raw Response Headers: ' . wp_json_encode( $headers ) );
+			error_log( 'NabooDatabase Diagnostics - Raw Response Body (First 1000 chars): ' . substr( $body, 0, 1000 ) );
 		}
 
 		$tests[] = array(
@@ -327,8 +327,8 @@ class Diagnostics {
 		if ( $status === 'fail' && ! is_wp_error( $response ) ) {
 			$headers = wp_remote_retrieve_headers( $response )->getAll();
 			$body = wp_remote_retrieve_body( $response );
-			$details .= '<br><br><strong>Raw Response Headers:</strong><br><pre style="background:#f1f5f9; padding:10px; border-radius:4px; max-height:150px; overflow:auto; font-size:11px;">' . esc_html( print_r( $headers, true ) ) . '</pre>';
-			$details .= '<strong>Raw Response Body (First 1000 chars):</strong><br><pre style="background:#fef2f2; padding:10px; border-radius:4px; max-height:200px; overflow:auto; font-size:11px; color:#991b1b;">' . esc_html( substr( $body, 0, 1000 ) ) . '</pre>';
+			error_log( 'NabooDatabase Diagnostics - Raw Response Headers: ' . wp_json_encode( $headers ) );
+			error_log( 'NabooDatabase Diagnostics - Raw Response Body (First 1000 chars): ' . substr( $body, 0, 1000 ) );
 		}
 
 		$tests[] = array(
