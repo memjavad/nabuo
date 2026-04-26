@@ -24,4 +24,5 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+require_once __DIR__ . '/test-performance-metrics-dashboard-health.php';
 echo "All tests passed.\n";
