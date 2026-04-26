@@ -234,6 +234,7 @@ class Smart_Search_Suggestions {
 			's'              => $query,
 			'posts_per_page' => $limit,
 			'fields'         => 'ids',
+			'no_found_rows'  => true, // Performance: skip SQL_CALC_FOUND_ROWS for unpaginated search
 		);
 
 		$query_obj = new \WP_Query( $args );

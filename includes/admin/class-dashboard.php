@@ -55,6 +55,7 @@ class Dashboard {
                 'post_type'      => 'psych_scale',
                 'posts_per_page' => -1,
                 'post_status'    => 'any',
+                'no_found_rows'  => true, // Performance: skip SQL_CALC_FOUND_ROWS for CSV export
             );
 
             $query = new \WP_Query( $args );

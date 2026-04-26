@@ -187,6 +187,7 @@ class Scale_Recommendation_Engine {
 					'terms'    => $scale_categories,
 				),
 			),
+			'no_found_rows'  => true, // Performance: skip SQL_CALC_FOUND_ROWS for unpaginated list
 		);
 
 		$similar = new \WP_Query( $args );
