@@ -65,4 +65,98 @@ class Test_Admin_Reports_Generator extends WP_UnitTestCase {
 		// (which means it got past the authorization check)
 		$this->assertInstanceOf( 'WP_REST_Response', $response );
 	}
+
+
+	/**
+	 * Test get overview report with standard results
+	 */
+	public function test_get_overview_report_standard_results() {
+		global $wpdb;
+
+		// Create a mock WP_REST_Request
+		$request = new WP_REST_Request();
+
+		// Replace the global wpdb with our mock just for this test
+		$original_wpdb = $wpdb;
+
+		$wpdb_mock = $this->createMock( wpdb::class );
+		$wpdb_mock->posts = 'wp_posts';
+		$wpdb_mock->users = 'wp_users';
+		$wpdb_mock->prefix = 'wp_';
+
+		$wpdb_mock->method( 'get_var' )->willReturnCallback( function( $query ) {
+			$query_map = [
+				"SELECT COUNT(*) FROM wp_posts WHERE post_type = 'psych_scale'" => 10,
+				"SELECT COUNT(*) FROM wp_posts WHERE post_type = 'psych_scale' AND post_status = 'publish'" => 5,
+				"SELECT COUNT(*) FROM wp_posts WHERE post_type = 'psych_scale' AND post_status = 'pending'" => 3,
+				"SELECT COUNT(*) FROM wp_users" => 50,
+				"SELECT COUNT(DISTINCT user_id) FROM wp_naboo_user_analytics WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 30 DAY)" => 20,
+				"SELECT SUM(views) FROM wp_naboo_popularity_analytics" => 1000,
+				"SELECT SUM(downloads) FROM wp_naboo_popularity_analytics" => 500,
+			];
+			return isset( $query_map[ $query ] ) ? $query_map[ $query ] : null;
+		});
+
+		$GLOBALS['wpdb'] = $wpdb_mock;
+
+		$response = $this->generator->get_overview_report( $request );
+		$data = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 10, $data['total_scales'] );
+		$this->assertEquals( 5, $data['published_scales'] );
+		$this->assertEquals( 3, $data['pending_scales'] );
+		$this->assertEquals( 50, $data['total_users'] );
+		$this->assertEquals( 20, $data['active_users'] );
+		$this->assertEquals( 1000, $data['total_views'] );
+		$this->assertEquals( 500, $data['total_downloads'] );
+		$this->assertArrayHasKey( 'generated_at', $data );
+
+		// Restore original wpdb
+		$GLOBALS['wpdb'] = $original_wpdb;
+	}
+
+	/**
+	 * Test get overview report with null DB results
+	 */
+	public function test_get_overview_report_null_results() {
+		global $wpdb;
+
+		// Create a mock WP_REST_Request
+		$request = new WP_REST_Request();
+
+		// Replace the global wpdb with our mock just for this test
+		$original_wpdb = $wpdb;
+
+		$wpdb_mock = $this->createMock( wpdb::class );
+		$wpdb_mock->posts = 'wp_posts';
+		$wpdb_mock->users = 'wp_users';
+		$wpdb_mock->prefix = 'wp_';
+
+		$wpdb_mock->method( 'get_var' )->willReturnCallback( function( $query ) {
+			$query_map = [
+				"SELECT COUNT(*) FROM wp_posts WHERE post_type = 'psych_scale'" => 0,
+				"SELECT COUNT(*) FROM wp_posts WHERE post_type = 'psych_scale' AND post_status = 'publish'" => 0,
+				"SELECT COUNT(*) FROM wp_posts WHERE post_type = 'psych_scale' AND post_status = 'pending'" => 0,
+				"SELECT COUNT(*) FROM wp_users" => 1,
+				"SELECT COUNT(DISTINCT user_id) FROM wp_naboo_user_analytics WHERE last_activity >= DATE_SUB(NOW(), INTERVAL 30 DAY)" => 0,
+				"SELECT SUM(views) FROM wp_naboo_popularity_analytics" => null,
+				"SELECT SUM(downloads) FROM wp_naboo_popularity_analytics" => null,
+			];
+			return isset( $query_map[ $query ] ) ? $query_map[ $query ] : null;
+		});
+
+		$GLOBALS['wpdb'] = $wpdb_mock;
+
+		$response = $this->generator->get_overview_report( $request );
+		$data = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 0, $data['total_scales'] );
+		$this->assertEquals( 0, $data['total_views'] );
+		$this->assertEquals( 0, $data['total_downloads'] );
+
+		// Restore original wpdb
+		$GLOBALS['wpdb'] = $original_wpdb;
+	}
 }
