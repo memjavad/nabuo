@@ -219,6 +219,16 @@ class Data_Export_Features {
 	private function format_scales_for_export( $posts ) {
 		$scales = array();
 
+		$post_ids = wp_list_pluck( $posts, 'ID' );
+
+		if ( ! empty( $post_ids ) ) {
+			update_meta_cache( 'post', $post_ids );
+			update_object_term_cache( $post_ids, 'psych_scale' );
+		}
+
+		$ratings_map   = $this->get_batch_average_ratings( $post_ids );
+		$downloads_map = $this->get_batch_download_counts( $post_ids );
+
 		foreach ( $posts as $post ) {
 			$categories = wp_get_post_terms( $post->ID, 'scale_category', array( 'fields' => 'names' ) );
 			$authors    = wp_get_post_terms( $post->ID, 'scale_author', array( 'fields' => 'names' ) );
@@ -231,10 +241,10 @@ class Data_Export_Features {
 			$population   = get_post_meta( $post->ID, '_naboo_scale_population', true );
 
 			// Get rating
-			$rating = $this->get_average_rating( $post->ID );
+			$rating = isset( $ratings_map[ $post->ID ] ) ? $ratings_map[ $post->ID ] : '';
 
 			// Get download count
-			$download_count = $this->get_download_count( $post->ID );
+			$download_count = isset( $downloads_map[ $post->ID ] ) ? $downloads_map[ $post->ID ] : 0;
 
 			$scales[] = array(
 				'id'           => $post->ID,
@@ -286,6 +296,62 @@ class Data_Export_Features {
 		) );
 
 		return $count ? (int) $count : 0;
+	}
+
+	/**
+	 * Get average ratings for multiple scales.
+	 */
+	private function get_batch_average_ratings( $scale_ids ) {
+		if ( empty( $scale_ids ) ) {
+			return array();
+		}
+
+		global $wpdb;
+		$ratings_table = $wpdb->prefix . 'naboo_ratings';
+
+		$placeholders = implode( ',', array_fill( 0, count( $scale_ids ), '%d' ) );
+
+		$query = $wpdb->prepare(
+			"SELECT scale_id, AVG(rating) as avg_rating FROM {$ratings_table} WHERE scale_id IN ($placeholders) AND status = 'approved' GROUP BY scale_id",
+			$scale_ids
+		);
+
+		$results = $wpdb->get_results( $query );
+
+		$map = array();
+		foreach ( $results as $row ) {
+			$map[ $row->scale_id ] = round( $row->avg_rating, 2 );
+		}
+
+		return $map;
+	}
+
+	/**
+	 * Get download counts for multiple scales.
+	 */
+	private function get_batch_download_counts( $scale_ids ) {
+		if ( empty( $scale_ids ) ) {
+			return array();
+		}
+
+		global $wpdb;
+		$downloads_table = $wpdb->prefix . 'naboo_file_downloads';
+
+		$placeholders = implode( ',', array_fill( 0, count( $scale_ids ), '%d' ) );
+
+		$query = $wpdb->prepare(
+			"SELECT scale_id, SUM(download_count) as total_downloads FROM {$downloads_table} WHERE scale_id IN ($placeholders) GROUP BY scale_id",
+			$scale_ids
+		);
+
+		$results = $wpdb->get_results( $query );
+
+		$map = array();
+		foreach ( $results as $row ) {
+			$map[ $row->scale_id ] = (int) $row->total_downloads;
+		}
+
+		return $map;
 	}
 
 	/**
