@@ -52,25 +52,68 @@ class Dashboard {
             fputcsv( $output, array( 'ID', 'Title', 'Category', 'Year', 'Author', 'Status' ) );
 
             $args = array(
-                'post_type'      => 'psych_scale',
-                'posts_per_page' => -1,
-                'post_status'    => 'any',
+                'post_type'              => 'psych_scale',
+                'posts_per_page'         => -1,
+                'post_status'            => 'any',
+                'no_found_rows'          => true,
+                'update_post_meta_cache' => false,
+                'update_post_term_cache' => false,
             );
 
             $query = new \WP_Query( $args );
 
             if ( $query->have_posts() ) {
+                global $wpdb;
+
+                // OPTIMIZATION: Instead of querying post meta and terms inside the while loop (N+1 query problem),
+                // we collect all post IDs and execute a single batch query for meta and terms, grouping the results by post ID.
+                // This reduces database round-trips from O(N) to O(1) and significantly speeds up the export process.
+                $post_ids = wp_list_pluck( $query->posts, 'ID' );
+
+                $meta_map = array();
+                $term_map = array();
+
+                if ( ! empty( $post_ids ) ) {
+                    $placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+
+                    $meta_query = $wpdb->prepare( "
+                        SELECT post_id, meta_value
+                        FROM {$wpdb->postmeta}
+                        WHERE meta_key = '_naboo_scale_year' AND post_id IN ($placeholders)
+                    ", $post_ids );
+
+                    $meta_results = $wpdb->get_results( $meta_query );
+                    if ( $meta_results ) {
+                        foreach ( $meta_results as $m ) {
+                            $meta_map[ $m->post_id ] = $m->meta_value;
+                        }
+                    }
+
+                    $term_query = $wpdb->prepare( "
+                        SELECT tr.object_id, t.name
+                        FROM {$wpdb->term_relationships} tr
+                        INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+                        INNER JOIN {$wpdb->terms} t ON tt.term_id = t.term_id
+                        WHERE tt.taxonomy = 'scale_category' AND tr.object_id IN ($placeholders)
+                    ", $post_ids );
+
+                    $term_results = $wpdb->get_results( $term_query );
+                    if ( $term_results ) {
+                        foreach ( $term_results as $tr ) {
+                            if ( ! isset( $term_map[ $tr->object_id ] ) ) {
+                                $term_map[ $tr->object_id ] = array();
+                            }
+                            $term_map[ $tr->object_id ][] = $tr->name;
+                        }
+                    }
+                }
+
                 while ( $query->have_posts() ) {
                     $query->the_post();
                     
                     $pid = get_the_ID();
-                    $terms = get_the_terms( $pid, 'scale_category' );
-                    $cats = array();
-                    if ( $terms && ! is_wp_error( $terms ) ) {
-                        foreach ( $terms as $t ) $cats[] = $t->name;
-                    }
-
-                    $year = get_post_meta( $pid, '_naboo_scale_year', true );
+                    $cats = isset( $term_map[ $pid ] ) ? $term_map[ $pid ] : array();
+                    $year = isset( $meta_map[ $pid ] ) ? $meta_map[ $pid ] : '';
                     $status = get_post_status( $pid );
 
                     fputcsv( $output, array(
