@@ -134,7 +134,7 @@ class Search_Admin {
 
 		$this->handle_actions();
 
-		$tab      = isset( $_GET['tab'] ) ? sanitize_text_field( $_GET['tab'] ) : 'overview';
+		$tab      = isset( $_GET['tab'] ) ? sanitize_text_field( wp_unslash( $_GET['tab'] ) ) : 'overview';
 		$stats    = $this->stats_calculator->get_index_stats();
 		$settings = get_option( 'naboo_search_settings', array(
 			'results_per_page' => 20,
@@ -147,8 +147,33 @@ class Search_Admin {
 		settings_errors( 'naboo_search_notices' );
 		?>
 		<div class="wrap naboo-admin-page">
+			<?php
+			$this->render_header( $stats );
+			$this->render_diagnostics();
+			$this->render_tabs_nav( $tab );
 
-			<!-- Header -->
+			if ( 'overview' === $tab ) {
+				$this->render_tab_overview( $stats, $cache_active, $settings );
+			} elseif ( 'index' === $tab ) {
+				$this->render_tab_index( $stats, $cache_active );
+			} elseif ( 'settings' === $tab ) {
+				$this->render_tab_settings( $settings );
+			}
+			?>
+		</div>
+
+		<?php
+		$this->render_styles();
+	}
+
+	/**
+	 * Render the header section.
+	 *
+	 * @param array $stats The index statistics.
+	 */
+	private function render_header( $stats ) {
+		?>
+		<!-- Header -->
 			<div class="naboo-admin-header" style="margin-bottom: 32px; padding: 40px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); border-radius: 16px; color: white; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); position: relative; overflow: hidden;">
 				<div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(99, 102, 241, 0.1); filter: blur(80px); border-radius: 50%;"></div>
 				<div style="display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1;">
@@ -167,8 +192,15 @@ class Search_Admin {
 					</div>
 				</div>
 			</div>
+		<?php
+	}
 
-				<!-- Diagnostic: real counts by post_status -->
+	/**
+	 * Render the diagnostics section.
+	 */
+	private function render_diagnostics() {
+		?>
+		<!-- Diagnostic: real counts by post_status -->
 				<?php
 				$status_counts = $this->stats_calculator->get_post_status_diagnostics();
 				$total_all     = array_sum( array_column( $status_counts, 'cnt' ) );
@@ -216,8 +248,17 @@ class Search_Admin {
 					</div>
 				</div>
 			</div>
+		<?php
+	}
 
-			<!-- Tabs -->
+	/**
+	 * Render the tabs navigation.
+	 *
+	 * @param string $tab The current tab.
+	 */
+	private function render_tabs_nav( $tab ) {
+		?>
+		<!-- Tabs -->
 			<div class="naboo-tabs-container" style="margin-bottom: 32px; display: flex; gap: 4px; background: #f1f5f9; padding: 6px; border-radius: 14px; width: fit-content; border: 1px solid #e2e8f0; margin-top: 40px;">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=naboo-search-admin&tab=overview' ) ); ?>" class="naboo-tab-btn <?php echo $tab === 'overview' ? 'active' : ''; ?>" style="text-decoration:none; display:flex; align-items:center; gap:8px; padding: 12px 24px; border-radius: 10px; font-weight: 700; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: <?php echo $tab === 'overview' ? 'white' : 'transparent'; ?>; color: <?php echo $tab === 'overview' ? '#1e293b' : '#64748b'; ?>; <?php echo $tab === 'overview' ? 'box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0;' : ''; ?>">
 					<span>📊</span> <?php esc_html_e( 'Overview', 'naboodatabase' ); ?>
@@ -229,10 +270,19 @@ class Search_Admin {
 					<span>⚙️</span> <?php esc_html_e( 'Settings', 'naboodatabase' ); ?>
 				</a>
 			</div>
+		<?php
+	}
 
-			<?php if ( 'overview' === $tab ) : ?>
-
-				<!-- Stats row -->
+	/**
+	 * Render the overview tab content.
+	 *
+	 * @param array $stats        The index statistics.
+	 * @param bool  $cache_active Whether the cache is active.
+	 * @param array $settings     The search settings.
+	 */
+	private function render_tab_overview( $stats, $cache_active, $settings ) {
+		?>
+		<!-- Stats row -->
 				<div class="naboo-search-stats-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;">
 					<div class="naboo-search-stat-card" style="background: white; border-radius: 20px; padding: 32px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); border: 1px solid #e2e8f0; position: relative; overflow: hidden;">
 						<div style="position: absolute; top: 0; right: 0; width: 64px; height: 64px; background: rgba(99, 102, 241, 0.03); border-radius: 0 0 0 64px;"></div>
@@ -352,10 +402,18 @@ class Search_Admin {
 					</div>
 				</div>
 			</div>
+		<?php
+	}
 
-			<?php elseif ( 'index' === $tab ) : ?>
-
-				<div class="naboo-admin-grid">
+	/**
+	 * Render the index management tab content.
+	 *
+	 * @param array $stats        The index statistics.
+	 * @param bool  $cache_active Whether the cache is active.
+	 */
+	private function render_tab_index( $stats, $cache_active ) {
+		?>
+		<div class="naboo-admin-grid">
 					<div class="naboo-admin-card span-full">
 						<div class="naboo-admin-card-header">
 							<span class="naboo-admin-card-icon blue">🗄️</span>
@@ -405,10 +463,17 @@ class Search_Admin {
 						</form>
 					</div>
 				</div>
+		<?php
+	}
 
-			<?php elseif ( 'settings' === $tab ) : ?>
-
-				<form method="post">
+	/**
+	 * Render the settings tab content.
+	 *
+	 * @param array $settings The search settings.
+	 */
+	private function render_tab_settings( $settings ) {
+		?>
+		<form method="post">
 					<?php wp_nonce_field( 'naboo_search_action' ); ?>
 					<div class="naboo-admin-grid">
 						<div class="naboo-admin-card">
@@ -478,11 +543,14 @@ class Search_Admin {
 						<?php submit_button( __( 'Save Search Configuration', 'naboodatabase' ), 'primary naboo-btn', 'naboo_save_search_settings', false, array( 'style' => 'background: #4f46e5; color: white; border: none; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);' ) ); ?>
 					</div>
 				</form>
+		<?php
+	}
 
-			<?php endif; ?>
-
-		</div>
-
+	/**
+	 * Render the page styles.
+	 */
+	private function render_styles() {
+		?>
 		<style>
 			.naboo-admin-page { font-family: 'Inter', sans-serif !important; }
 			.naboo-search-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
