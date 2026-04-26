@@ -398,7 +398,10 @@ class Scale_Recommendation_Engine {
 		$categories1 = wp_get_post_terms( $scale1->ID, 'scale_category', array( 'fields' => 'ids' ) );
 		$categories2 = wp_get_post_terms( $scale2->ID, 'scale_category', array( 'fields' => 'ids' ) );
 		$common_cats = count( array_intersect( $categories1, $categories2 ) );
-		$score += min( $common_cats / max( count( $categories1 ), count( $categories2 ) ), 1 ) * 60;
+		$max_cats = max( count( $categories1 ), count( $categories2 ) );
+		if ( $max_cats > 0 ) {
+			$score += min( $common_cats / $max_cats, 1 ) * 60;
+		}
 
 		// Author similarity
 		if ( $scale1->post_author === $scale2->post_author ) {

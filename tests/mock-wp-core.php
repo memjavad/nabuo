@@ -79,5 +79,25 @@ $wpdb = new class {
 };
 
 function wp_reset_postdata() {}
-function wp_get_post_terms() { return []; }
-function get_post_meta() { return 0; }
+if (!function_exists("wp_get_post_terms")) {
+    $mock_post_terms = [];
+    function wp_set_mock_post_terms($terms) {
+        global $mock_post_terms;
+        $mock_post_terms = $terms;
+    }
+    function wp_get_post_terms($post_id, $taxonomy = "", $args = []) {
+        global $mock_post_terms;
+        return $mock_post_terms[$post_id] ?? [];
+    }
+}
+if (!function_exists("get_post_meta")) {
+    $mock_post_meta = [];
+    function wp_set_mock_post_meta($meta) {
+        global $mock_post_meta;
+        $mock_post_meta = $meta;
+    }
+    function get_post_meta($post_id, $key = "", $single = false) {
+        global $mock_post_meta;
+        return $mock_post_meta[$post_id][$key] ?? 0;
+    }
+}

@@ -14,6 +14,7 @@ class Test_Scale_Recommendation_Engine {
     public function run() {
         $passed = true;
         $passed = $this->test_get_personalized_recommendations_anonymous() && $passed;
+        $passed = $this->test_calculate_similarity_score() && $passed;
 
         return $passed;
     }
@@ -48,6 +49,70 @@ class Test_Scale_Recommendation_Engine {
 
         echo "FAIL: Anonymous user did not get expected trending recommendations (method was NOT called).\n";
         return false;
+    }
+
+    private function test_calculate_similarity_score() {
+        echo "Running test_calculate_similarity_score...
+";
+
+        $engine = new Scale_Recommendation_Engine('naboodatabase', '1.0.0');
+
+        // Use Reflection to access private method
+        $reflection = new ReflectionClass(Scale_Recommendation_Engine::class);
+        $method = $reflection->getMethod('calculate_similarity_score');
+        $method->setAccessible(true);
+
+        // Setup mock data
+        if (function_exists('wp_set_mock_post_terms')) {
+            wp_set_mock_post_terms([
+                1 => [1, 2, 3],
+                2 => [2, 3, 4],
+                3 => [], // For zero division test
+                4 => []
+            ]);
+        }
+
+        if (function_exists('wp_set_mock_post_meta')) {
+            wp_set_mock_post_meta([
+                1 => ['_naboo_view_count' => 100],
+                2 => ['_naboo_view_count' => 80],
+                3 => ['_naboo_view_count' => 0],
+                4 => ['_naboo_view_count' => 0]
+            ]);
+        }
+
+        $scale1 = (object) ['ID' => 1, 'post_author' => 1];
+        $scale2 = (object) ['ID' => 2, 'post_author' => 1];
+
+        $score = $method->invokeArgs($engine, [$scale1, $scale2]);
+
+        if (round($score) == 76) {
+            echo "PASS: calculate_similarity_score calculates correctly.
+";
+        } else {
+            echo "FAIL: calculate_similarity_score returned $score, expected 76.
+";
+            return false;
+        }
+
+        // Test division by zero fix
+        $scale3 = (object) ['ID' => 3, 'post_author' => 1];
+        $scale4 = (object) ['ID' => 4, 'post_author' => 2];
+
+        try {
+            $score_zero = $method->invokeArgs($engine, [$scale3, $scale4]);
+            echo "PASS: calculate_similarity_score handles zero categories safely.
+";
+            return true;
+        } catch (\Exception $e) {
+            echo "FAIL: calculate_similarity_score threw Exception with zero categories: " . $e->getMessage() . "
+";
+            return false;
+        } catch (\Error $e) {
+            echo "FAIL: calculate_similarity_score threw Error with zero categories: " . $e->getMessage() . "
+";
+            return false;
+        }
     }
 }
 
