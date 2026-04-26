@@ -1,3 +1,3 @@
-## 2024-05-24 - Missing no_found_rows in WP_Query
-**Learning:** Found several `WP_Query` instances that fetch exactly ONE post using `posts_per_page => 1` but forget to include `no_found_rows => true`. This is a classic WordPress bottleneck as WP_Query defaults to executing `SQL_CALC_FOUND_ROWS` to calculate pagination, which is highly inefficient when only fetching 1 record and when pagination isn't needed.
-**Action:** When creating or modifying single-post `WP_Query` lookups or unpaginated lists, aggressively add `'no_found_rows' => true`.
+## 2024-04-26 - Optimize get_popularity_by_category with a single query
+**Learning:** An N+1 query loop using `get_posts` and aggregate SQL queries per taxonomy term can be condensed into a single query by JOINing `wp_terms`, `wp_term_taxonomy`, `wp_term_relationships`, and `wp_posts` along with the target custom table. Using a `LEFT JOIN` on the target custom table along with aggregate functions (`COUNT`, `SUM`) and grouping by the term ID/name allows the database to process the aggregations efficiently and massively decreases queries and execution time.
+**Action:** Always investigate loops running `$wpdb` queries or WP core query wrappers (`get_posts`, `WP_Query`) and refactor them to use a single unified SQL query with JOINs and grouping for improved performance.
