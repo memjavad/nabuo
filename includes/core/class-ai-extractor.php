@@ -67,6 +67,87 @@ class AI_Extractor {
 	}
 
 	/**
+	 * Helper function to prepare payload, execute API request to Gemini, and parse the response.
+	 *
+	 * @param string $api_url The full API endpoint URL including the key.
+	 * @param string $prompt The prompt text to send to the AI.
+	 * @param float $temperature The temperature setting for the generation.
+	 * @param string|null $response_mime_type Optional mime type for the response (e.g. 'application/json').
+	 * @param int $timeout Timeout for the HTTP request in seconds.
+	 * @param string $error_prefix Prefix for any error messages returned.
+	 * @return array|string|\WP_Error Extracted data array (if JSON), string (if text), or WP_Error on failure.
+	 */
+	private function call_gemini_api( $api_url, $prompt, $temperature = 0.1, $response_mime_type = null, $timeout = 300, $error_prefix = 'Gemini API Error: ' ) {
+		$generation_config = array(
+			'temperature' => $temperature,
+		);
+
+		if ( $response_mime_type !== null ) {
+			$generation_config['responseMimeType'] = $response_mime_type;
+		}
+
+		$body = array(
+			'contents' => array(
+				array(
+					'parts' => array(
+						array(
+							'text' => $prompt,
+						),
+					),
+				),
+			),
+			'generationConfig' => $generation_config,
+		);
+
+		$request_args = array(
+			'body'    => wp_json_encode( $body ),
+			'headers' => array(
+				'Content-Type' => 'application/json',
+			),
+			'timeout' => $timeout,
+		);
+
+		$response = wp_remote_post( $api_url, $request_args );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_body = wp_remote_retrieve_body( $response );
+
+		if ( 200 !== $response_code ) {
+			$error_data = json_decode( $response_body, true );
+			$error_msg  = $error_data['error']['message'] ?? 'Unknown API Error';
+			return new \WP_Error( 'api_error', $error_prefix . $error_msg );
+		}
+
+		$data = json_decode( $response_body, true );
+
+		if ( ! isset( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
+			return new \WP_Error( 'parse_error', __( 'Could not parse response from AI.', 'naboodatabase' ) );
+		}
+
+		$result_text = $data['candidates'][0]['content']['parts'][0]['text'];
+
+		if ( $response_mime_type === 'application/json' ) {
+			// Remove Markdown JSON wrapper if any
+			$result_text = preg_replace( '/^```json\s*/i', '', $result_text );
+			$result_text = preg_replace( '/\s*```$/', '', $result_text );
+			$result_text = trim( $result_text );
+
+			$extracted_data = json_decode( $result_text, true );
+
+			if ( ! is_array( $extracted_data ) ) {
+				return new \WP_Error( 'invalid_json', __( 'AI did not return a valid JSON object.', 'naboodatabase' ) );
+			}
+			return $extracted_data;
+		}
+
+		return trim( $result_text );
+	}
+
+	/**
 	 * Extract data from raw text extracted from a PDF
 	 *
 	 * @param string $extracted_text The raw text from the scale PDF.
@@ -124,62 +205,10 @@ Here is the extracted text:
 		$model_name = get_option( 'naboo_gemini_model', 'gemini-2.5-flash' );
 		$api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model_name . ':generateContent?key=' . $api_key;
 
-		$body = array(
-			'contents' => array(
-				array(
-					'parts' => array(
-						array(
-							'text' => $prompt,
-						),
-					),
-				),
-			),
-			'generationConfig' => array(
-				'temperature'     => 0.1,
-				'responseMimeType' => 'application/json',
-			),
-		);
+		$extracted_data = $this->call_gemini_api( $api_url, $prompt, 0.1, 'application/json', 300 );
 
-		$request_args = array(
-			'body'    => wp_json_encode( $body ),
-			'headers' => array(
-				'Content-Type' => 'application/json',
-			),
-			'timeout' => 300, // Gemini can take time to parse big PDFs
-		);
-
-		$response = wp_remote_post( $api_url, $request_args );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
-
-		if ( 200 !== $response_code ) {
-			$error_data = json_decode( $response_body, true );
-			$error_msg  = $error_data['error']['message'] ?? 'Unknown API Error';
-			return new \WP_Error( 'api_error', 'Gemini API Error: ' . $error_msg );
-		}
-
-		$data = json_decode( $response_body, true );
-
-		if ( ! isset( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
-			return new \WP_Error( 'parse_error', __( 'Could not parse response from AI.', 'naboodatabase' ) );
-		}
-
-		$json_str = $data['candidates'][0]['content']['parts'][0]['text'];
-
-		// Remove Markdown JSON wrapper if any
-		$json_str = preg_replace( '/^```json\s*/i', '', $json_str );
-		$json_str = preg_replace( '/\s*```$/', '', $json_str );
-		$json_str = trim( $json_str );
-
-		$extracted_data = json_decode( $json_str, true );
-
-		if ( ! is_array( $extracted_data ) ) {
-			return new \WP_Error( 'invalid_json', __( 'AI did not return a valid JSON object.', 'naboodatabase' ) );
+		if ( is_wp_error( $extracted_data ) ) {
+			return $extracted_data;
 		}
 
 		// --- Secondary Refinement via Gemma 27B ---
@@ -204,55 +233,15 @@ Extracted Data:
 		$gemma_model = 'gemma-4-31b-it';
 		$refinement_api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $gemma_model . ':generateContent?key=' . $api_key;
 
-		$refinement_body = array(
-			'contents' => array(
-				array(
-					'parts' => array(
-						array(
-							'text' => $refinement_prompt,
-						),
-					),
-				),
-			),
-			'generationConfig' => array(
-				'temperature'     => 0.1,
-				'responseMimeType' => 'application/json',
-			),
-		);
+		$refined_data = $this->call_gemini_api( $refinement_api_url, $refinement_prompt, 0.1, 'application/json', 300 );
 
-		$refinement_request_args = array(
-			'body'    => wp_json_encode( $refinement_body ),
-			'headers' => array(
-				'Content-Type' => 'application/json',
-			),
-			'timeout' => 300, // Give it time to refine
-		);
-
-		$refinement_response = wp_remote_post( $refinement_api_url, $refinement_request_args );
-
-		if ( ! is_wp_error( $refinement_response ) ) {
-			$ref_response_code = wp_remote_retrieve_response_code( $refinement_response );
-			$ref_response_body = wp_remote_retrieve_body( $refinement_response );
-
-			if ( 200 === $ref_response_code ) {
-				$ref_data = json_decode( $ref_response_body, true );
-				if ( isset( $ref_data['candidates'][0]['content']['parts'][0]['text'] ) ) {
-					$ref_json_str = $ref_data['candidates'][0]['content']['parts'][0]['text'];
-					$ref_json_str = preg_replace( '/^```json\s*/i', '', $ref_json_str );
-					$ref_json_str = preg_replace( '/\s*```$/', '', $ref_json_str );
-					$ref_json_str = trim( $ref_json_str );
-					
-					$refined_data = json_decode( $ref_json_str, true );
-					if ( is_array( $refined_data ) ) {
-						// Merge ONLY the refined title and abstract back into the main payload.
-						if ( ! empty( $refined_data['title'] ) ) {
-							$extracted_data['title'] = $refined_data['title'];
-						}
-						if ( ! empty( $refined_data['abstract'] ) ) {
-							$extracted_data['abstract'] = $refined_data['abstract'];
-						}
-					}
-				}
+		if ( ! is_wp_error( $refined_data ) && is_array( $refined_data ) ) {
+			// Merge ONLY the refined title and abstract back into the main payload.
+			if ( ! empty( $refined_data['title'] ) ) {
+				$extracted_data['title'] = $refined_data['title'];
+			}
+			if ( ! empty( $refined_data['abstract'] ) ) {
+				$extracted_data['abstract'] = $refined_data['abstract'];
 			}
 		}
 
@@ -328,49 +317,17 @@ Here is the extracted text:
 		$model_name = get_option( 'naboo_gemini_model', 'gemini-2.5-flash' );
 		$api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model_name . ':generateContent?key=' . $api_key;
 
-		$body = array(
-			'contents' => array(
-				array(
-					'parts' => array(
-						array(
-							'text' => $prompt,
-						),
-					),
-				),
-			),
-			'generationConfig' => array(
-				'temperature' => 0.2,
-			),
-		);
+		$result_text = $this->call_gemini_api( $api_url, $prompt, 0.2, null, 300, 'AI Processing failed.' );
 
-		$request_args = array(
-			'body'    => wp_json_encode( $body ),
-			'headers' => array(
-				'Content-Type' => 'application/json',
-			),
-			'timeout' => 300,
-		);
-
-		$response = wp_remote_post( $api_url, $request_args );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
+		if ( is_wp_error( $result_text ) ) {
+			// If it's a parse error, original code returned empty string.
+			if ( $result_text->get_error_code() === 'parse_error' ) {
+				return '';
+			}
+			// For api_error, original code returned the error
+			return $result_text;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
-
-		if ( 200 !== $response_code ) {
-			return new \WP_Error( 'api_error', 'AI Processing failed.' );
-		}
-
-		$data = json_decode( $response_body, true );
-
-		if ( ! isset( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
-			return '';
-		}
-
-		$result_text = trim( $data['candidates'][0]['content']['parts'][0]['text'] );
 		return $result_text;
 	}
 
@@ -463,49 +420,15 @@ Here is the extracted text:
 		$model_name = 'gemma-4-31b-it'; // Hardcoded per user request
 		$api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $model_name . ':generateContent?key=' . $api_key;
 
-		$body = array(
-			'contents' => array(
-				array(
-					'parts' => array(
-						array(
-							'text' => $prompt,
-						),
-					),
-				),
-			),
-			'generationConfig' => array(
-				'temperature' => 0.4,
-			),
-		);
+		$result_text = $this->call_gemini_api( $api_url, $prompt, 0.4, null, 120, 'AI Processing failed.' );
 
-		$request_args = array(
-			'body'    => wp_json_encode( $body ),
-			'headers' => array(
-				'Content-Type' => 'application/json',
-			),
-			'timeout' => 120,
-		);
-
-		$response = wp_remote_post( $api_url, $request_args );
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
+		if ( is_wp_error( $result_text ) ) {
+			if ( $result_text->get_error_code() === 'parse_error' ) {
+				return $current_value; // Return original if AI fails to generate text
+			}
+			return $result_text;
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
-
-		if ( 200 !== $response_code ) {
-			return new \WP_Error( 'api_error', 'AI Processing failed.' );
-		}
-
-		$data = json_decode( $response_body, true );
-
-		if ( ! isset( $data['candidates'][0]['content']['parts'][0]['text'] ) ) {
-			return $current_value; // Return original if AI fails to generate text
-		}
-
-		$result_text = trim( $data['candidates'][0]['content']['parts'][0]['text'] );
 		return $result_text;
 	}
 }
