@@ -32,6 +32,7 @@ class Widget extends WP_Widget {
 				'post_type'      => 'psych_scale',
 				'post_status'    => 'publish',
 				'posts_per_page' => $count,
+				'no_found_rows'  => true, // Performance: skip SQL_CALC_FOUND_ROWS for widget list
 			);
 
 			if ( $mode === 'popular' ) {
