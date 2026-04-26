@@ -24,4 +24,9 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+
+
+
+require_once __DIR__ . '/test-class-comments.php';
 echo "All tests passed.\n";
