@@ -1,0 +1,3 @@
+## 2026-04-26 - Add isolated tests for fix_plugin_crons
+**Learning:** When PHPUnit setup isn't viable/working properly, we can successfully test WordPress components using standard PHP scripts and mocks. Be careful to check `class_exists`/`function_exists` when setting up mocks so we don't cause fatal errors if WordPress *is* loaded.
+**Action:** When adding tests for a project utilizing custom PHP test scripts hooked into `run-tests.php`, continue using this format, avoiding heavy reliance on complex PHPUnit wrappers if they break the test suite or delete existing files. Never delete tests if it is not explicitly required to do so.

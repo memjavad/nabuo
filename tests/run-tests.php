@@ -24,4 +24,6 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+require_once __DIR__ . '/test-maintenance-manager-crons.php';
 echo "All tests passed.\n";
