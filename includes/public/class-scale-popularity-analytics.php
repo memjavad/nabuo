@@ -258,51 +258,39 @@ class Scale_Popularity_Analytics {
 	 * @return \WP_REST_Response
 	 */
 	public function get_popularity_by_category( $request ) {
-		$args = array(
-			'taxonomy' => 'scale_category',
-			'hide_empty' => false,
-		);
-
-		$categories = get_terms( $args );
-		$category_stats = array();
-
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'naboo_popularity_analytics';
 
-		foreach ( $categories as $category ) {
-			$scales = get_posts(
-				array(
-					'post_type'      => 'psych_scale',
-					'posts_per_page' => -1,
-					'tax_query'      => array(
-						array(
-							'taxonomy' => 'scale_category',
-							'field'    => 'term_id',
-							'terms'    => $category->term_id,
-						),
-					),
-				)
-			);
+		// ⚡ Bolt Performance: Replaced N+1 query pattern (looping through categories to run get_posts and db queries)
+		// with a single unified SQL query using joins and aggregations.
+		$query = "
+			SELECT
+				t.name AS category,
+				COUNT(DISTINCT p.ID) AS scale_count,
+				SUM(COALESCE(pa.views, 0)) AS total_views,
+				SUM(COALESCE(pa.downloads, 0)) AS total_downloads
+			FROM {$wpdb->terms} t
+			INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id AND tt.taxonomy = 'scale_category'
+			INNER JOIN {$wpdb->term_relationships} tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
+			INNER JOIN {$wpdb->posts} p ON tr.object_id = p.ID AND p.post_type = 'psych_scale' AND p.post_status = 'publish'
+			LEFT JOIN {$table_name} pa ON p.ID = pa.scale_id
+			GROUP BY t.term_id, t.name
+		";
 
-			$scale_ids = wp_list_pluck( $scales, 'ID' );
-
-			if ( ! empty( $scale_ids ) ) {
-				$placeholders = implode( ',', array_fill( 0, count( $scale_ids ), '%d' ) );
-				$stats = $wpdb->get_row(
-					$wpdb->prepare(
-						"SELECT SUM(views) as total_views, SUM(downloads) as total_downloads, COUNT(*) as scale_count FROM $table_name WHERE scale_id IN ($placeholders)",
-						$scale_ids
-					)
-				);
-
-				$category_stats[] = array(
-					'category' => $category->name,
-					'scale_count' => $stats->scale_count ?? 0,
-					'total_views' => $stats->total_views ?? 0,
-					'total_downloads' => $stats->total_downloads ?? 0,
-				);
-			}
+		$results = $wpdb->get_results( $query, ARRAY_A );
+		if ( ! is_array( $results ) ) {
+			$results = array();
 		}
+
+		// Format back to associative array with correct types
+		$category_stats = array_map( function( $row ) {
+			return array(
+				'category'        => $row['category'],
+				'scale_count'     => (int) $row['scale_count'],
+				'total_views'     => (int) $row['total_views'],
+				'total_downloads' => (int) $row['total_downloads'],
+			);
+		}, $results );
 
 		return new \WP_REST_Response( array( 'categories' => $category_stats ), 200 );
 	}
