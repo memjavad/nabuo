@@ -491,34 +491,39 @@ class Batch_AI_Remote_Sync {
 	 * Helper to perform a raw cURL request
 	 */
 	public function make_raw_curl_request( $url, $token, $timeout = 120 ) {
-		$ch      = curl_init();
 		$headers = array(
-			'X-Naboo-Token: ' . $token,
-			'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-			'Accept-Language: en-US,en;q=0.5',
-			'Connection: keep-alive',
-			'Upgrade-Insecure-Requests: 1',
-			'Sec-Fetch-Dest: document',
-			'Sec-Fetch-Mode: navigate',
-			'Sec-Fetch-Site: none',
-			'Sec-Fetch-User: ?1',
-			'Cache-Control: max-age=0',
+			'X-Naboo-Token'             => $token,
+			'Accept'                    => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+			'Accept-Language'           => 'en-US,en;q=0.5',
+			'Connection'                => 'keep-alive',
+			'Upgrade-Insecure-Requests' => '1',
+			'Sec-Fetch-Dest'            => 'document',
+			'Sec-Fetch-Mode'            => 'navigate',
+			'Sec-Fetch-Site'            => 'none',
+			'Sec-Fetch-User'            => '?1',
+			'Cache-Control'             => 'max-age=0',
 		);
 
-		curl_setopt( $ch, CURLOPT_URL, $url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_HEADER, false );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
-		curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36' );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
-		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		$args = array(
+			'timeout'     => $timeout,
+			'sslverify'   => false,
+			'user-agent'  => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+			'headers'     => $headers,
+			'redirection' => 5,
+		);
 
-		$body   = curl_exec( $ch );
-		$status = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		$error  = curl_error( $ch );
-		curl_close( $ch );
+		$response = wp_safe_remote_get( $url, $args );
+
+		$status = 0;
+		$body   = '';
+		$error  = '';
+
+		if ( is_wp_error( $response ) ) {
+			$error = $response->get_error_message();
+		} else {
+			$status = (int) wp_remote_retrieve_response_code( $response );
+			$body   = wp_remote_retrieve_body( $response );
+		}
 
 		return array(
 			'status' => $status,
