@@ -80,31 +80,101 @@ class Advanced_Search {
 	 *   page         – int
 	 *   per_page     – int
 	 */
-	public function advanced_search( $request ) {
+		public function advanced_search( $request ) {
 		global $wpdb;
 
-		/* ── Sanitize simple params ── */
-		$keyword         = sanitize_text_field( $request->get_param( 'keyword' ) ?? '' );
-		$categories      = array_map( 'intval', (array) ( $request->get_param( 'categories' ) ?? array() ) );
-		$authors         = array_map( 'intval', (array) ( $request->get_param( 'authors' ) ?? array() ) );
-		$year_from       = intval( $request->get_param( 'year_from' ) ?? 0 );
-		$year_to         = intval( $request->get_param( 'year_to' ) ?? 0 );
-		$language        = sanitize_text_field( $request->get_param( 'language' ) ?? '' );
-		$test_type       = sanitize_text_field( $request->get_param( 'test_type' ) ?? '' );
-		$format          = sanitize_text_field( $request->get_param( 'format' ) ?? '' );
-		$age_group       = sanitize_text_field( $request->get_param( 'age_group' ) ?? '' );
-		$methodology     = sanitize_text_field( $request->get_param( 'methodology' ) ?? '' );
-		$population      = sanitize_text_field( $request->get_param( 'population' ) ?? '' );
-		$items_min       = intval( $request->get_param( 'items_min' ) ?? 0 );
-		$items_max       = intval( $request->get_param( 'items_max' ) ?? 0 );
-		$has_file        = $request->get_param( 'has_file' ) === '1';
-		$sort            = sanitize_text_field( $request->get_param( 'sort' ) ?? 'date' );
-		$page            = max( 1, intval( $request->get_param( 'page' ) ?? 1 ) );
-		$per_page        = min( 50, max( 5, intval( $request->get_param( 'per_page' ) ?? 20 ) ) );
+		$params = $this->sanitize_search_params( $request );
+		$rows   = $this->parse_boolean_rows( $request->get_param( 'rows' ) );
 
-		/* ── Boolean rows ── */
-		$rows_raw = $request->get_param( 'rows' );
-		$rows     = array();
+		$table_name = $wpdb->prefix . \ArabPsychology\NabooDatabase\Admin\Database_Indexer::TABLE_NAME;
+
+		$this->maybe_populate_index( $table_name );
+
+		$sql_args      = array();
+		$where_clauses = $this->build_where_clauses( $params, $rows, $sql_args );
+
+		$join_views    = "";
+		$relevance_col = "";
+		$order_by_sql  = $this->build_sorting_clauses( $params, $rows, $join_views, $relevance_col );
+
+		// Build WHERE String
+		$where_sql = "";
+		if ( ! empty( $where_clauses ) ) {
+			$where_sql = "WHERE " . implode( " AND ", $where_clauses );
+		}
+
+		// Count Query
+		$count_sql = "SELECT COUNT(i.post_id) FROM {$table_name} i {$where_sql}";
+		if ( ! empty( $sql_args ) ) {
+			$count_sql = $wpdb->prepare( $count_sql, ...$sql_args );
+		}
+		$total_posts = (int) $wpdb->get_var( $count_sql );
+		$total_pages = ceil( $total_posts / $params['per_page'] );
+
+		// Data Query
+		$offset = ( $params['page'] - 1 ) * $params['per_page'];
+
+		$data_sql = "SELECT i.post_id {$relevance_col} FROM {$table_name} i {$join_views} {$where_sql} ORDER BY {$order_by_sql} LIMIT %d OFFSET %d";
+
+		// Add LIMIT/OFFSET args
+		$sql_args[] = $params['per_page'];
+		$sql_args[] = $offset;
+
+		$data_sql = $wpdb->prepare( $data_sql, ...$sql_args );
+
+		$post_ids = $wpdb->get_col( $data_sql );
+
+		/* ── Formatting Results ── */
+		$results = array();
+		if ( ! empty( $post_ids ) ) {
+			foreach ( $post_ids as $pid ) {
+				$post = get_post( $pid );
+				if ( $post ) {
+					$results[] = $this->format_scale_result( $post, $params['keyword'] );
+				}
+			}
+		}
+
+		return rest_ensure_response( array(
+			'success'     => true,
+			'data'        => $results,
+			'total'       => $total_posts,
+			'page'        => $params['page'],
+			'per_page'    => $params['per_page'],
+			'total_pages' => $total_pages,
+		) );
+	}
+
+	/**
+	 * Sanitize parameters for search query.
+	 */
+	private function sanitize_search_params( $request ) {
+		return array(
+			'keyword'     => sanitize_text_field( $request->get_param( 'keyword' ) ?? '' ),
+			'categories'  => array_map( 'intval', (array) ( $request->get_param( 'categories' ) ?? array() ) ),
+			'authors'     => array_map( 'intval', (array) ( $request->get_param( 'authors' ) ?? array() ) ),
+			'year_from'   => intval( $request->get_param( 'year_from' ) ?? 0 ),
+			'year_to'     => intval( $request->get_param( 'year_to' ) ?? 0 ),
+			'language'    => sanitize_text_field( $request->get_param( 'language' ) ?? '' ),
+			'test_type'   => sanitize_text_field( $request->get_param( 'test_type' ) ?? '' ),
+			'format'      => sanitize_text_field( $request->get_param( 'format' ) ?? '' ),
+			'age_group'   => sanitize_text_field( $request->get_param( 'age_group' ) ?? '' ),
+			'methodology' => sanitize_text_field( $request->get_param( 'methodology' ) ?? '' ),
+			'population'  => sanitize_text_field( $request->get_param( 'population' ) ?? '' ),
+			'items_min'   => intval( $request->get_param( 'items_min' ) ?? 0 ),
+			'items_max'   => intval( $request->get_param( 'items_max' ) ?? 0 ),
+			'has_file'    => $request->get_param( 'has_file' ) === '1',
+			'sort'        => sanitize_text_field( $request->get_param( 'sort' ) ?? 'date' ),
+			'page'        => max( 1, intval( $request->get_param( 'page' ) ?? 1 ) ),
+			'per_page'    => min( 50, max( 5, intval( $request->get_param( 'per_page' ) ?? 20 ) ) ),
+		);
+	}
+
+	/**
+	 * Parse boolean search rows.
+	 */
+	private function parse_boolean_rows( $rows_raw ) {
+		$rows = array();
 		if ( is_array( $rows_raw ) ) {
 			foreach ( $rows_raw as $row ) {
 				if ( ! is_array( $row ) ) {
@@ -120,24 +190,17 @@ class Advanced_Search {
 				}
 			}
 		}
+		return $rows;
+	}
 
-		$table_name = $wpdb->prefix . \ArabPsychology\NabooDatabase\Admin\Database_Indexer::TABLE_NAME;
-
-		/* ── Auto-populate index if empty (first-run scenario) ── */
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$index_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
-		if ( $index_count === 0 ) {
-			$this->bulk_sync_index();
-		}
-
-		/* ── Query Construction ── */
-
+	/**
+	 * Build WHERE clauses for search query.
+	 */
+	private function build_where_clauses( $params, $rows, &$sql_args ) {
+		global $wpdb;
 		$where_clauses = array();
-		$sql_args      = array();
 
 		/* ── Keyword / Boolean Search ── */
-		// We'll map the allowed 'field' properties to columns in our flat index.
-		// Fallback for 'any' will hit the FULLTEXT index.
 		$allowed_fields = array(
 			'title'      => 'title',
 			'construct'  => 'construct',
@@ -146,31 +209,25 @@ class Advanced_Search {
 			'population' => 'population',
 		);
 
-		// Handle simple keyword search (no rows, just the main search bar)
-		if ( empty( $rows ) && ! empty( $keyword ) ) {
-			// Boolean mode FULLTEXT search across primary fields
+		if ( empty( $rows ) && ! empty( $params['keyword'] ) ) {
 			$where_clauses[] = "MATCH (title, abstract, purpose, construct, population) AGAINST (%s IN BOOLEAN MODE)";
-			$sql_args[]      = $this->format_boolean_keyword( $keyword );
+			$sql_args[]      = $this->format_boolean_keyword( $params['keyword'] );
 		}
-		
-		// Handle boolean rows from Advanced Search
+
 		if ( ! empty( $rows ) ) {
 			$boolean_expressions = array();
-			
-			// Map the UI rows into SQL grouping
 			foreach ( $rows as $i => $row ) {
 				$term = trim( $row['term'] );
 				if ( empty( $term ) ) continue;
 
 				$db_field = $allowed_fields[ $row['field'] ] ?? 'any';
-				$operator = ( $i === 0 ) ? '' : ( $row['operator'] === 'OR' ? 'OR' : 'AND' ); // 'NOT' is handled within boolean fulltext or via NOT LIKE
+				$operator = ( $i === 0 ) ? '' : ( $row['operator'] === 'OR' ? 'OR' : 'AND' );
 				$is_not   = ( $row['operator'] === 'NOT' );
 
 				if ( $db_field === 'any' ) {
 					$match_sql = "MATCH (title, abstract, purpose, construct, population) AGAINST (%s IN BOOLEAN MODE)";
 					$match_arg = $this->format_boolean_keyword( $term, $is_not );
 				} else {
-					// Specific column
 					$match_sql = "{$db_field} " . ( $is_not ? "NOT " : "" ) . "LIKE %s";
 					$match_arg = '%' . $wpdb->esc_like( $term ) . '%';
 				}
@@ -182,35 +239,33 @@ class Advanced_Search {
 				}
 				$sql_args[] = $match_arg;
 			}
-			
 			if ( ! empty( $boolean_expressions ) ) {
 				$where_clauses[] = "( " . implode( " ", $boolean_expressions ) . " )";
 			}
 		}
 
-		/* ── Taxonomy Filters (Stored as comma-separated JSON-like strings in index) ── */
-		// To match efficiently without JSON functions (for older MySQL), we use FIND_IN_SET mapped with ANDs
-		if ( ! empty( $categories ) ) {
+		/* ── Taxonomy Filters ── */
+		if ( ! empty( $params['categories'] ) ) {
 			$cat_clauses = array();
-			foreach ( $categories as $cat_id ) {
+			foreach ( $params['categories'] as $cat_id ) {
 				$cat_clauses[] = "FIND_IN_SET(%d, category_ids) > 0";
 				$sql_args[]    = $cat_id;
 			}
 			$where_clauses[] = "( " . implode( " OR ", $cat_clauses ) . " )";
 		}
 
-		if ( ! empty( $authors ) ) {
+		if ( ! empty( $params['authors'] ) ) {
 			$auth_clauses = array();
-			foreach ( $authors as $auth_id ) {
+			foreach ( $params['authors'] as $auth_id ) {
 				$auth_clauses[] = "FIND_IN_SET(%d, author_ids) > 0";
 				$sql_args[]    = $auth_id;
 			}
 			$where_clauses[] = "( " . implode( " OR ", $auth_clauses ) . " )";
 		}
 
-		if ( ! empty( $age_group ) ) {
+		if ( ! empty( $params['age_group'] ) ) {
 			$age_clauses = array();
-			foreach ( (array) $age_group as $age_id ) {
+			foreach ( (array) $params['age_group'] as $age_id ) {
 				$age_clauses[] = "FIND_IN_SET(%d, age_group_ids) > 0";
 				$sql_args[]    = $age_id;
 			}
@@ -218,35 +273,35 @@ class Advanced_Search {
 		}
 
 		/* ── Meta Column Filters ── */
-		if ( $year_from && $year_to ) {
+		if ( $params['year_from'] && $params['year_to'] ) {
 			$where_clauses[] = "year BETWEEN %d AND %d";
-			$sql_args[] = $year_from;
-			$sql_args[] = $year_to;
-		} elseif ( $year_from ) {
+			$sql_args[] = $params['year_from'];
+			$sql_args[] = $params['year_to'];
+		} elseif ( $params['year_from'] ) {
 			$where_clauses[] = "year >= %d";
-			$sql_args[] = $year_from;
-		} elseif ( $year_to ) {
+			$sql_args[] = $params['year_from'];
+		} elseif ( $params['year_to'] ) {
 			$where_clauses[] = "year <= %d";
-			$sql_args[] = $year_to;
+			$sql_args[] = $params['year_to'];
 		}
 
-		if ( $items_min && $items_max ) {
+		if ( $params['items_min'] && $params['items_max'] ) {
 			$where_clauses[] = "items BETWEEN %d AND %d";
-			$sql_args[] = $items_min;
-			$sql_args[] = $items_max;
-		} elseif ( $items_min ) {
+			$sql_args[] = $params['items_min'];
+			$sql_args[] = $params['items_max'];
+		} elseif ( $params['items_min'] ) {
 			$where_clauses[] = "items >= %d";
-			$sql_args[] = $items_min;
-		} elseif ( $items_max ) {
+			$sql_args[] = $params['items_min'];
+		} elseif ( $params['items_max'] ) {
 			$where_clauses[] = "items <= %d";
-			$sql_args[] = $items_max;
+			$sql_args[] = $params['items_max'];
 		}
 
 		$exact_meta_fields = array(
-			'language'    => $language,
-			'test_type'   => $test_type,
-			'format'      => $format,
-			'methodology' => $methodology,
+			'language'    => $params['language'],
+			'test_type'   => $params['test_type'],
+			'format'      => $params['format'],
+			'methodology' => $params['methodology'],
 		);
 		foreach ( $exact_meta_fields as $col => $val ) {
 			if ( $val !== '' ) {
@@ -255,26 +310,33 @@ class Advanced_Search {
 			}
 		}
 
-		if ( $population !== '' ) {
+		if ( $params['population'] !== '' ) {
 			$where_clauses[] = "population LIKE %s";
-			$sql_args[] = '%' . $wpdb->esc_like( $population ) . '%';
+			$sql_args[] = '%' . $wpdb->esc_like( $params['population'] ) . '%';
 		}
 
-		if ( $has_file ) {
+		if ( $params['has_file'] ) {
 			$where_clauses[] = "has_file = 1";
 		}
 
-		/* ── Pagination & Sorting ── */
-		$order_by_sql = "post_id DESC"; // Default
-		$relevance_col = "";
+		return $where_clauses;
+	}
 
-		if ( $sort === 'relevance' && ! empty( $keyword ) && empty( $rows ) ) {
-			$relevance_col = ", MATCH (title, abstract, purpose, construct, population) AGAINST ('" . esc_sql( $this->format_boolean_keyword($keyword) ) . "' IN BOOLEAN MODE) AS score";
+	/**
+	 * Build sorting clauses for search query.
+	 */
+	private function build_sorting_clauses( $params, $rows, &$join_views, &$relevance_col ) {
+		global $wpdb;
+		$order_by_sql  = "post_id DESC";
+		$relevance_col = "";
+		$join_views    = "";
+
+		if ( $params['sort'] === 'relevance' && ! empty( $params['keyword'] ) && empty( $rows ) ) {
+			$relevance_col = ", MATCH (title, abstract, purpose, construct, population) AGAINST ('" . esc_sql( $this->format_boolean_keyword( $params['keyword'] ) ) . "' IN BOOLEAN MODE) AS score";
 			$order_by_sql = "score DESC, post_id DESC";
 		} else {
-			switch ( $sort ) {
+			switch ( $params['sort'] ) {
 				case 'views':
-					// Since views change constantly, we left it out of the index table. We join postmeta for sorting.
 					$join_views = "LEFT JOIN {$wpdb->postmeta} pm_views ON i.post_id = pm_views.post_id AND pm_views.meta_key = '_naboo_view_count'";
 					$order_by_sql = "CAST(IFNULL(pm_views.meta_value, 0) AS UNSIGNED) DESC, i.post_id DESC";
 					break;
@@ -302,62 +364,25 @@ class Advanced_Search {
 				case 'oldest':
 				case 'date':
 				default:
-					// Instead of joining posts table just for date, we use post_id as a proxy for date since they are sequential.
-					$dir = ( $sort === 'oldest' ) ? 'ASC' : 'DESC';
+					$dir = ( $params['sort'] === 'oldest' ) ? 'ASC' : 'DESC';
 					$order_by_sql = "post_id {$dir}";
 					break;
 			}
 		}
 
-		// Build WHERE String
-		$where_sql = "";
-		if ( ! empty( $where_clauses ) ) {
-			$where_sql = "WHERE " . implode( " AND ", $where_clauses );
+		return $order_by_sql;
+	}
+
+	/**
+	 * Populate index if empty.
+	 */
+	private function maybe_populate_index( $table_name ) {
+		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$index_count = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+		if ( $index_count === 0 ) {
+			$this->bulk_sync_index();
 		}
-
-		// Count Query
-		$count_sql = "SELECT COUNT(i.post_id) FROM {$table_name} i {$where_sql}";
-		if ( ! empty( $sql_args ) ) {
-			$count_sql = $wpdb->prepare( $count_sql, ...$sql_args );
-		}
-		$total_posts = (int) $wpdb->get_var( $count_sql );
-		$total_pages = ceil( $total_posts / $per_page );
-
-		// Data Query
-		$offset = ( $page - 1 ) * $per_page;
-		$join_views = $join_views ?? ""; 
-		
-		$data_sql = "SELECT i.post_id {$relevance_col} FROM {$table_name} i {$join_views} {$where_sql} ORDER BY {$order_by_sql} LIMIT %d OFFSET %d";
-		
-		// Add LIMIT/OFFSET args
-		$sql_args[] = $per_page;
-		$sql_args[] = $offset;
-
-		$data_sql = $wpdb->prepare( $data_sql, ...$sql_args );
-		
-		$post_ids = $wpdb->get_col( $data_sql );
-
-		/* ── Formatting Results ── */
-		$results = array();
-		if ( ! empty( $post_ids ) ) {
-			// Now we hit the standard WP cache to construct the UI
-			// This is fast because we're only querying exactly 20 posts max
-			foreach ( $post_ids as $pid ) {
-				$post = get_post( $pid );
-				if ( $post ) {
-					$results[] = $this->format_scale_result( $post, $keyword );
-				}
-			}
-		}
-
-		return rest_ensure_response( array(
-			'success'     => true,
-			'data'        => $results,
-			'total'       => $total_posts,
-			'page'        => $page,
-			'per_page'    => $per_page,
-			'total_pages' => $total_pages,
-		) );
 	}
 
 	/**
