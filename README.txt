@@ -48,6 +48,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
+= 1.55.11 =
+* Enhancement: Added transient caching to Smart Search Suggestions to improve autocomplete performance.
 = 1.55.8 =
 * Fixed plugin header conflict that caused WordPress to misidentify the plugin as "Naboo Memcached Object Cache".
 

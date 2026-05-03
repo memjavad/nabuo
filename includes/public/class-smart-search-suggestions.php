@@ -228,30 +228,37 @@ class Smart_Search_Suggestions {
 		$query = $request->get_param( 'query' );
 		$limit = $request->get_param( 'limit' );
 
-		$args = array(
-			'post_type'      => 'psych_scale',
-			'post_status'    => 'publish',
-			's'              => $query,
-			'posts_per_page' => $limit,
-			'fields'         => 'ids',
-		);
+		$cache_key = 'naboo_scales_' . md5( $query . '_' . $limit );
+		$results   = get_transient( $cache_key );
 
-		$query_obj = new \WP_Query( $args );
-		$results   = array();
-
-		foreach ( $query_obj->posts as $post_id ) {
-			$post   = get_post( $post_id );
-			$thumb  = get_the_post_thumbnail_url( $post_id, 'thumbnail' );
-			$rating = $this->get_average_rating( $post_id );
-
-			$results[] = array(
-				'id'         => $post_id,
-				'title'      => $post->post_title,
-				'excerpt'    => wp_trim_words( $post->post_excerpt ?: $post->post_content, 15 ),
-				'thumbnail'  => $thumb ?: '',
-				'rating'     => $rating,
-				'url'        => get_permalink( $post_id ),
+		if ( false === $results ) {
+			$args = array(
+				'post_type'      => 'psych_scale',
+				'post_status'    => 'publish',
+				's'              => $query,
+				'posts_per_page' => $limit,
+				'fields'         => 'ids',
 			);
+
+			$query_obj = new \WP_Query( $args );
+			$results   = array();
+
+			foreach ( $query_obj->posts as $post_id ) {
+				$post   = get_post( $post_id );
+				$thumb  = get_the_post_thumbnail_url( $post_id, 'thumbnail' );
+				$rating = $this->get_average_rating( $post_id );
+
+				$results[] = array(
+					'id'         => $post_id,
+					'title'      => $post->post_title,
+					'excerpt'    => wp_trim_words( $post->post_excerpt ?: $post->post_content, 15 ),
+					'thumbnail'  => $thumb ?: '',
+					'rating'     => $rating,
+					'url'        => get_permalink( $post_id ),
+				);
+			}
+
+			set_transient( $cache_key, $results, HOUR_IN_SECONDS );
 		}
 
 		return new WP_REST_Response( array( 'scales' => $results ) );
