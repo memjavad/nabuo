@@ -236,13 +236,43 @@ class Smart_Search_Suggestions {
 			'fields'         => 'ids',
 		);
 
+		// Optimize query performance for lists
+		$args['no_found_rows'] = true;
+
 		$query_obj = new \WP_Query( $args );
 		$results   = array();
+
+		$ratings = array();
+		if ( ! empty( $query_obj->posts ) ) {
+			global $wpdb;
+			$ratings_table = $wpdb->prefix . 'naboo_ratings';
+
+			$placeholders = array_fill( 0, count( $query_obj->posts ), '%d' );
+			$placeholders_str = implode( ', ', $placeholders );
+
+			// Bulk fetch ratings to avoid N+1 queries
+			$db_results = $wpdb->get_results( $wpdb->prepare(
+				"SELECT scale_id, AVG(rating) as avg_rating FROM $ratings_table
+				WHERE scale_id IN ($placeholders_str) AND status = 'approved'
+				GROUP BY scale_id",
+				$query_obj->posts
+			) );
+
+			if ( $db_results ) {
+				foreach ( $db_results as $row ) {
+					$ratings[ $row->scale_id ] = round( $row->avg_rating, 1 );
+				}
+			}
+
+			// Pre-warm caches
+			update_meta_cache( 'post', $query_obj->posts );
+			update_object_term_cache( $query_obj->posts, 'psych_scale' );
+		}
 
 		foreach ( $query_obj->posts as $post_id ) {
 			$post   = get_post( $post_id );
 			$thumb  = get_the_post_thumbnail_url( $post_id, 'thumbnail' );
-			$rating = $this->get_average_rating( $post_id );
+			$rating = isset( $ratings[ $post_id ] ) ? $ratings[ $post_id ] : 0;
 
 			$results[] = array(
 				'id'         => $post_id,
