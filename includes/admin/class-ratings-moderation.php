@@ -138,11 +138,14 @@ class Ratings_Moderation {
 		$offset     = ( $paged - 1 ) * $per_page;
 
 		// Count per status
-		$counts = array();
-		foreach ( array( 'pending', 'approved', 'rejected', 'spam' ) as $s ) {
-			$counts[ $s ] = (int) $wpdb->get_var(
-				$wpdb->prepare( "SELECT COUNT(*) FROM `{$table}` WHERE status = %s", $s )
-			);
+		$counts = array( 'pending' => 0, 'approved' => 0, 'rejected' => 0, 'spam' => 0 );
+		$status_counts = $wpdb->get_results( "SELECT status, COUNT(*) as count FROM `{$table}` WHERE status IN ('pending', 'approved', 'rejected', 'spam') GROUP BY status" );
+		if ( $status_counts ) {
+			foreach ( $status_counts as $row ) {
+				if ( isset( $counts[ $row->status ] ) ) {
+					$counts[ $row->status ] = (int) $row->count;
+				}
+			}
 		}
 		$counts['all'] = array_sum( $counts );
 
