@@ -25,3 +25,8 @@ function test_empty_file_upload() {
 
 test_empty_file_upload();
 echo "All tests passed.\n";
+
+// Run new analytics test
+exec("php " . __DIR__ . "/test_get_all_users_stats.php", $output, $return_var);
+echo implode("\n", $output) . "\n";
+if ($return_var !== 0) { exit(1); }

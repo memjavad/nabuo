@@ -272,6 +272,10 @@ class User_Analytics_Dashboard {
 	 * @return \WP_REST_Response
 	 */
 	public function get_all_users_stats( $request ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return new \WP_Error( 'rest_forbidden', esc_html__( 'You do not have permissions to view this data.', 'naboodatabase' ), array( 'status' => 401 ) );
+		}
+
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'naboo_user_analytics';
 
