@@ -3,9 +3,10 @@
  * Plugin Name:       Naboo Database
  * Plugin URI:        https://arabpsychology.com/
  * Description:       A database for psychological scales. «نابو» كإله للكتابة والعقلانية المنظمة. لقد مثل نابو مراحل متقدمة من التطور المعرفي البشري وتدوين السلوكيات الاجتماعية.
- * Version:           1.55.10
+ * Version:           1.55.11
  * Author:            Arab Psychology
  * Text Domain:       naboodatabase
+ * Requires at least: 6.2
  * Domain Path:       /languages
  */
 
@@ -17,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Current plugin version.
  */
-define( 'NABOODATABASE_VERSION', '1.55.10' );
+define( 'NABOODATABASE_VERSION', '1.55.11' );
 define( 'NABOODATABASE_PATH', plugin_dir_path( __FILE__ ) );
 define( 'NABOODATABASE_URL', plugin_dir_url( __FILE__ ) );
 

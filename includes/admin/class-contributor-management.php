@@ -324,34 +324,30 @@ class Contributor_Management {
 		);
 
 		$updated = 0;
-		$values  = array();
-
-		$values       = array();
-		$placeholders = array();
+		$values_sql   = array();
+		$prepare_args = array( $table_name );
 
 		foreach ( $users as $user ) {
 			$stats = $this->calculate_contributor_stats( $user->ID );
 
-			$values[] = $wpdb->prepare(
-				"(%d, %d, %d, %d, %d, %d, %f, %s, %s)",
-				$user->ID,
-				$stats->total_scales,
-				$stats->approved_scales,
-				$stats->rejected_scales,
-				$stats->total_comments,
-				$stats->total_ratings,
-				$stats->avg_rating,
-				$stats->first_contribution,
-				$stats->last_contribution
-			);
+			$values_sql[]   = "(%d, %d, %d, %d, %d, %d, %f, %s, %s)";
+			$prepare_args[] = $user->ID;
+			$prepare_args[] = $stats->total_scales;
+			$prepare_args[] = $stats->approved_scales;
+			$prepare_args[] = $stats->rejected_scales;
+			$prepare_args[] = $stats->total_comments;
+			$prepare_args[] = $stats->total_ratings;
+			$prepare_args[] = $stats->avg_rating;
+			$prepare_args[] = $stats->first_contribution;
+			$prepare_args[] = $stats->last_contribution;
 
 			$updated++;
 		}
 
-		if ( ! empty( $values ) ) {
-			$query = "INSERT INTO $table_name
+		if ( ! empty( $values_sql ) ) {
+			$query = "INSERT INTO %i
 				(user_id, total_scales, approved_scales, rejected_scales, total_comments, total_ratings, avg_rating, first_contribution, last_contribution)
-				VALUES " . implode( ', ', $values ) . "
+				VALUES " . implode( ', ', $values_sql ) . "
 				ON DUPLICATE KEY UPDATE
 				total_scales = VALUES(total_scales),
 				approved_scales = VALUES(approved_scales),
@@ -361,7 +357,7 @@ class Contributor_Management {
 				avg_rating = VALUES(avg_rating),
 				last_contribution = VALUES(last_contribution)";
 
-			$wpdb->query( $query );
+			$wpdb->query( $wpdb->prepare( $query, $prepare_args ) );
 		}
 
 		return new \WP_REST_Response(
