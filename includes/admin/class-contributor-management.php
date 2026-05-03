@@ -30,11 +30,11 @@ class Contributor_Management {
 	 * Constructor
 	 *
 	 * @param string $plugin_name The plugin name.
-	 * @param string $version     The plugin version.
+	 * @param string $version	 The plugin version.
 	 */
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+		$this->version	 = $version;
 		$this->create_table();
 	}
 
@@ -77,8 +77,8 @@ class Contributor_Management {
 			'apa/v1',
 			'/contributors/leaderboard',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_leaderboard' ),
+				'methods'			 => 'GET',
+				'callback'			=> array( $this, 'get_leaderboard' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -87,8 +87,8 @@ class Contributor_Management {
 			'apa/v1',
 			'/contributors/(?P<user_id>\d+)/stats',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_contributor_stats' ),
+				'methods'			 => 'GET',
+				'callback'			=> array( $this, 'get_contributor_stats' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -97,8 +97,8 @@ class Contributor_Management {
 			'apa/v1',
 			'/contributors/(?P<user_id>\d+)/scales',
 			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_contributor_scales' ),
+				'methods'			 => 'GET',
+				'callback'			=> array( $this, 'get_contributor_scales' ),
 				'permission_callback' => '__return_true',
 			)
 		);
@@ -107,8 +107,8 @@ class Contributor_Management {
 			'apa/v1',
 			'/contributors/update-stats',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'update_all_contributor_stats' ),
+				'methods'			 => 'POST',
+				'callback'			=> array( $this, 'update_all_contributor_stats' ),
 				'permission_callback' => function() {
 					return current_user_can( 'manage_options' );
 				},
@@ -134,7 +134,7 @@ class Contributor_Management {
 		foreach ( $leaderboard as &$row ) {
 			$user = get_user_by( 'id', $row->user_id );
 			$row->display_name = $user ? $user->display_name : 'Unknown';
-			$row->user_url     = $user ? get_author_posts_url( $user->ID ) : '';
+			$row->user_url	 = $user ? get_author_posts_url( $user->ID ) : '';
 		}
 
 		return new \WP_REST_Response( array( 'leaderboard' => $leaderboard ), 200 );
@@ -149,7 +149,7 @@ class Contributor_Management {
 	public function get_contributor_stats( $request ) {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'naboo_contributor_stats';
-		$user_id    = $request->get_param( 'user_id' );
+		$user_id	= $request->get_param( 'user_id' );
 
 		$stats = $wpdb->get_row(
 			$wpdb->prepare( "SELECT * FROM $table_name WHERE user_id = %d", $user_id )
@@ -186,34 +186,29 @@ class Contributor_Management {
 		$status  = $request->get_param( 'status' ) ?? 'publish';
 
 		$args = array(
-			'post_type'      => 'psych_scale',
-			'post_status'    => $status,
-			'author'         => $user_id,
+			'post_type'	  => 'psych_scale',
+			'post_status'	=> $status,
+			'author'		 => $user_id,
 			'posts_per_page' => 20,
 		);
 
 		$query = new \WP_Query( $args );
 
 		$post_ids = wp_list_pluck( $query->posts, 'ID' );
-		$views_meta = array();
 
 		if ( ! empty( $post_ids ) ) {
-			global $wpdb;
-			$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
-			$meta_results = $wpdb->get_results( $wpdb->prepare( "SELECT post_id, meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_naboo_view_count' AND post_id IN ($placeholders)", ...$post_ids ) );
-			foreach ( $meta_results as $meta ) {
-				$views_meta[ $meta->post_id ] = $meta->meta_value;
-			}
+			update_meta_cache( 'post', $post_ids );
 		}
 
 		$scales = array();
 		foreach ( $query->posts as $scale ) {
+			$views = get_post_meta( $scale->ID, '_naboo_view_count', true );
 			$scales[] = array(
-				'id'       => $scale->ID,
-				'title'    => $scale->post_title,
-				'date'     => $scale->post_date,
+				'id'	   => $scale->ID,
+				'title'	=> $scale->post_title,
+				'date'	 => $scale->post_date,
 				'status'   => $scale->post_status,
-				'views'    => isset( $views_meta[ $scale->ID ] ) ? $views_meta[ $scale->ID ] : 0,
+				'views'	=> $views ? (int) $views : 0,
 			);
 		}
 
@@ -221,8 +216,8 @@ class Contributor_Management {
 
 		return new \WP_REST_Response(
 			array(
-				'scales'      => $scales,
-				'total'       => $query->found_posts,
+				'scales'	  => $scales,
+				'total'	   => $query->found_posts,
 				'total_pages' => $query->max_num_pages,
 			),
 			200
@@ -295,15 +290,15 @@ class Contributor_Management {
 		);
 
 		return (object) array(
-			'user_id'              => $user_id,
-			'total_scales'         => $total_scales,
-			'approved_scales'      => $approved_scales,
-			'rejected_scales'      => $rejected_scales,
-			'total_comments'       => $total_comments,
-			'total_ratings'        => $total_ratings,
-			'avg_rating'           => round( $avg_rating, 2 ),
+			'user_id'			  => $user_id,
+			'total_scales'		 => $total_scales,
+			'approved_scales'	  => $approved_scales,
+			'rejected_scales'	  => $rejected_scales,
+			'total_comments'	   => $total_comments,
+			'total_ratings'		=> $total_ratings,
+			'avg_rating'		   => round( $avg_rating, 2 ),
 			'first_contribution'   => $first_scale,
-			'last_contribution'    => $last_scale,
+			'last_contribution'	=> $last_scale,
 		);
 	}
 
@@ -326,7 +321,7 @@ class Contributor_Management {
 		$updated = 0;
 		$values  = array();
 
-		$values       = array();
+		$values	   = array();
 		$placeholders = array();
 
 		foreach ( $users as $user ) {
