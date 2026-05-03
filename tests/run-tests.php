@@ -25,3 +25,10 @@ function test_empty_file_upload() {
 
 test_empty_file_upload();
 echo "All tests passed.\n";
+
+// Run the new test
+exec('php ' . __DIR__ . '/test-batch-ai-remote-sync.php', $output, $return_var);
+echo implode("\n", $output) . "\n";
+if ($return_var !== 0) {
+    exit(1);
+}
