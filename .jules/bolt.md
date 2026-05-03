@@ -1,3 +1,4 @@
-## 2024-05-24 - Missing no_found_rows in WP_Query
-**Learning:** Found several `WP_Query` instances that fetch exactly ONE post using `posts_per_page => 1` but forget to include `no_found_rows => true`. This is a classic WordPress bottleneck as WP_Query defaults to executing `SQL_CALC_FOUND_ROWS` to calculate pagination, which is highly inefficient when only fetching 1 record and when pagination isn't needed.
-**Action:** When creating or modifying single-post `WP_Query` lookups or unpaginated lists, aggressively add `'no_found_rows' => true`.
+## Performance Improvements
+
+* When addressing N+1 query problems fetching post metadata across a collection of posts, use `wp_list_pluck` to extract post IDs and `update_meta_cache('post', $post_ids)` to pre-warm the cache. Subsequent calls to `get_post_meta($id, $key, true)` within a loop will then hit the cache instead of the database.
+* Always use `update_meta_cache` for WordPress metadata, rather than directly fetching and building an associative array manually using `$wpdb->get_results`.
