@@ -146,58 +146,99 @@ class Core {
 	}
 
 	private function define_admin_hooks() {
+		$this->define_admin_core_hooks();
+		$this->define_admin_seo_hooks();
+		$this->define_admin_moderation_hooks();
+		$this->define_admin_feature_hooks();
+		$this->define_admin_analytics_api_hooks();
+	}
+
+	private function define_admin_core_hooks() {
 		$plugin_admin = new Admin( $this->get_plugin_name(), $this->get_version() );
-        $dashboard = new Dashboard();
-        $theme_customizer = new Theme_Customizer( $this->get_plugin_name(), $this->get_version() );
-        $advanced_dashboard = new Advanced_Admin_Dashboard( $this->get_plugin_name(), $this->get_version() );
-        $submission_queue = new Submission_Management_Queue( $this->get_plugin_name(), $this->get_version() );
-        $scale_editing_tools = new Scale_Editing_Tools( $this->get_plugin_name(), $this->get_version() );
-        $bulk_import_tool = new Bulk_Import_Tool( $this->get_plugin_name(), $this->get_version() );
-        $scale_validation = new Scale_Validation( $this->get_plugin_name(), $this->get_version() );
-        $bulk_operations = new Bulk_Operations( $this->get_plugin_name(), $this->get_version() );
-        $user_role_management = new User_Role_Management( $this->get_plugin_name(), $this->get_version() );
-        $email_notifications = new Email_Notifications_System( $this->get_plugin_name(), $this->get_version() );
-        $contributor_management = new Contributor_Management( $this->get_plugin_name(), $this->get_version() );
-        $admin_reports_generator = new Admin_Reports_Generator( $this->get_plugin_name(), $this->get_version() );
-        $export_analytics_reports = new Export_Analytics_Reports( $this->get_plugin_name(), $this->get_version() );
-        $performance_metrics_dashboard = new Performance_Metrics_Dashboard( $this->get_plugin_name(), $this->get_version() );
-        $advanced_caching_system = new Advanced_Caching_System( $this->get_plugin_name(), $this->get_version() );
-        $api_rate_limiting = new API_Rate_Limiting( $this->get_plugin_name(), $this->get_version() );
-        $settings_center = new Settings_Center( $this->get_plugin_name(), $this->get_version() );
-        $settings_ajax = new Settings_Ajax();
-        $comments_moderation = new Comments_Moderation( $this->get_plugin_name(), $this->get_version() );
-        $ratings_moderation = new Ratings_Moderation( $this->get_plugin_name(), $this->get_version() );
-        $seo_settings = new SEO_Settings( $this->get_plugin_name(), $this->get_version() );
-        $performance_optimizer = new Performance_Optimizer( $this->get_plugin_name(), $this->get_version() );
-        $security_center = new Security_Center( $this->get_plugin_name(), $this->get_version() );
-        $glossary_admin = new Glossary_Admin( $this->get_plugin_name(), $this->get_version() );
-        $health_optimizer = new Health_Optimizer( $this->get_plugin_name(), $this->get_version() );
-        $cloudflare_integration = new Cloudflare_Integration();
-        $cloudflare_integration->init_hooks();
+		$theme_customizer = new Theme_Customizer( $this->get_plugin_name(), $this->get_version() );
+		$advanced_dashboard = new Advanced_Admin_Dashboard( $this->get_plugin_name(), $this->get_version() );
+		$settings_center = new Settings_Center( $this->get_plugin_name(), $this->get_version() );
+		$settings_ajax = new Settings_Ajax();
+		$performance_optimizer = new Performance_Optimizer( $this->get_plugin_name(), $this->get_version() );
+		$security_center = new Security_Center( $this->get_plugin_name(), $this->get_version() );
+		$health_optimizer = new Health_Optimizer( $this->get_plugin_name(), $this->get_version() );
+		$cloudflare_integration = new Cloudflare_Integration();
+		$diagnostics = new Diagnostics( $this->get_plugin_name(), $this->get_version() );
+
+		$cloudflare_integration->init_hooks();
 
 		// Enqueue styles and scripts
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $theme_customizer, 'enqueue_scripts' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $advanced_dashboard, 'enqueue_styles' );
-        
-		// Theme Customizer Menu (hooks still used for register_settings etc.)
-        $this->loader->add_action( 'admin_menu', $theme_customizer, 'add_admin_menu', 20 );
-        $this->loader->add_action( 'admin_init', $theme_customizer, 'register_settings' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $theme_customizer, 'enqueue_scripts' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $advanced_dashboard, 'enqueue_styles' );
 
-        // Settings Center (priority 20 so its add_submenu_page overrides the placeholder above)
-        $this->loader->add_action( 'admin_menu', $settings_center, 'register_menu', 20 );
-        $this->loader->add_action( 'admin_init', $settings_center, 'register_settings' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $settings_center, 'enqueue_assets' );
+		// Theme Customizer Menu
+		$this->loader->add_action( 'admin_menu', $theme_customizer, 'add_admin_menu', 20 );
+		$this->loader->add_action( 'admin_init', $theme_customizer, 'register_settings' );
 
-        // Settings AJAX Handlers
-        $settings_ajax->register_hooks();
+		// Settings Center
+		$this->loader->add_action( 'admin_menu', $settings_center, 'register_menu', 20 );
+		$this->loader->add_action( 'admin_init', $settings_center, 'register_settings' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $settings_center, 'enqueue_assets' );
 
-        // SEO & Schema Settings
-        $this->loader->add_action( 'admin_menu', $seo_settings, 'register_menu', 20 );
-        $this->loader->add_action( 'admin_init', $seo_settings, 'register_settings' );
-        $this->loader->add_action( 'wp_ajax_naboo_generate_sitemap', $seo_settings, 'ajax_generate_sitemap' );
-        $this->loader->add_action( 'wp_ajax_nopriv_naboo_generate_sitemap', $seo_settings, 'ajax_generate_sitemap' );
+		// Settings AJAX Handlers
+		$settings_ajax->register_hooks();
+
+		// Advanced Search Indexer
+		add_action( 'save_post', [ 'ArabPsychology\\NabooDatabase\\Admin\\Database_Indexer', 'trigger_sync_on_save' ], 99, 3 );
+		add_action( 'deleted_post', [ 'ArabPsychology\\NabooDatabase\\Admin\\Database_Indexer', 'trigger_sync_on_delete' ], 10, 1 );
+		\ArabPsychology\NabooDatabase\Admin\Database_Indexer::init_async_hooks();
+
+		// Admin list sortable columns for psych_scale.
+		$this->loader->add_filter( 'manage_edit-psych_scale_sortable_columns', $plugin_admin, 'sortable_columns' );
+		$this->loader->add_action( 'pre_get_posts', $plugin_admin, 'handle_custom_sort' );
+
+		// Invalidate admin review bar transient when a psych_scale changes status.
+		add_action( 'transition_post_status', function( $new, $old, $post ) {
+			if ( $post->post_type === 'psych_scale' ) {
+				delete_transient( 'naboo_admin_bar_next_0' );
+				delete_transient( 'naboo_admin_bar_next_' . $post->ID );
+			}
+		}, 10, 3 );
+
+		// Performance Optimizer
+		$this->loader->add_action( 'admin_menu', $performance_optimizer, 'register_menu', 20 );
+		$this->loader->add_action( 'admin_init', $performance_optimizer, 'register_settings' );
+		$performance_optimizer->init_optimizations();
+
+		// Security Center
+		$this->loader->add_action( 'admin_menu', $security_center, 'register_menu', 20 );
+		$this->loader->add_action( 'admin_init', $security_center, 'register_settings' );
+
+		// Advanced Admin Dashboard Menu
+		$this->loader->add_action( 'admin_menu', $advanced_dashboard, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_menu', $advanced_dashboard, 'reorder_submenus', 999 );
+
+		// Add meta boxes
+		$this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_meta_boxes' );
+		$this->loader->add_action( 'save_post', $plugin_admin, 'save_meta_box_data' );
+
+		// Custom Columns
+		$this->loader->add_filter( 'manage_psych_scale_posts_columns', $plugin_admin, 'manage_columns' );
+		$this->loader->add_action( 'manage_psych_scale_posts_custom_column', $plugin_admin, 'manage_custom_column', 10, 2 );
+
+		// Health & Maintenance
+		$this->loader->add_action( 'admin_menu', $health_optimizer, 'register_menu', 20 );
+		$health_optimizer->register_ajax();
+
+		// Diagnostics Dashboard
+		$this->loader->add_action( 'admin_menu', $diagnostics, 'register_menu', 25 );
+	}
+
+	private function define_admin_seo_hooks() {
+		$seo_settings = new SEO_Settings( $this->get_plugin_name(), $this->get_version() );
+
+		// SEO & Schema Settings
+		$this->loader->add_action( 'admin_menu', $seo_settings, 'register_menu', 20 );
+		$this->loader->add_action( 'admin_init', $seo_settings, 'register_settings' );
+		$this->loader->add_action( 'wp_ajax_naboo_generate_sitemap', $seo_settings, 'ajax_generate_sitemap' );
+		$this->loader->add_action( 'wp_ajax_nopriv_naboo_generate_sitemap', $seo_settings, 'ajax_generate_sitemap' );
 		
 		// Sitemap Automation & Dynamic Delivery
 		$this->loader->add_action( 'init', $seo_settings, 'dynamic_sitemap_endpoint' );
@@ -220,142 +261,118 @@ class Core {
 
 		// SEO: inject canonical URL + hreflang tags on psych_scale singular pages.
 		$this->loader->add_action( 'wp_head', $seo_settings, 'inject_canonical_and_hreflang', 1 );
+	}
 
-		// Advanced Search Indexer — registered directly (bypassing Loader) because the
-		// Loader's signature is ($hook, $component, $callback, $priority, $accepted_args)
-		// which cannot accept a callable array as $component without shifting arguments.
-		add_action( 'save_post', [ 'ArabPsychology\\NabooDatabase\\Admin\\Database_Indexer', 'trigger_sync_on_save' ], 99, 3 );
-		add_action( 'deleted_post', [ 'ArabPsychology\\NabooDatabase\\Admin\\Database_Indexer', 'trigger_sync_on_delete' ], 10, 1 );
-		\ArabPsychology\NabooDatabase\Admin\Database_Indexer::init_async_hooks();
+	private function define_admin_moderation_hooks() {
+		$comments_moderation = new Comments_Moderation( $this->get_plugin_name(), $this->get_version() );
+		$ratings_moderation = new Ratings_Moderation( $this->get_plugin_name(), $this->get_version() );
+		$batch_ai = new Batch_AI();
+		$pending_processor = new Pending_Processor();
+		$email_notifications = new Email_Notifications_System( $this->get_plugin_name(), $this->get_version() );
 
-		// Admin list sortable columns for psych_scale.
-		$this->loader->add_filter( 'manage_edit-psych_scale_sortable_columns', $plugin_admin, 'sortable_columns' );
-		$this->loader->add_action( 'pre_get_posts', $plugin_admin, 'handle_custom_sort' );
+		// Comments Moderation
+		$this->loader->add_action( 'admin_menu', $comments_moderation, 'register_menu', 20 );
+		$this->loader->add_action( 'admin_post_naboo_comment_action', $comments_moderation, 'handle_action' );
 
-		// Invalidate admin review bar transient when a psych_scale changes status.
-		add_action( 'transition_post_status', function( $new, $old, $post ) {
-			if ( $post->post_type === 'psych_scale' ) {
-				delete_transient( 'naboo_admin_bar_next_0' );
-				delete_transient( 'naboo_admin_bar_next_' . $post->ID );
-			}
-		}, 10, 3 );
+		// Ratings Moderation
+		$this->loader->add_action( 'admin_menu', $ratings_moderation, 'register_menu', 20 );
+		$this->loader->add_action( 'admin_post_naboo_rating_action', $ratings_moderation, 'handle_action' );
 
-        // Performance Optimizer
-        $this->loader->add_action( 'admin_menu', $performance_optimizer, 'register_menu', 20 );
-        $this->loader->add_action( 'admin_init', $performance_optimizer, 'register_settings' );
-        $performance_optimizer->init_optimizations();
+		// Batch AI Processing
+		$batch_ai->register();
 
-        // Security Center
-        $this->loader->add_action( 'admin_menu', $security_center, 'register_menu', 20 );
-        $this->loader->add_action( 'admin_init', $security_center, 'register_settings' );
+		// Pending Processor
+		$this->loader->add_action( 'admin_menu', $pending_processor, 'add_plugin_admin_menu', 20 );
+		$this->loader->add_action( 'admin_enqueue_scripts', $pending_processor, 'enqueue_scripts' );
+		$this->loader->add_action( 'wp_ajax_naboo_process_pending_scale', $pending_processor, 'ajax_process_pending_scale' );
 
-        // Comments Moderation
-        $this->loader->add_action( 'admin_menu', $comments_moderation, 'register_menu', 20 );
-        $this->loader->add_action( 'admin_post_naboo_comment_action', $comments_moderation, 'handle_action' );
+		// Queue cleanup cron: reset stuck 'processing' items + purge old 'done' rows daily.
+		if ( ! wp_next_scheduled( 'naboo_queue_cleanup' ) ) {
+			wp_schedule_event( time(), 'daily', 'naboo_queue_cleanup' );
+		}
+		add_action( 'naboo_queue_cleanup', [ 'ArabPsychology\\NabooDatabase\\Core\\Installer', 'reset_stuck_processing_items' ] );
+		add_action( 'naboo_queue_cleanup', [ 'ArabPsychology\\NabooDatabase\\Core\\Installer', 'purge_old_done_items' ] );
 
-        // Ratings Moderation
-        $this->loader->add_action( 'admin_menu', $ratings_moderation, 'register_menu', 20 );
-        $this->loader->add_action( 'admin_post_naboo_rating_action', $ratings_moderation, 'handle_action' );
-        
-        // Batch AI Processing
-        $batch_ai = new Batch_AI();
-        $batch_ai->register();
+		// Email Notifications System
+		$this->loader->add_action( 'rest_api_init', $email_notifications, 'register_endpoints' );
+		$this->loader->add_action( 'admin_menu', $email_notifications, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $email_notifications, 'enqueue_admin_scripts' );
+	}
 
-        // Pending Processor
-        $pending_processor = new Pending_Processor();
-        $this->loader->add_action( 'admin_menu', $pending_processor, 'add_plugin_admin_menu', 20 );
-        $this->loader->add_action( 'admin_enqueue_scripts', $pending_processor, 'enqueue_scripts' );
-        $this->loader->add_action( 'wp_ajax_naboo_process_pending_scale', $pending_processor, 'ajax_process_pending_scale' );
+	private function define_admin_feature_hooks() {
+		$submission_queue = new Submission_Management_Queue( $this->get_plugin_name(), $this->get_version() );
+		$scale_editing_tools = new Scale_Editing_Tools( $this->get_plugin_name(), $this->get_version() );
+		$bulk_import_tool = new Bulk_Import_Tool( $this->get_plugin_name(), $this->get_version() );
+		$scale_validation = new Scale_Validation( $this->get_plugin_name(), $this->get_version() );
+		$bulk_operations = new Bulk_Operations( $this->get_plugin_name(), $this->get_version() );
+		$user_role_management = new User_Role_Management( $this->get_plugin_name(), $this->get_version() );
+		$contributor_management = new Contributor_Management( $this->get_plugin_name(), $this->get_version() );
+		$glossary_admin = new Glossary_Admin( $this->get_plugin_name(), $this->get_version() );
+		$search_admin = new Search_Admin( $this->get_plugin_name(), $this->get_version() );
 
-        // Queue cleanup cron: reset stuck 'processing' items + purge old 'done' rows daily.
-        if ( ! wp_next_scheduled( 'naboo_queue_cleanup' ) ) {
-            wp_schedule_event( time(), 'daily', 'naboo_queue_cleanup' );
-        }
-        add_action( 'naboo_queue_cleanup', [ 'ArabPsychology\\NabooDatabase\\Core\\Installer', 'reset_stuck_processing_items' ] );
-        add_action( 'naboo_queue_cleanup', [ 'ArabPsychology\\NabooDatabase\\Core\\Installer', 'purge_old_done_items' ] );
+		// Search Engine Admin Page
+		$this->loader->add_action( 'admin_menu', $search_admin, 'register_menu', 20 );
 
-        // Advanced Admin Dashboard Menu
-        $this->loader->add_action( 'admin_menu', $advanced_dashboard, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_menu', $advanced_dashboard, 'reorder_submenus', 999 );
+		// Submission Management Queue
+		$this->loader->add_action( 'rest_api_init', $submission_queue, 'register_endpoints' );
+		$this->loader->add_action( 'admin_menu', $submission_queue, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $submission_queue, 'enqueue_admin_scripts' );
 
-        // Search Engine Admin Page
-        $search_admin = new Search_Admin( $this->get_plugin_name(), $this->get_version() );
-        $this->loader->add_action( 'admin_menu', $search_admin, 'register_menu', 20 );
+		// Scale Editing Tools
+		$this->loader->add_action( 'rest_api_init', $scale_editing_tools, 'register_endpoints' );
 
-        // Submission Management Queue
-        $this->loader->add_action( 'rest_api_init', $submission_queue, 'register_endpoints' );
-        $this->loader->add_action( 'admin_menu', $submission_queue, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $submission_queue, 'enqueue_admin_scripts' );
-        
-        
-        // Scale Editing Tools
-        $this->loader->add_action( 'rest_api_init', $scale_editing_tools, 'register_endpoints' );
-        
-        // Bulk Import Tool
-        $this->loader->add_action( 'rest_api_init', $bulk_import_tool, 'register_endpoints' );
-        $this->loader->add_action( 'admin_menu', $bulk_import_tool, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $bulk_import_tool, 'enqueue_admin_scripts' );
-        
-        // Scale Validation
-        $this->loader->add_action( 'rest_api_init', $scale_validation, 'register_endpoints' );
-        $this->loader->add_action( 'admin_menu', $scale_validation, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $scale_validation, 'enqueue_admin_scripts' );
-        
-        // Bulk Operations
-        $this->loader->add_action( 'rest_api_init', $bulk_operations, 'register_endpoints' );
-        $this->loader->add_action( 'admin_menu', $bulk_operations, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $bulk_operations, 'enqueue_admin_scripts' );
-        
-        // User Role Management
-        $this->loader->add_action( 'rest_api_init', $user_role_management, 'register_endpoints' );
-        
-        // Email Notifications System
-        $this->loader->add_action( 'rest_api_init', $email_notifications, 'register_endpoints' );
-        $this->loader->add_action( 'admin_menu', $email_notifications, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $email_notifications, 'enqueue_admin_scripts' );
-        
-        // Contributor Management
-        $this->loader->add_action( 'rest_api_init', $contributor_management, 'register_endpoints' );
-        
-        // Admin Reports Generator
-        $this->loader->add_action( 'rest_api_init', $admin_reports_generator, 'register_endpoints' );
-        
-        // Export Analytics Reports
-        $this->loader->add_action( 'rest_api_init', $export_analytics_reports, 'register_endpoints' );
-        
-        // Performance Metrics Dashboard
-        $this->loader->add_action( 'rest_api_init', $performance_metrics_dashboard, 'register_endpoints' );
-        
-        // Advanced Caching System
-        $this->loader->add_action( 'rest_api_init', $advanced_caching_system, 'register_endpoints' );
-        
-        // API Rate Limiting
-        $this->loader->add_action( 'rest_api_init', $api_rate_limiting, 'register_endpoints' );
-        $this->loader->add_action( 'admin_menu', $api_rate_limiting, 'add_admin_menu' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $api_rate_limiting, 'enqueue_admin_scripts' );
-        
-        // Add meta boxes
-        $this->loader->add_action( 'add_meta_boxes', $plugin_admin, 'add_meta_boxes' );
-        $this->loader->add_action( 'save_post', $plugin_admin, 'save_meta_box_data' );
+		// Bulk Import Tool
+		$this->loader->add_action( 'rest_api_init', $bulk_import_tool, 'register_endpoints' );
+		$this->loader->add_action( 'admin_menu', $bulk_import_tool, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $bulk_import_tool, 'enqueue_admin_scripts' );
 
-        // Custom Columns
-        $this->loader->add_filter( 'manage_psych_scale_posts_columns', $plugin_admin, 'manage_columns' );
-        $this->loader->add_action( 'manage_psych_scale_posts_custom_column', $plugin_admin, 'manage_custom_column', 10, 2 );
+		// Scale Validation
+		$this->loader->add_action( 'rest_api_init', $scale_validation, 'register_endpoints' );
+		$this->loader->add_action( 'admin_menu', $scale_validation, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $scale_validation, 'enqueue_admin_scripts' );
 
-        // Glossary Admin
-        $this->loader->add_action( 'admin_menu', $glossary_admin, 'add_admin_menu' );
-        $this->loader->add_action( 'add_meta_boxes', $glossary_admin, 'add_meta_boxes' );
-        $this->loader->add_action( 'save_post', $glossary_admin, 'save_meta_box_data' );
-        $this->loader->add_filter( 'manage_naboo_glossary_posts_columns', $glossary_admin, 'manage_columns' );
-        $this->loader->add_action( 'manage_naboo_glossary_posts_custom_column', $glossary_admin, 'manage_custom_column', 10, 2 );
+		// Bulk Operations
+		$this->loader->add_action( 'rest_api_init', $bulk_operations, 'register_endpoints' );
+		$this->loader->add_action( 'admin_menu', $bulk_operations, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $bulk_operations, 'enqueue_admin_scripts' );
 
-        // Health & Maintenance
-        $this->loader->add_action( 'admin_menu', $health_optimizer, 'register_menu', 20 );
-        $health_optimizer->register_ajax();
+		// User Role Management
+		$this->loader->add_action( 'rest_api_init', $user_role_management, 'register_endpoints' );
 
-        // Diagnostics Dashboard
-        $diagnostics = new Diagnostics( $this->get_plugin_name(), $this->get_version() );
-        $this->loader->add_action( 'admin_menu', $diagnostics, 'register_menu', 25 );
+		// Contributor Management
+		$this->loader->add_action( 'rest_api_init', $contributor_management, 'register_endpoints' );
+
+		// Glossary Admin
+		$this->loader->add_action( 'admin_menu', $glossary_admin, 'add_admin_menu' );
+		$this->loader->add_action( 'add_meta_boxes', $glossary_admin, 'add_meta_boxes' );
+		$this->loader->add_action( 'save_post', $glossary_admin, 'save_meta_box_data' );
+		$this->loader->add_filter( 'manage_naboo_glossary_posts_columns', $glossary_admin, 'manage_columns' );
+		$this->loader->add_action( 'manage_naboo_glossary_posts_custom_column', $glossary_admin, 'manage_custom_column', 10, 2 );
+	}
+
+	private function define_admin_analytics_api_hooks() {
+		$admin_reports_generator = new Admin_Reports_Generator( $this->get_plugin_name(), $this->get_version() );
+		$export_analytics_reports = new Export_Analytics_Reports( $this->get_plugin_name(), $this->get_version() );
+		$performance_metrics_dashboard = new Performance_Metrics_Dashboard( $this->get_plugin_name(), $this->get_version() );
+		$advanced_caching_system = new Advanced_Caching_System( $this->get_plugin_name(), $this->get_version() );
+		$api_rate_limiting = new API_Rate_Limiting( $this->get_plugin_name(), $this->get_version() );
+
+		// Admin Reports Generator
+		$this->loader->add_action( 'rest_api_init', $admin_reports_generator, 'register_endpoints' );
+
+		// Export Analytics Reports
+		$this->loader->add_action( 'rest_api_init', $export_analytics_reports, 'register_endpoints' );
+
+		// Performance Metrics Dashboard
+		$this->loader->add_action( 'rest_api_init', $performance_metrics_dashboard, 'register_endpoints' );
+
+		// Advanced Caching System
+		$this->loader->add_action( 'rest_api_init', $advanced_caching_system, 'register_endpoints' );
+
+		// API Rate Limiting
+		$this->loader->add_action( 'rest_api_init', $api_rate_limiting, 'register_endpoints' );
+		$this->loader->add_action( 'admin_menu', $api_rate_limiting, 'add_admin_menu' );
+		$this->loader->add_action( 'admin_enqueue_scripts', $api_rate_limiting, 'enqueue_admin_scripts' );
 	}
 
 	private function define_public_hooks() {
