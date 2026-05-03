@@ -179,6 +179,7 @@ class Scale_Recommendation_Engine {
 			'post_type'      => 'psych_scale',
 			'post_status'    => 'publish',
 			'posts_per_page' => $limit,
+			'no_found_rows'  => true,
 			'post__not_in'   => array( $scale_id ),
 			'tax_query'      => array(
 				array(
@@ -191,6 +192,13 @@ class Scale_Recommendation_Engine {
 
 		$similar = new \WP_Query( $args );
 		$results = array();
+
+		$post_ids = wp_list_pluck( $similar->posts, 'ID' );
+		if ( ! empty( $post_ids ) ) {
+			$all_ids = array_unique( array_merge( array( $scale_id ), $post_ids ) );
+			update_meta_cache( 'post', $all_ids );
+			update_object_term_cache( $all_ids, 'psych_scale' );
+		}
 
 		foreach ( $similar->posts as $post ) {
 			$similarity_score = $this->calculate_similarity_score( $scale, $post );
