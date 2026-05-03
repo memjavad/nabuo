@@ -107,9 +107,6 @@ class Ajax {
     }
 
     public function ajax_filter_archive() {
-        // Simple nonce check or skip if public
-        // check_ajax_referer( 'naboo_search_nonce', 'nonce' );
-
         $search_term = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
         $taxonomy    = isset( $_GET['taxonomy'] ) ? sanitize_text_field( $_GET['taxonomy'] ) : '';
         $term_id     = isset( $_GET['term_id'] ) ? intval( $_GET['term_id'] ) : 0;
