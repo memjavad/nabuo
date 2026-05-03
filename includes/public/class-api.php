@@ -139,9 +139,46 @@ class API {
         $scales = array();
 
         if ( $query->have_posts() ) {
+            // Optimization: N+1 query elimination
+            $post_ids = wp_list_pluck( $query->posts, 'ID' );
+
+            // Warm up meta cache
+            update_meta_cache( 'post', $post_ids );
+
+            // Fetch all terms in a single query
+            global $wpdb;
+            $placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+            $query_str = $wpdb->prepare( "
+                SELECT t.term_id, t.name, t.slug, tr.object_id
+                FROM {$wpdb->terms} t
+                INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+                INNER JOIN {$wpdb->term_relationships} tr ON tt.term_taxonomy_id = tr.term_taxonomy_id
+                WHERE tt.taxonomy = 'scale_category'
+                AND tr.object_id IN ( $placeholders )
+            ", $post_ids );
+
+            $terms_results = $wpdb->get_results( $query_str );
+
+            $bulk_categories = array();
+            foreach ( $post_ids as $pid ) {
+                $bulk_categories[ $pid ] = array();
+            }
+
+            if ( $terms_results ) {
+                foreach ( $terms_results as $row ) {
+                    $bulk_categories[ $row->object_id ][] = array(
+                        'id'   => $row->term_id,
+                        'name' => $row->name,
+                        'slug' => $row->slug,
+                    );
+                }
+            }
+
             while ( $query->have_posts() ) {
                 $query->the_post();
-                $scales[] = $this->prepare_scale_for_response( get_post() );
+                $post = get_post();
+                $post_categories = isset( $bulk_categories[ $post->ID ] ) ? $bulk_categories[ $post->ID ] : array();
+                $scales[] = $this->prepare_scale_for_response( $post, $post_categories );
             }
         }
 
@@ -177,18 +214,26 @@ class API {
         return new WP_REST_Response( array( 'success' => true, 'synced' => $synced ), 200 );
     }
 
-    private function prepare_scale_for_response( $post ) {
-        $terms = get_the_terms( $post->ID, 'scale_category' );
-        $categories = array();
-        if ( $terms && ! is_wp_error( $terms ) ) {
-            foreach ( $terms as $term ) {
-                $categories[] = array(
-                    'id'   => $term->term_id,
-                    'name' => $term->name,
-                    'slug' => $term->slug,
-                );
+    private function prepare_scale_for_response( $post, $categories = null ) {
+        if ( $categories === null ) {
+            $terms = get_the_terms( $post->ID, 'scale_category' );
+            $categories = array();
+            if ( $terms && ! is_wp_error( $terms ) ) {
+                foreach ( $terms as $term ) {
+                    $categories[] = array(
+                        'id'   => $term->term_id,
+                        'name' => $term->name,
+                        'slug' => $term->slug,
+                    );
+                }
             }
         }
+
+        // Optimizing meta fetching
+        $all_meta = get_post_meta( $post->ID, '', false );
+        $get_meta_val = function( $key ) use ( $all_meta ) {
+            return isset( $all_meta[ $key ][0] ) ? maybe_unserialize( $all_meta[ $key ][0] ) : '';
+        };
 
         return array(
             'id'          => $post->ID,
@@ -198,12 +243,12 @@ class API {
             'date'        => $post->post_date,
             'categories'  => $categories,
             'meta'        => array(
-                'items'       => get_post_meta( $post->ID, '_naboo_scale_items', true ),
-                'reliability' => get_post_meta( $post->ID, '_naboo_scale_reliability', true ),
-                'validity'    => get_post_meta( $post->ID, '_naboo_scale_validity', true ),
-                'year'        => get_post_meta( $post->ID, '_naboo_scale_year', true ),
-                'views'       => get_post_meta( $post->ID, '_naboo_view_count', true ),
-                'synced'      => get_post_meta( $post->ID, '_naboo_synced_grokipedia', true ) === '1',
+                'items'       => $get_meta_val( '_naboo_scale_items' ),
+                'reliability' => $get_meta_val( '_naboo_scale_reliability' ),
+                'validity'    => $get_meta_val( '_naboo_scale_validity' ),
+                'year'        => $get_meta_val( '_naboo_scale_year' ),
+                'views'       => $get_meta_val( '_naboo_view_count' ),
+                'synced'      => $get_meta_val( '_naboo_synced_grokipedia' ) === '1',
             ),
             'link'        => get_permalink( $post->ID ),
         );
