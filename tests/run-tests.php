@@ -25,3 +25,5 @@ function test_empty_file_upload() {
 
 test_empty_file_upload();
 echo "All tests passed.\n";
+
+require_once __DIR__ . '/test-glossary-public.php';
