@@ -34,8 +34,9 @@ class Maintenance_Manager {
 
 			case 'optimize_tables':
 				$tables = $wpdb->get_col( "SHOW TABLES LIKE '{$wpdb->prefix}naboo_%'" );
-				foreach ( $tables as $table ) {
-					$wpdb->query( "OPTIMIZE TABLE $table" );
+				if ( ! empty( $tables ) ) {
+					$tables_list = '`' . implode( '`, `', $tables ) . '`';
+					$wpdb->query( "OPTIMIZE TABLE $tables_list" );
 				}
 				Database_Indexer::sync_all_scales();
 				$message = __( 'Plugin database tables have been optimized and re-indexed.', 'naboodatabase' );
@@ -59,8 +60,9 @@ class Maintenance_Manager {
 
 			case 'optimize_all_tables':
 				$tables = $wpdb->get_col( 'SHOW TABLES' );
-				foreach ( $tables as $table ) {
-					$wpdb->query( "OPTIMIZE TABLE $table" );
+				if ( ! empty( $tables ) ) {
+					$tables_list = '`' . implode( '`, `', $tables ) . '`';
+					$wpdb->query( "OPTIMIZE TABLE $tables_list" );
 				}
 				$message = __( 'All database tables have been optimized.', 'naboodatabase' );
 				break;
@@ -110,8 +112,9 @@ class Maintenance_Manager {
 				$wpdb->query( "DELETE FROM $wpdb->comments WHERE comment_approved = 'spam'" );
 				$wpdb->query( "DELETE FROM $wpdb->posts WHERE post_type = 'revision'" );
 				$tables = $wpdb->get_col( 'SHOW TABLES' );
-				foreach ( $tables as $table ) {
-					$wpdb->query( "OPTIMIZE TABLE $table" );
+				if ( ! empty( $tables ) ) {
+					$tables_list = '`' . implode( '`, `', $tables ) . '`';
+					$wpdb->query( "OPTIMIZE TABLE $tables_list" );
 				}
 				Database_Indexer::sync_all_scales();
 				flush_rewrite_rules( true );
