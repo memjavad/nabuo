@@ -132,13 +132,18 @@ class Batch_AI {
 
 	public function display_plugin_admin_page() {
 		global $wpdb;
-		$raw_drafts = $wpdb->get_results( "
+		$raw_drafts = $wpdb->get_results(
+			$wpdb->prepare(
+				"
             SELECT ID, post_title 
-            FROM {$wpdb->posts} 
+            FROM %i
             WHERE post_type = 'naboo_raw_draft' 
             AND post_status IN ('publish', 'draft', 'pending')
             ORDER BY post_date DESC
-        " );
+        ",
+				$wpdb->posts
+			)
+		);
 
 		$pending_drafts = array();
 		foreach ( $raw_drafts as $rd ) {

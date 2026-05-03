@@ -1,0 +1,12 @@
+🔒 Fix SQL Injection vulnerability in Batch AI Drafts retrieval
+
+🎯 **What:**
+Fixed an SQL Injection vulnerability (or static analysis warning) in `includes/admin/class-batch-ai.php` inside the `display_plugin_admin_page` method. The table name `$wpdb->posts` was being directly interpolated into the SQL string.
+
+⚠️ **Risk:**
+While `$wpdb->posts` is a core property and thus less likely to be directly manipulated by an attacker, direct interpolation of properties into SQL strings is generally unsafe and is flagged by security scanners. If an attacker could somehow modify `$wpdb->posts`, they could execute arbitrary SQL queries.
+
+🛡️ **Solution:**
+Replaced the direct interpolation with `$wpdb->prepare()`. Since `$wpdb->posts` is a table identifier, I used the `%i` placeholder, which is specifically designed for safely formatting table and column identifiers.
+
+Because the `%i` placeholder was introduced in WordPress 6.2, I also bumped the `Requires at least` version from 5.0 to 6.2 in both `naboodatabase.php` and `README.txt` to prevent fatal errors on older WordPress installations. The plugin version was bumped to 1.55.11, and a changelog entry was added.
