@@ -70,6 +70,30 @@ if (!function_exists('get_permalink')) {
     }
 }
 
+
+// Mock Transients API
+$GLOBALS['mock_transients'] = [];
+
+if (!function_exists('get_transient')) {
+    function get_transient($key) {
+        if (isset($GLOBALS['mock_transients'][$key])) {
+            return $GLOBALS['mock_transients'][$key];
+        }
+        return false;
+    }
+}
+
+if (!function_exists('set_transient')) {
+    function set_transient($key, $value, $expiration = 0) {
+        $GLOBALS['mock_transients'][$key] = $value;
+        return true;
+    }
+}
+
+if (!defined('HOUR_IN_SECONDS')) {
+    define('HOUR_IN_SECONDS', 3600);
+}
+
 // Mock WPDB
 if (!class_exists('Mock_WPDB')) {
     class Mock_WPDB {
