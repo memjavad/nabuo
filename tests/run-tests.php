@@ -25,3 +25,10 @@ function test_empty_file_upload() {
 
 test_empty_file_upload();
 echo "All tests passed.\n";
+
+exec('php ' . __DIR__ . '/verify_bulk_assignment.php', $output, $return_var);
+if ($return_var !== 0) {
+    echo implode("\n", $output);
+    exit(1);
+}
+echo "PASS: verify_bulk_assignment.php from run-tests.php\n";

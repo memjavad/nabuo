@@ -135,6 +135,7 @@ class Bulk_Operations {
 	 * @return \WP_REST_Response
 	 */
 	public function add_taxonomy( $request ) {
+		global $wpdb;
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
 		$taxonomy  = $request->get_param( 'taxonomy' ) ?? 'scale_category';
 		$term_ids  = $request->get_param( 'term_ids' ) ?? array();
@@ -146,14 +147,48 @@ class Bulk_Operations {
 			);
 		}
 
+		$scale_ids = array_map( 'intval', $scale_ids );
+		$term_ids  = array_map( 'intval', $term_ids );
+		$term_taxonomy_ids = array();
+
+		if ( ! empty( $term_ids ) ) {
+			$term_id_placeholders = implode( ',', array_fill( 0, count( $term_ids ), '%d' ) );
+			$query = $wpdb->prepare(
+				"SELECT term_taxonomy_id FROM {$wpdb->term_taxonomy} WHERE taxonomy = %s AND term_id IN ($term_id_placeholders)",
+				array_merge( array( $taxonomy ), $term_ids )
+			);
+			$term_taxonomy_ids = $wpdb->get_col( $query );
+		}
+
 		$updated = 0;
+		if ( ! empty( $term_taxonomy_ids ) ) {
+			$values       = array();
+			$placeholders = array();
 
-		foreach ( $scale_ids as $scale_id ) {
-			$result = wp_set_post_terms( $scale_id, $term_ids, $taxonomy, true );
-
-			if ( ! is_wp_error( $result ) ) {
+			foreach ( $scale_ids as $scale_id ) {
+				foreach ( $term_taxonomy_ids as $tt_id ) {
+					$values[]       = $scale_id;
+					$values[]       = $tt_id;
+					$placeholders[] = '(%d, %d)';
+				}
 				$updated++;
 			}
+
+			// Chunk inserts
+			$chunk_size          = 500;
+			$chunks_placeholders = array_chunk( $placeholders, $chunk_size );
+			$chunks_values       = array_chunk( $values, $chunk_size * 2 );
+
+			foreach ( $chunks_placeholders as $index => $chunk_placeholder ) {
+				$insert_query = $wpdb->prepare(
+					"INSERT IGNORE INTO {$wpdb->term_relationships} (object_id, term_taxonomy_id) VALUES " . implode( ', ', $chunk_placeholder ),
+					$chunks_values[ $index ]
+				);
+				$wpdb->query( $insert_query );
+			}
+
+			wp_update_term_count( $term_taxonomy_ids, $taxonomy );
+			clean_object_term_cache( $scale_ids, 'psych_scale' );
 		}
 
 		return new \WP_REST_Response(
