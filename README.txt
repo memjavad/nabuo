@@ -48,6 +48,10 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
+= 1.0.1 =
+* Optimized AI batch processor N+1 query.
+
 = 1.55.8 =
 * Fixed plugin header conflict that caused WordPress to misidentify the plugin as "Naboo Memcached Object Cache".
 
