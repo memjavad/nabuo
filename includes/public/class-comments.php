@@ -97,15 +97,28 @@ class Comments {
 			$offset
 		) );
 
-		// Get replies for each comment
-		foreach ( $comments as $comment ) {
-			$replies = $wpdb->get_results( $wpdb->prepare(
-				"SELECT * FROM $table_name WHERE scale_id = %d AND parent_id = %d AND status = 'approved' 
+		// Get replies for all top-level comments in a single query
+		if ( ! empty( $comments ) ) {
+			$comment_ids = array_map( function( $c ) { return $c->id; }, $comments );
+			$placeholders = implode( ',', array_fill( 0, count( $comment_ids ), '%d' ) );
+			$args = array_merge( array( $scale_id ), $comment_ids );
+
+			$all_replies = $wpdb->get_results( $wpdb->prepare(
+				"SELECT * FROM $table_name WHERE scale_id = %d AND parent_id IN ($placeholders) AND status = 'approved'
 				 ORDER BY created_at ASC",
-				$scale_id,
-				$comment->id
+				$args
 			) );
-			$comment->replies = $replies;
+
+			$replies_by_parent = array();
+			if ( $all_replies ) {
+				foreach ( $all_replies as $reply ) {
+					$replies_by_parent[ $reply->parent_id ][] = $reply;
+				}
+			}
+
+			foreach ( $comments as $comment ) {
+				$comment->replies = isset( $replies_by_parent[ $comment->id ] ) ? $replies_by_parent[ $comment->id ] : array();
+			}
 		}
 
 		$total = $wpdb->get_var( $wpdb->prepare(
