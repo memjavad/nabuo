@@ -154,6 +154,8 @@ class SEO_Sitemap_Manager {
 
 		// 3. Taxonomies (Categories and Authors)
 		$taxonomies = array( 'scale_category', 'scale_author' );
+		global $wpdb;
+
 		foreach ( $taxonomies as $taxonomy ) {
 			$terms = get_terms( array(
 				'taxonomy'   => $taxonomy,
@@ -161,28 +163,41 @@ class SEO_Sitemap_Manager {
 			) );
 
 			if ( ! is_wp_error( $terms ) && ! empty( $terms ) ) {
+				$term_ids = wp_list_pluck( $terms, 'term_id' );
+
+				// Get the last modified date for each term in a single query
+				$placeholders = implode( ',', array_fill( 0, count( $term_ids ), '%d' ) );
+				$query = "
+					SELECT tr.term_taxonomy_id as term_id, MAX(p.post_modified_gmt) as max_modified_gmt, MAX(p.post_modified) as max_modified
+					FROM {$wpdb->term_relationships} tr
+					INNER JOIN {$wpdb->term_taxonomy} tt ON tr.term_taxonomy_id = tt.term_taxonomy_id
+					INNER JOIN {$wpdb->posts} p ON tr.object_id = p.ID
+					WHERE tt.taxonomy = %s
+					AND tt.term_id IN ($placeholders)
+					AND p.post_type = 'psych_scale'
+					AND p.post_status = 'publish'
+					GROUP BY tr.term_taxonomy_id
+				";
+
+				$prepare_args = array_merge( array( $taxonomy ), $term_ids );
+				$results = $wpdb->get_results( $wpdb->prepare( $query, $prepare_args ) );
+
+				$latest_posts_by_term = array();
+				foreach ( $results as $row ) {
+					// Use post_modified_gmt if available and valid, fallback to post_modified
+					$modified_date = ( ! empty( $row->max_modified_gmt ) && '0000-00-00 00:00:00' !== $row->max_modified_gmt )
+						? $row->max_modified_gmt
+						: ( ! empty( $row->max_modified ) ? $row->max_modified : '' );
+
+					// Format as ISO 8601
+					if ( ! empty( $modified_date ) ) {
+						$latest_posts_by_term[ $row->term_id ] = mysql2date( 'c', $modified_date, false );
+					}
+				}
+
 				foreach ( $terms as $term ) {
-					// Get the last-modified date from the most recently modified post in this term.
-					$latest_in_term = get_posts( array(
-						'post_type'      => 'psych_scale',
-						'post_status'    => 'publish',
-						'posts_per_page' => 1,
-						'orderby'        => 'modified',
-						'order'          => 'DESC',
-						'fields'         => 'ids',
-						'tax_query'      => array(
-							array(
-								'taxonomy' => $taxonomy,
-								'field'    => 'term_id',
-								'terms'    => $term->term_id,
-							),
-						),
-						'no_found_rows'          => true,
-						'update_post_meta_cache' => false,
-						'update_post_term_cache' => false,
-					) );
-					$term_lastmod = ! empty( $latest_in_term )
-						? get_the_modified_date( 'c', $latest_in_term[0] )
+					$term_lastmod = isset( $latest_posts_by_term[ $term->term_id ] )
+						? $latest_posts_by_term[ $term->term_id ]
 						: gmdate( 'c' );
 
 					$urls[] = array(
