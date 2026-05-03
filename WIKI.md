@@ -205,3 +205,14 @@ The following features are planned for future releases to enhance the plugin's a
 ---
 
 *Last Updated: 1.5.4*
+# CRITICAL learnings
+
+* **When interpreting ambiguous user requests or potential typos, definitively rule out technical meanings (e.g., verifying via `grep`) before assuming it refers to standard repository files.**
+* **When modifying production code, the plugin version MUST be incremented using Semantic Versioning. However, do not increment the version when exclusively modifying test files or adding test coverage.**
+* **When a task description provides a 'Current Code' snippet, do not assume it is missing and duplicate it into the source codebase. Focus exclusively on writing tests for the existing logic.**
+* **When creating execution plans, explicitly include an immediate verification step (e.g., `cat <filename>` or `ls -la`) to confirm successful creation before proceeding.**
+* **In execution plans, avoid grouping modifications for multiple files (e.g., version bumps in both `naboodatabase.php` and `README.txt`) into a single step. Split them into distinct, granular steps per file to comply with the Specificity Rule.**
+* **In execution plans, do not group file modifications or verification commands for multiple files into a single step. Each file's modification must be an independent step, immediately followed by its own distinct verification step (e.g., `git diff` and `php -l`).**
+* **In execution plans, all code modifications (including version increments in files like `naboodatabase.php` and `README.txt`) must be scheduled before the final test verification step to ensure no regressions.**
+* **To eliminate N+1 queries in WordPress when fetching posts and custom data per taxonomy term, replace loops iterating through terms (e.g., `get_terms` followed by `get_posts`) with a single unified `$wpdb` SQL query joining `wp_terms`, `wp_term_taxonomy`, `wp_term_relationships`, `wp_posts`, and any target custom tables, utilizing SQL aggregations (`COUNT`, `SUM`) grouped by term ID.**
+* **To resolve N+1 query patterns in PHP, collect parent IDs using `wp_list_pluck()` and execute a single batch query using the `IN` clause with `$wpdb->prepare()`. Group results by parent ID in PHP to redistribute them.**

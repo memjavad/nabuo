@@ -504,11 +504,11 @@ class Batch_AI_Processor {
 		$fields_to_refine = array( 'abstract', 'category', 'year', 'authors', 'language', 'test_type', 'format', 'age_group', 'author_details', 'permissions' );
 		$extractor = new AI_Extractor();
 
-		foreach ( $fields_to_refine as $field_name ) {
-			global $wpdb;
-			$q_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}naboo_process_queue WHERE draft_id = %d", $draft_id ) );
-			if ( $q_status === 'failed' || $q_status === 'done' ) break;
+		global $wpdb;
+		$q_status = $wpdb->get_var( $wpdb->prepare( "SELECT status FROM {$wpdb->prefix}naboo_process_queue WHERE draft_id = %d", $draft_id ) );
+		if ( $q_status === 'failed' || $q_status === 'done' ) return;
 
+		foreach ( $fields_to_refine as $field_name ) {
 			sleep( 5 );
 			if ( function_exists( 'set_time_limit' ) ) set_time_limit( 300 );
 
