@@ -77,6 +77,14 @@ class Related_Scales {
 	}
 
 	public function get_related_scales( $scale_id, $limit = 6 ) {
+		$cache_key = "related_scales_{$scale_id}_{$limit}";
+		$cache_group = 'naboo_scales';
+		$cached_scales = wp_cache_get( $cache_key, $cache_group );
+
+		if ( false !== $cached_scales ) {
+			return $cached_scales;
+		}
+
 		$scale = get_post( $scale_id );
 
 		if ( ! $scale || 'psych_scale' !== $scale->post_type ) {
@@ -105,7 +113,10 @@ class Related_Scales {
 			return $b['score'] <=> $a['score'];
 		});
 
-		return array_slice( $merged, 0, $limit );
+		$final_scales = array_slice( $merged, 0, $limit );
+		wp_cache_set( $cache_key, $final_scales, $cache_group, 12 * 3600 ); // 12 hours
+
+		return $final_scales;
 	}
 
 	private function get_scales_by_category( $scale_id, $limit = 6 ) {

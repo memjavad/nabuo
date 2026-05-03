@@ -1,3 +1,13 @@
-## 2024-05-24 - Missing no_found_rows in WP_Query
-**Learning:** Found several `WP_Query` instances that fetch exactly ONE post using `posts_per_page => 1` but forget to include `no_found_rows => true`. This is a classic WordPress bottleneck as WP_Query defaults to executing `SQL_CALC_FOUND_ROWS` to calculate pagination, which is highly inefficient when only fetching 1 record and when pagination isn't needed.
-**Action:** When creating or modifying single-post `WP_Query` lookups or unpaginated lists, aggressively add `'no_found_rows' => true`.
+# CRITICAL learnings for Bolt:
+
+* **Caching complex computations:** When optimizing heavy operations that produce results which do not change frequently (like related scales based on term taxonomy queries or similar text matches), wrapping the logic with `wp_cache_get` and `wp_cache_set` is a simple yet powerful performance improvement.
+* **Testing Global Constants in Namespaces:** When working in a namespaced PHP file in WordPress, using global constants like `HOUR_IN_SECONDS` may fail with `Undefined constant "Namespace\HOUR_IN_SECONDS"`. Use their raw integer counterparts (e.g., `3600`) or reference them globally `\HOUR_IN_SECONDS` if the environment guarantees they are defined.
+* **Managing Sandbox Artifacts:** Ensure test scripts and patch scripts are properly deleted before committing to avoid polluting the PR with unrelated, temporary files.
+* **Testing Missing Dependencies:** When `phpunit` is not installed or the downloaded `.phar` is broken, rely on the project's custom test runner (e.g., `php tests/run-tests.php`) to ensure CI compatibility.
+
+# CRITICAL learnings for Bolt:
+
+* **Caching complex computations:** When optimizing heavy operations that produce results which do not change frequently (like related scales based on term taxonomy queries or similar text matches), wrapping the logic with `wp_cache_get` and `wp_cache_set` is a simple yet powerful performance improvement.
+* **Testing Global Constants in Namespaces:** When working in a namespaced PHP file in WordPress, using global constants like `HOUR_IN_SECONDS` may fail with `Undefined constant "Namespace\HOUR_IN_SECONDS"`. Use their raw integer counterparts (e.g., `3600`) or reference them globally `\HOUR_IN_SECONDS` if the environment guarantees they are defined.
+* **Managing Sandbox Artifacts:** Ensure test scripts and patch scripts are properly deleted before committing to avoid polluting the PR with unrelated, temporary files.
+* **Testing Missing Dependencies:** When `phpunit` is not installed or the downloaded `.phar` is broken, rely on the project's custom test runner (e.g., `php tests/run-tests.php`) to ensure CI compatibility.
