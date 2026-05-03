@@ -90,12 +90,14 @@ class Ratings {
 		$user_id = get_current_user_id();
 
 		$query = $wpdb->prepare(
-			"SELECT * FROM $table_name WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10"
+			"SELECT * FROM %i WHERE status = 'approved' ORDER BY created_at DESC LIMIT 10",
+			$table_name
 		);
 
 		if ( $scale_id ) {
 			$query = $wpdb->prepare(
-				"SELECT * FROM $table_name WHERE scale_id = %d AND status = 'approved' ORDER BY created_at DESC LIMIT 10",
+				"SELECT * FROM %i WHERE scale_id = %d AND status = 'approved' ORDER BY created_at DESC LIMIT 10",
+				$table_name,
 				intval( $scale_id )
 			);
 		}
@@ -115,7 +117,8 @@ class Ratings {
 		$scale_id = intval( $request->get_param( 'scale_id' ) );
 
 		$results = $wpdb->get_results( $wpdb->prepare(
-			"SELECT * FROM $table_name WHERE scale_id = %d AND status = 'approved' ORDER BY helpful_count DESC, created_at DESC LIMIT 20",
+			"SELECT * FROM %i WHERE scale_id = %d AND status = 'approved' ORDER BY helpful_count DESC, created_at DESC LIMIT 20",
+			$table_name,
 			$scale_id
 		) );
 
@@ -146,7 +149,8 @@ class Ratings {
 		// Check if user already rated this scale (by user_id for logged-in; by IP for guests).
 		if ( $user_id > 0 ) {
 			$existing = $wpdb->get_row( $wpdb->prepare(
-				"SELECT id FROM $table_name WHERE user_id = %d AND scale_id = %d",
+				"SELECT id FROM %i WHERE user_id = %d AND scale_id = %d",
+				$table_name,
 				$user_id,
 				$scale_id
 			) );
@@ -200,7 +204,8 @@ class Ratings {
 		$user_id = get_current_user_id();
 
 		$rating = $wpdb->get_row( $wpdb->prepare(
-			"SELECT * FROM $table_name WHERE id = %d",
+			"SELECT * FROM %i WHERE id = %d",
+			$table_name,
 			$id
 		) );
 
@@ -254,7 +259,8 @@ class Ratings {
 		$user_id = get_current_user_id();
 
 		$rating = $wpdb->get_row( $wpdb->prepare(
-			"SELECT * FROM $table_name WHERE id = %d",
+			"SELECT * FROM %i WHERE id = %d",
+			$table_name,
 			$id
 		) );
 
@@ -303,7 +309,8 @@ class Ratings {
 		set_transient( $rl_key, 1, HOUR_IN_SECONDS );
 
 		$rating = $wpdb->get_row( $wpdb->prepare(
-			"SELECT * FROM $table_name WHERE id = %d",
+			"SELECT * FROM %i WHERE id = %d",
+			$table_name,
 			$id
 		) );
 
@@ -354,8 +361,9 @@ class Ratings {
 				COUNT(CASE WHEN rating = 3 THEN 1 END) as three_star,
 				COUNT(CASE WHEN rating = 2 THEN 1 END) as two_star,
 				COUNT(CASE WHEN rating = 1 THEN 1 END) as one_star
-			FROM $table_name 
+			FROM %i
 			WHERE scale_id = %d AND status = 'approved'",
+			$table_name,
 			$scale_id
 		) );
 
