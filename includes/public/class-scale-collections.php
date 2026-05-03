@@ -258,8 +258,23 @@ class Scale_Collections {
 			$user_id
 		) );
 
+		if ( empty( $collections ) ) {
+			return new WP_REST_Response( array( 'collections' => $collections ) );
+		}
+
+		$collection_ids = wp_list_pluck( $collections, 'id' );
+
+		$items_table = $wpdb->prefix . 'naboo_collection_items';
+
+		// Use a single query to fetch item counts for all retrieved collections
+		$placeholders = implode( ',', array_fill( 0, count( $collection_ids ), '%d' ) );
+		$counts = $wpdb->get_results( $wpdb->prepare(
+			"SELECT collection_id, COUNT(*) as count FROM $items_table WHERE collection_id IN ($placeholders) GROUP BY collection_id",
+			$collection_ids
+		), OBJECT_K );
+
 		foreach ( $collections as $collection ) {
-			$collection->item_count = $this->get_collection_item_count( $collection->id );
+			$collection->item_count = isset( $counts[ $collection->id ] ) ? (int) $counts[ $collection->id ]->count : 0;
 		}
 
 		return new WP_REST_Response( array( 'collections' => $collections ) );
