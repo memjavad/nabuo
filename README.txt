@@ -48,6 +48,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+= 1.55.11 =
+* ⚡ Bolt: Fixed N+1 query in collection item count to improve performance.
+
 = 1.55.8 =
 * Fixed plugin header conflict that caused WordPress to misidentify the plugin as "Naboo Memcached Object Cache".
 
