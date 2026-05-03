@@ -447,12 +447,12 @@ class Advanced_Search {
 		// Distinct enumerated values for dropdown filters with counts
 		$get_distinct = function( $column ) use ( $wpdb, $table_name ) {
 			// Using flat table avoids joining posts to postmeta
-			$results = $wpdb->get_results( "
-				SELECT {$column} as value, COUNT(*) as cc
-				FROM {$table_name}
-				WHERE {$column} != '' AND {$column} IS NOT NULL
-				GROUP BY {$column}
-			" );
+			$results = $wpdb->get_results( $wpdb->prepare( "
+				SELECT %i as value, COUNT(*) as cc
+				FROM %i
+				WHERE %i != '' AND %i IS NOT NULL
+				GROUP BY %i
+			", $column, $table_name, $column, $column, $column ) );
 
 			// These columns might still have comma-separated values internally (e.g. Test Types)
 			$counts = array();
