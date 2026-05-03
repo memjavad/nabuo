@@ -24,4 +24,14 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+echo "Running Glossary Admin Tests...
+";
+exec('php ' . __DIR__ . '/admin/test-glossary-admin.php', $output_glossary, $return_var_glossary);
+echo implode("\n", $output_glossary) . "\n";
+if ($return_var_glossary !== 0) {
+    echo "FAIL: Glossary Admin Tests failed.\n";
+    exit(1);
+}
+
 echo "All tests passed.\n";
