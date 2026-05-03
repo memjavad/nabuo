@@ -30,11 +30,11 @@ class Bulk_Operations {
 	 * Constructor
 	 *
 	 * @param string $plugin_name The plugin name.
-	 * @param string $version     The plugin version.
+	 * @param string $version	 The plugin version.
 	 */
 	public function __construct( $plugin_name, $version ) {
 		$this->plugin_name = $plugin_name;
-		$this->version     = $version;
+		$this->version	 = $version;
 	}
 
 	/**
@@ -45,8 +45,8 @@ class Bulk_Operations {
 			'apa/v1',
 			'/bulk/change-status',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'change_status' ),
+				'methods'			 => 'POST',
+				'callback'			=> array( $this, 'change_status' ),
 				'permission_callback' => function() {
 					return current_user_can( 'manage_options' );
 				},
@@ -57,8 +57,8 @@ class Bulk_Operations {
 			'apa/v1',
 			'/bulk/add-taxonomy',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'add_taxonomy' ),
+				'methods'			 => 'POST',
+				'callback'			=> array( $this, 'add_taxonomy' ),
 				'permission_callback' => function() {
 					return current_user_can( 'manage_options' );
 				},
@@ -69,8 +69,8 @@ class Bulk_Operations {
 			'apa/v1',
 			'/bulk/delete',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'delete_scales' ),
+				'methods'			 => 'POST',
+				'callback'			=> array( $this, 'delete_scales' ),
 				'permission_callback' => function() {
 					return current_user_can( 'manage_options' );
 				},
@@ -81,8 +81,8 @@ class Bulk_Operations {
 			'apa/v1',
 			'/bulk/export',
 			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'export_scales' ),
+				'methods'			 => 'POST',
+				'callback'			=> array( $this, 'export_scales' ),
 				'permission_callback' => function() {
 					return current_user_can( 'manage_options' );
 				},
@@ -98,7 +98,7 @@ class Bulk_Operations {
 	 */
 	public function change_status( $request ) {
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
-		$status    = $request->get_param( 'status' ) ?? 'draft';
+		$status	= $request->get_param( 'status' ) ?? 'draft';
 
 		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) || ! in_array( $status, array( 'publish', 'draft', 'pending', 'trash' ), true ) ) {
 			return new \WP_REST_Response(
@@ -107,19 +107,26 @@ class Bulk_Operations {
 			);
 		}
 
-		$updated = 0;
+		global $wpdb;
 
-		foreach ( $scale_ids as $scale_id ) {
-			$result = wp_update_post(
-				array(
-					'ID'          => $scale_id,
-					'post_status' => $status,
-				)
-			);
+		$scale_ids = array_map( 'intval', $scale_ids );
+		$placeholders = implode( ',', array_fill( 0, count( $scale_ids ), '%d' ) );
+		$args = array_merge( array( $status ), $scale_ids );
 
-			if ( $result ) {
-				$updated++;
+		$query = $wpdb->prepare(
+			"UPDATE {$wpdb->posts} SET post_status = %s WHERE ID IN ($placeholders)",
+			$args
+		);
+
+		$result = $wpdb->query( $query );
+
+		if ( false !== $result ) {
+			$updated = $result;
+			foreach ( $scale_ids as $scale_id ) {
+				clean_post_cache( $scale_id );
 			}
+		} else {
+			$updated = 0;
 		}
 
 		return new \WP_REST_Response(
@@ -203,7 +210,7 @@ class Bulk_Operations {
 	 */
 	public function export_scales( $request ) {
 		$scale_ids = $request->get_param( 'scale_ids' ) ?? array();
-		$format    = $request->get_param( 'format' ) ?? 'json';
+		$format	= $request->get_param( 'format' ) ?? 'json';
 
 		if ( empty( $scale_ids ) || ! is_array( $scale_ids ) ) {
 			return new \WP_REST_Response(
@@ -222,18 +229,18 @@ class Bulk_Operations {
 			}
 
 			$scales_data[] = array(
-				'id'            => $scale->ID,
-				'title'         => $scale->post_title,
+				'id'			=> $scale->ID,
+				'title'		 => $scale->post_title,
 				'description'   => $scale->post_content,
-				'excerpt'       => $scale->post_excerpt,
-				'items'         => get_post_meta( $scale_id, '_naboo_scale_items', true ),
+				'excerpt'	   => $scale->post_excerpt,
+				'items'		 => get_post_meta( $scale_id, '_naboo_scale_items', true ),
 				'reliability'   => get_post_meta( $scale_id, '_naboo_scale_reliability', true ),
-				'validity'      => get_post_meta( $scale_id, '_naboo_scale_validity', true ),
-				'year'          => get_post_meta( $scale_id, '_naboo_scale_year', true ),
-				'language'      => get_post_meta( $scale_id, '_naboo_scale_language', true ),
-				'population'    => get_post_meta( $scale_id, '_naboo_scale_population', true ),
-				'categories'    => wp_get_post_terms( $scale_id, 'scale_category', array( 'fields' => 'names' ) ),
-				'authors'       => wp_get_post_terms( $scale_id, 'scale_author', array( 'fields' => 'names' ) ),
+				'validity'	  => get_post_meta( $scale_id, '_naboo_scale_validity', true ),
+				'year'		  => get_post_meta( $scale_id, '_naboo_scale_year', true ),
+				'language'	  => get_post_meta( $scale_id, '_naboo_scale_language', true ),
+				'population'	=> get_post_meta( $scale_id, '_naboo_scale_population', true ),
+				'categories'	=> wp_get_post_terms( $scale_id, 'scale_category', array( 'fields' => 'names' ) ),
+				'authors'	   => wp_get_post_terms( $scale_id, 'scale_author', array( 'fields' => 'names' ) ),
 			);
 		}
 
