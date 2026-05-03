@@ -71,26 +71,38 @@ class PDF_Export {
 	}
 
 	/**
-	 * Build HTML content for PDF.
+	 * Get data for PDF generation.
 	 */
-	private function build_pdf_html( $post ) {
+	private function get_pdf_data( $post ) {
 		$scale_id = $post->ID;
 		$categories = wp_get_post_terms( $scale_id, 'scale_category', array( 'fields' => 'names' ) );
 		$authors    = wp_get_post_terms( $scale_id, 'scale_author', array( 'fields' => 'names' ) );
 
-		// Get meta data
-		$items        = get_post_meta( $scale_id, '_naboo_scale_items', true );
-		$reliability  = get_post_meta( $scale_id, '_naboo_scale_reliability', true );
-		$validity     = get_post_meta( $scale_id, '_naboo_scale_validity', true );
-		$year         = get_post_meta( $scale_id, '_naboo_scale_year', true );
-		$language     = get_post_meta( $scale_id, '_naboo_scale_language', true );
-		$population   = get_post_meta( $scale_id, '_naboo_scale_population', true );
+		$data = array(
+			'title'       => $post->post_title,
+			'description' => $post->post_content,
+			'guid'        => $post->guid,
+			'items'       => get_post_meta( $scale_id, '_naboo_scale_items', true ),
+			'reliability' => get_post_meta( $scale_id, '_naboo_scale_reliability', true ),
+			'validity'    => get_post_meta( $scale_id, '_naboo_scale_validity', true ),
+			'year'        => get_post_meta( $scale_id, '_naboo_scale_year', true ),
+			'language'    => get_post_meta( $scale_id, '_naboo_scale_language', true ),
+			'population'  => get_post_meta( $scale_id, '_naboo_scale_population', true ),
+			'rating_info' => $this->get_rating_summary( $scale_id ),
+			'categories_str' => ! empty( $categories ) ? implode( ', ', $categories ) : 'Not specified',
+			'authors_str'    => ! empty( $authors ) ? implode( ', ', $authors ) : 'Not specified',
+			'date'        => date( 'F j, Y g:i A' ),
+			'host'        => $_SERVER['HTTP_HOST'] ?? '',
+		);
 
-		// Get rating info
-		$rating_info = $this->get_rating_summary( $scale_id );
+		return $data;
+	}
 
-		$categories_str = ! empty( $categories ) ? implode( ', ', $categories ) : 'Not specified';
-		$authors_str    = ! empty( $authors ) ? implode( ', ', $authors ) : 'Not specified';
+	/**
+	 * Build HTML content for PDF.
+	 */
+	private function build_pdf_html( $post ) {
+		$data = $this->get_pdf_data( $post );
 
 		$html = <<<HTML
 <!DOCTYPE html>
@@ -213,17 +225,17 @@ class PDF_Export {
 <body>
 	<div class="pdf-container">
 		<div class="pdf-header">
-			<div class="pdf-title">{$post->post_title}</div>
+			<div class="pdf-title">{$data['title']}</div>
 			<div class="pdf-meta">
-				<span>Published: {$year}</span>
-				<span>Language: {$language}</span>
+				<span>Published: {$data['year']}</span>
+				<span>Language: {$data['language']}</span>
 			</div>
 		</div>
 
 		<div class="pdf-section">
 			<div class="pdf-section-title">Description</div>
 			<div class="pdf-section-content">
-				<div class="pdf-description">{$post->post_content}</div>
+				<div class="pdf-description">{$data['description']}</div>
 			</div>
 		</div>
 
@@ -233,19 +245,19 @@ class PDF_Export {
 				<div class="pdf-grid">
 					<div class="pdf-grid-item">
 						<div class="pdf-grid-label">Category</div>
-						<div class="pdf-grid-value">{$categories_str}</div>
+						<div class="pdf-grid-value">{$data['categories_str']}</div>
 					</div>
 					<div class="pdf-grid-item">
 						<div class="pdf-grid-label">Author(s)</div>
-						<div class="pdf-grid-value">{$authors_str}</div>
+						<div class="pdf-grid-value">{$data['authors_str']}</div>
 					</div>
 					<div class="pdf-grid-item">
 						<div class="pdf-grid-label">Target Population</div>
-						<div class="pdf-grid-value">{$population}</div>
+						<div class="pdf-grid-value">{$data['population']}</div>
 					</div>
 					<div class="pdf-grid-item">
 						<div class="pdf-grid-label">Number of Items</div>
-						<div class="pdf-grid-value">{$items}</div>
+						<div class="pdf-grid-value">{$data['items']}</div>
 					</div>
 				</div>
 			</div>
@@ -257,29 +269,29 @@ class PDF_Export {
 				<div class="pdf-grid">
 					<div class="pdf-grid-item">
 						<div class="pdf-grid-label">Reliability</div>
-						<div class="pdf-grid-value">{$reliability}</div>
+						<div class="pdf-grid-value">{$data['reliability']}</div>
 					</div>
 					<div class="pdf-grid-item">
 						<div class="pdf-grid-label">Validity</div>
-						<div class="pdf-grid-value">{$validity}</div>
+						<div class="pdf-grid-value">{$data['validity']}</div>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		{$rating_info}
+		{$data['rating_info']}
 
 		<div class="pdf-section">
 			<div class="pdf-section-title">Additional Information</div>
 			<div class="pdf-section-content">
 				<div class="pdf-description">
-					For more information about this scale, visit: {$_SERVER['HTTP_HOST']}{$post->guid}
+					For more information about this scale, visit: {$data['host']}{$data['guid']}
 				</div>
 			</div>
 		</div>
 
 		<div class="pdf-footer">
-			Generated on {date( 'F j, Y g:i A' )} | Naboo Database
+			Generated on {$data['date']} | Naboo Database
 		</div>
 	</div>
 </body>
