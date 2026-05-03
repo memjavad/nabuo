@@ -24,4 +24,11 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+exec('php ' . __DIR__ . '/test-user-analytics-dashboard.php', $output, $return_var);
+if ($return_var !== 0) {
+    echo implode("\n", $output);
+    exit(1);
+}
+echo implode("\n", $output) . "\n";
+
 echo "All tests passed.\n";
