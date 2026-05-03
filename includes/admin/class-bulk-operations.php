@@ -181,6 +181,9 @@ class Bulk_Operations {
 
 		$deleted = 0;
 
+		wp_defer_term_counting( true );
+		wp_defer_comment_counting( true );
+
 		foreach ( $scale_ids as $scale_id ) {
 			$result = wp_delete_post( $scale_id, $permanent );
 
@@ -188,6 +191,9 @@ class Bulk_Operations {
 				$deleted++;
 			}
 		}
+
+		wp_defer_term_counting( false );
+		wp_defer_comment_counting( false );
 
 		return new \WP_REST_Response(
 			array( 'message' => sprintf( '%d scales deleted', $deleted ) ),
