@@ -3,7 +3,7 @@ Contributors: ArabPsychology
 Tags: database, scales, psychology, research, directory
 Requires at least: 5.0
 Tested up to: 6.4
-Stable tag: 1.55.10
+Stable tag: 1.55.11
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,9 @@ Submitted scales are saved as 'Pending' posts. You can review and publish them f
 
 
 == Changelog ==
+
+= 1.55.11 =
+* Optimization: Resolved N+1 query issue in scale recommendation engine by batch pre-warming post metadata and taxonomy caches for similar scales, resulting in faster load times. Added `no_found_rows` to recommendation engine query since pagination is not needed.
 = 1.55.8 =
 * Fixed plugin header conflict that caused WordPress to misidentify the plugin as "Naboo Memcached Object Cache".
 
