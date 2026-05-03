@@ -1,0 +1,4 @@
+## SQL Injection via string interpolation in bulk inserts
+
+**Vulnerability:** A bulk `INSERT ... ON DUPLICATE KEY UPDATE` query was using `$wpdb->prepare()` to format the values for individual rows, but the final query execution was relying on string interpolation to include the table name and the imploded values array, allowing for potential SQL injection if the table name or other components were compromised or unsanitized.
+**Fix:** The fix involves utilizing the WordPress 6.2+ `%i` placeholder in `$wpdb->prepare()` to escape the table name identifier securely. The values were collected into a single, flat `$prepare_args` array (starting with the table name, then appending all placeholder values), and the `$values_sql` array accumulated the prepared `(%d, %s, ...)` formats. Finally, the entire query was wrapped in `$wpdb->prepare( $query, $prepare_args )`.
