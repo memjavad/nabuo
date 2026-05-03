@@ -1,0 +1,15 @@
+🎯 **What:**
+This PR addresses a gap in test coverage by adding a test file to cover the private `format_boolean_keyword` method of the `Advanced_Search` class.
+
+📊 **Coverage:**
+The new `test-advanced-search-format-boolean.php` test covers several scenarios:
+* Empty and whitespace-only strings
+* Basic keywords
+* Short keywords (length <= 2) which are expected to be ignored
+* Strings with pre-existing boolean operators which should be stripped
+* Strings with multiple words
+* Mixed-case strings which should be down-cased
+* Applying the force exclude flag (`$force_exclude = true`)
+
+✨ **Result:**
+By leveraging `ReflectionClass`, the private method could be adequately tested without exposing it. A custom runner ensures this file is executed when the test suite runs, significantly improving the robustness and test coverage of boolean formatting edge cases.

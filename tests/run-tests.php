@@ -1,4 +1,5 @@
 <?php
+
 // Autoloader/mock setup for testing without framework
 require_once __DIR__ . '/../includes/admin/import/class-import-processor.php';
 use ArabPsychology\NabooDatabase\Admin\Import\Import_Processor;
@@ -24,4 +25,8 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+// Execute the new advanced search format boolean keyword test
+require_once __DIR__ . '/test-advanced-search-format-boolean.php';
+
 echo "All tests passed.\n";

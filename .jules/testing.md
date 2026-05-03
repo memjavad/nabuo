@@ -1,0 +1,1 @@
+When testing private methods using `ReflectionClass`, avoid hallucinating constructor arguments if they are not explicitly known. Instead, use `$reflection->newInstanceWithoutConstructor()` to safely instantiate the class without triggering fatal errors from missing dependencies.
