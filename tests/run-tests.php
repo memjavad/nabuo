@@ -24,4 +24,16 @@ function test_empty_file_upload() {
 }
 
 test_empty_file_upload();
+
+
+// Execute the new test
+exec('php ' . __DIR__ . '/test-pdf-export-exception.php', $output, $return_var);
+foreach ($output as $line) {
+    echo $line . "\n";
+}
+if ($return_var !== 0) {
+    echo "FAIL: test-pdf-export-exception.php exited with code $return_var\n";
+    exit(1);
+}
+
 echo "All tests passed.\n";

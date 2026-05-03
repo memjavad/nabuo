@@ -65,7 +65,7 @@ class PDF_Export {
 	/**
 	 * Generate PDF content for a scale.
 	 */
-	private function generate_pdf( $post ) {
+	protected function generate_pdf( $post ) {
 		$html = $this->build_pdf_html( $post );
 		return $this->html_to_pdf( $html, $post->post_title );
 	}
