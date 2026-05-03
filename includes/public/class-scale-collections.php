@@ -269,11 +269,21 @@ class Scale_Collections {
 	 * Create a new collection.
 	 */
 	public function create_collection( WP_REST_Request $request ) {
-		$user_id            = get_current_user_id();
-		$collection_name    = $request->get_param( 'collection_name' );
-		$description        = $request->get_param( 'description' );
-		$color_code         = $request->get_param( 'color_code' );
-		$is_public          = $request->get_param( 'is_public' ) ? 1 : 0;
+		$user_id = get_current_user_id();
+
+		if ( ! $user_id ) {
+			return new \WP_Error( 'not_logged_in', 'You must be logged in to create a collection.', array( 'status' => 401 ) );
+		}
+
+		$collection_name = sanitize_text_field( $request->get_param( 'collection_name' ) );
+
+		if ( empty( $collection_name ) ) {
+			return new \WP_Error( 'missing_title', 'Collection title is required.', array( 'status' => 400 ) );
+		}
+
+		$description = $request->get_param( 'description' );
+		$color_code  = $request->get_param( 'color_code' );
+		$is_public   = $request->get_param( 'is_public' ) ? 1 : 0;
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'naboo_collections';
