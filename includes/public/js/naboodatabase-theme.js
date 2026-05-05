@@ -15,6 +15,10 @@
                 toggle.classList.toggle('active');
                 nav.classList.toggle('open');
                 document.body.classList.toggle('mobile-nav-open');
+
+                // Update aria-expanded
+                var isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', !isExpanded);
             });
             // Close on outside click
             document.addEventListener('click', function (e) {
@@ -22,6 +26,7 @@
                     toggle.classList.remove('active');
                     nav.classList.remove('open');
                     document.body.classList.remove('mobile-nav-open');
+                    toggle.setAttribute('aria-expanded', 'false');
                 }
             });
         }
