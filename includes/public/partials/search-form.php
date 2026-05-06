@@ -73,7 +73,7 @@ $main_search_title = isset( $naboo_options['main_search_title'] ) && $naboo_opti
 					
 					<div class="naboo-sc-input-wrap">
 						<input type="text"
-						       id="naboo-row-1-term"
+						       id="naboo-row-1-term" aria-label="<?php esc_attr_e( 'Search term', 'naboodatabase' ); ?>"
 						       class="naboo-row-term naboo-sc-input"
 						       placeholder="<?php esc_attr_e( 'Search psychological scales, constructs, or authors...', 'naboodatabase' ); ?>"
 						       autocomplete="off">
@@ -106,8 +106,8 @@ $main_search_title = isset( $naboo_options['main_search_title'] ) && $naboo_opti
 				<?php endif; ?>
 
 				<!-- Add Row / Date hidden behind advanced or logic, kept for structure -->
-				<button type="button" id="naboo-add-row" style="display:none;">Add row</button>
-				<button type="button" id="naboo-add-date" style="display:none;">Add date</button>
+				<button type="button" id="naboo-add-row" style="display:none;" aria-label="<?php esc_attr_e( 'Add search row', 'naboodatabase' ); ?>">Add row</button>
+				<button type="button" id="naboo-add-date" style="display:none;" aria-label="<?php esc_attr_e( 'Add date range filter', 'naboodatabase' ); ?>">Add date</button>
 			</div>
 
 			<div class="naboo-sc-links" style="display:none;">
@@ -188,16 +188,16 @@ $main_search_title = isset( $naboo_options['main_search_title'] ) && $naboo_opti
 					<div class="naboo-sc-adv-group">
 						<label class="naboo-sc-adv-label"><?php esc_html_e( 'Items range', 'naboodatabase' ); ?></label>
 						<div class="naboo-sc-range">
-							<input type="number" id="naboo-items-min" class="naboo-sc-range-input" placeholder="<?php esc_attr_e( 'Min', 'naboodatabase' ); ?>" min="0">
+							<input type="number" id="naboo-items-min" class="naboo-sc-range-input" aria-label="<?php esc_attr_e( 'Minimum items', 'naboodatabase' ); ?>" placeholder="<?php esc_attr_e( 'Min', 'naboodatabase' ); ?>" min="0">
 							<span class="naboo-dash">–</span>
-							<input type="number" id="naboo-items-max" class="naboo-sc-range-input" placeholder="<?php esc_attr_e( 'Max', 'naboodatabase' ); ?>" min="0">
+							<input type="number" id="naboo-items-max" class="naboo-sc-range-input" aria-label="<?php esc_attr_e( 'Maximum items', 'naboodatabase' ); ?>" placeholder="<?php esc_attr_e( 'Max', 'naboodatabase' ); ?>" min="0">
 						</div>
 					</div>
 
 					<div class="naboo-sc-adv-group naboo-sc-adv-check">
 						<label class="naboo-sc-adv-label"><?php esc_html_e( 'Download available', 'naboodatabase' ); ?></label>
 						<label class="naboo-sc-toggle">
-							<input type="checkbox" id="naboo-filter-has-file">
+							<input type="checkbox" id="naboo-filter-has-file" aria-label="<?php esc_attr_e( 'Has file download', 'naboodatabase' ); ?>">
 							<span class="naboo-sc-toggle-knob"></span>
 						</label>
 					</div>
@@ -353,7 +353,7 @@ $main_search_title = isset( $naboo_options['main_search_title'] ) && $naboo_opti
 		</div>
 		<div class="naboo-sc-input-wrap">
 			<input type="text" class="naboo-row-term naboo-sc-input"
-			       placeholder="<?php esc_attr_e( 'Search documents…', 'naboodatabase' ); ?>" autocomplete="off">
+			       placeholder="<?php esc_attr_e( 'Search documents…', 'naboodatabase' ); ?>" autocomplete="off" aria-label="<?php esc_attr_e( 'Search term', 'naboodatabase' ); ?>">
 			<div class="naboo-suggestions-box" style="display:none;"></div>
 		</div>
 		<button type="button" class="naboo-remove-row" title="<?php esc_attr_e( 'Remove row', 'naboodatabase' ); ?>" aria-label="<?php esc_attr_e( 'Remove row', 'naboodatabase' ); ?>">
