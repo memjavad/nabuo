@@ -76,33 +76,33 @@
 				<h3><?php _e( 'Basic Information', 'naboodatabase' ); ?></h3>
 				
 				<div class="naboo-form-row">
-					<label for="ai_scale_title"><?php _e( 'Scale Title *', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="title" title="<?php esc_attr_e( 'Refine with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_title"><?php _e( 'Scale Title *', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="title" aria-label="<?php esc_attr_e( 'Refine title with AI', 'naboodatabase' ); ?>" title="<?php esc_attr_e( 'Refine with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<input type="text" id="ai_scale_title" name="scale_title" required class="widefat">
 				</div>
 
 				<div class="naboo-form-row two-col">
 					<div>
-						<label for="ai_scale_construct"><?php _e( 'Construct Measured', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="construct"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_construct"><?php _e( 'Construct Measured', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="construct" aria-label="<?php esc_attr_e( 'Refine construct with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_construct" name="scale_construct" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_year"><?php _e( 'Publication Year', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="year"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_year"><?php _e( 'Publication Year', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="year" aria-label="<?php esc_attr_e( 'Refine year with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="number" id="ai_scale_year" name="scale_year" class="widefat">
 					</div>
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_purpose"><?php _e( 'Purpose', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="purpose"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_purpose"><?php _e( 'Purpose', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="purpose" aria-label="<?php esc_attr_e( 'Refine purpose with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_purpose" name="scale_purpose" rows="2" class="widefat"></textarea>
 				</div>
 				
 				<div class="naboo-form-row">
-					<label for="ai_scale_keywords"><?php _e( 'Keywords', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="keywords"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_keywords"><?php _e( 'Keywords', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="keywords" aria-label="<?php esc_attr_e( 'Refine keywords with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<input type="text" id="ai_scale_keywords" name="scale_keywords" class="widefat" placeholder="<?php esc_attr_e( 'e.g., depression, anxiety, self-report...', 'naboodatabase' ); ?>">
 				</div>
 				
 				<div class="naboo-form-row">
-					<label for="ai_scale_abstract"><?php _e( 'Abstract / Description', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="abstract"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_abstract"><?php _e( 'Abstract / Description', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="abstract" aria-label="<?php esc_attr_e( 'Refine abstract with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_abstract" name="scale_abstract" rows="4" class="widefat"></textarea>
 				</div>
 			</div>
@@ -112,43 +112,43 @@
 
 				<div class="naboo-form-row three-col">
 					<div>
-						<label for="ai_scale_items"><?php _e( 'Number of Items', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="items"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_items"><?php _e( 'Number of Items', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="items" aria-label="<?php esc_attr_e( 'Refine items with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="number" id="ai_scale_items" name="scale_items" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_language"><?php _e( 'Language', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="language"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_language"><?php _e( 'Language', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="language" aria-label="<?php esc_attr_e( 'Refine language with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_language" name="scale_language" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_test_type"><?php _e( 'Test Type (Legacy)', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="test_type"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_test_type"><?php _e( 'Test Type (Legacy)', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="test_type" aria-label="<?php esc_attr_e( 'Refine test type with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_test_type" name="scale_test_type" class="widefat">
 					</div>
 				</div>
 
 				<div class="naboo-form-row two-col">
 					<div>
-						<label for="ai_scale_administration_method"><?php _e( 'Administration Method', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="administration_method"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_administration_method"><?php _e( 'Administration Method', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="administration_method" aria-label="<?php esc_attr_e( 'Refine administration method with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_administration_method" name="scale_administration_method" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_instrument_type"><?php _e( 'Instrument Type', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="instrument_type"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_instrument_type"><?php _e( 'Instrument Type', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="instrument_type" aria-label="<?php esc_attr_e( 'Refine instrument type with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_instrument_type" name="scale_instrument_type" class="widefat">
 					</div>
 				</div>
 
 				<div class="naboo-form-row two-col">
 					<div>
-						<label for="ai_scale_format"><?php _e( 'Response Format', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="format"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_format"><?php _e( 'Response Format', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="format" aria-label="<?php esc_attr_e( 'Refine format with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_format" name="scale_format" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_methodology"><?php _e( 'Methodology', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="methodology"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_methodology"><?php _e( 'Methodology', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="methodology" aria-label="<?php esc_attr_e( 'Refine methodology with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_methodology" name="scale_methodology" class="widefat">
 					</div>
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_items_list"><?php _e( 'Items List', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="items_list"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_items_list"><?php _e( 'Items List', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="items_list" aria-label="<?php esc_attr_e( 'Refine items list with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_items_list" name="scale_items_list" rows="5" class="widefat" placeholder="<?php esc_attr_e( 'Review the extracted scale items here...', 'naboodatabase' ); ?>"></textarea>
 				</div>
 			</div>
@@ -157,12 +157,12 @@
 				<h3><?php _e( 'Scoring Details', 'naboodatabase' ); ?></h3>
 				
 				<div class="naboo-form-row">
-					<label for="ai_scale_scoring_rules"><?php _e( 'Scoring Rules', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="scoring_rules"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_scoring_rules"><?php _e( 'Scoring Rules', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="scoring_rules" aria-label="<?php esc_attr_e( 'Refine scoring rules with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_scoring_rules" name="scale_scoring_rules" rows="3" class="widefat" placeholder="<?php esc_attr_e( 'e.g., Reverse scoring items, subscales sums...', 'naboodatabase' ); ?>"></textarea>
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_r_code"><?php _e( 'R Code for Auto-Scoring', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="r_code"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_r_code"><?php _e( 'R Code for Auto-Scoring', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="r_code" aria-label="<?php esc_attr_e( 'Refine r code with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_r_code" name="scale_r_code" rows="4" class="widefat" style="font-family: monospace;" placeholder="<?php esc_attr_e( 'R code snippet for calculating totals...', 'naboodatabase' ); ?>"></textarea>
 				</div>
 			</div>
@@ -171,17 +171,17 @@
 				<h3><?php _e( 'Psychometrics', 'naboodatabase' ); ?></h3>
 				
 				<div class="naboo-form-row">
-					<label for="ai_scale_reliability"><?php _e( 'Reliability', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="reliability"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_reliability"><?php _e( 'Reliability', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="reliability" aria-label="<?php esc_attr_e( 'Refine reliability with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_reliability" name="scale_reliability" rows="3" class="widefat"></textarea>
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_validity"><?php _e( 'Validity', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="validity"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_validity"><?php _e( 'Validity', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="validity" aria-label="<?php esc_attr_e( 'Refine validity with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_validity" name="scale_validity" rows="3" class="widefat"></textarea>
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_factor_analysis"><?php _e( 'Factor Analysis', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="factor_analysis"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_factor_analysis"><?php _e( 'Factor Analysis', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="factor_analysis" aria-label="<?php esc_attr_e( 'Refine factor analysis with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_factor_analysis" name="scale_factor_analysis" rows="3" class="widefat"></textarea>
 				</div>
 			</div>
@@ -191,32 +191,32 @@
 				
 				<div class="naboo-form-row two-col">
 					<div>
-						<label for="ai_scale_population"><?php _e( 'Target Population', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="population"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_population"><?php _e( 'Target Population', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="population" aria-label="<?php esc_attr_e( 'Refine population with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_population" name="scale_population" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_age_group"><?php _e( 'Age Group', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="age_group"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_age_group"><?php _e( 'Age Group', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="age_group" aria-label="<?php esc_attr_e( 'Refine age group with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_age_group" name="scale_age_group" class="widefat">
 					</div>
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_authors"><?php _e( 'Scale Authors (Names)', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="authors"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_authors"><?php _e( 'Scale Authors (Names)', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="authors" aria-label="<?php esc_attr_e( 'Refine authors with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<input type="text" id="ai_scale_authors" name="scale_authors" class="widefat" placeholder="<?php esc_attr_e( 'e.g., John Doe, Jane Smith', 'naboodatabase' ); ?>">
 				</div>
 
 				<div class="naboo-form-row">
-					<label for="ai_scale_author_details"><?php _e( 'Author Details & Affiliations', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="author_details"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+					<label for="ai_scale_author_details"><?php _e( 'Author Details & Affiliations', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="author_details" aria-label="<?php esc_attr_e( 'Refine author details with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 					<textarea id="ai_scale_author_details" name="scale_author_details" rows="3" class="widefat"></textarea>
 				</div>
                 
                 <div class="naboo-form-row two-col">
 					<div>
-						<label for="ai_scale_author_email"><?php _e( 'Author Email', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="author_email"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_author_email"><?php _e( 'Author Email', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="author_email" aria-label="<?php esc_attr_e( 'Refine author email with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="email" id="ai_scale_author_email" name="scale_author_email" class="widefat">
 					</div>
 					<div>
-						<label for="ai_scale_author_orcid"><?php _e( 'Author ORCID', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="author_orcid"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
+						<label for="ai_scale_author_orcid"><?php _e( 'Author ORCID', 'naboodatabase' ); ?> <button type="button" class="naboo-ai-refine-btn" data-field="author_orcid" aria-label="<?php esc_attr_e( 'Refine author orcid with AI', 'naboodatabase' ); ?>"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> AI</button></label>
 						<input type="text" id="ai_scale_author_orcid" name="scale_author_orcid" class="widefat" placeholder="e.g., 0000-0000-0000-0000">
 					</div>
 				</div>
