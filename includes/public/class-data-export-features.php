@@ -129,6 +129,8 @@ class Data_Export_Features {
 			}
 		}
 
+		$args['no_found_rows'] = true;
+
 		$query = new \WP_Query( $args );
 		$scales = $this->format_scales_for_export( $query->posts );
 
@@ -185,6 +187,7 @@ class Data_Export_Features {
 			'post_status' => 'publish',
 			'post__in'    => $favorite_ids,
 			'orderby'     => 'post__in',
+			'no_found_rows' => true,
 		);
 
 		$query = new \WP_Query( $args );

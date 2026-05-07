@@ -113,6 +113,7 @@ class Scale_Validation {
 			'post_type'      => 'psych_scale',
 			'post_status'    => $status,
 			'posts_per_page' => -1,
+			'no_found_rows'  => true,
 		);
 
 		$query = new \WP_Query( $args );
@@ -214,6 +215,7 @@ class Scale_Validation {
 			'post_type'      => 'psych_scale',
 			'post_status'    => 'publish',
 			'posts_per_page' => -1,
+			'no_found_rows'  => true,
 		);
 
 		$query = new \WP_Query( $args );
