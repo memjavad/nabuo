@@ -230,6 +230,7 @@ class Search_Result_Improvements {
 			's'              => $query,
 			'posts_per_page' => -1,
 			'fields'         => 'ids',
+			'no_found_rows'  => true,
 		);
 
 		$query_obj = new \WP_Query( $args );

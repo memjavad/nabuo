@@ -129,6 +129,7 @@ class Related_Scales {
 			),
 			'orderby' => 'date',
 			'order' => 'DESC',
+			'no_found_rows' => true,
 		);
 
 		$query = new \WP_Query( $args );
@@ -168,6 +169,7 @@ class Related_Scales {
 			),
 			'orderby' => 'date',
 			'order' => 'DESC',
+			'no_found_rows' => true,
 		);
 
 		$query = new \WP_Query( $args );
@@ -208,6 +210,7 @@ class Related_Scales {
 			's' => implode( ' ', array_slice( $keywords, 0, 3 ) ),
 			'orderby' => 'relevance',
 			'order' => 'DESC',
+			'no_found_rows' => true,
 		);
 
 		$query = new \WP_Query( $args );
